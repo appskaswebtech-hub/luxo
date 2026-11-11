@@ -1,193 +1,694 @@
-{% liquid
-  assign overlay = section.settings.overlay_opacity | divided_by: 100.0
+{%- liquid
+  assign layout_style = section.settings.layout_style
+  assign use_custom_colors = section.settings.enable_custom_colors
+  
+  assign bg_color = section.settings.default_bg_color
+  assign text_color = section.settings.default_text_color
+  assign accent_color = section.settings.default_accent_color
 
-  assign loading = 'lazy'
-  if section.index == 1
-    assign loading = 'eager'
+  if use_custom_colors
+    assign bg_color = section.settings.custom_bg_color
+    assign text_color = section.settings.custom_text_color
+    assign accent_color = section.settings.custom_accent_color
   endif
-%}
 
-<div
-  class="hero full-width {{ section.settings.height }} {{ section.settings.content_position }}"
-  style="--hero-overlay: {{ overlay }};"
->
-  <div class="hero__media">
-    {%- if section.settings.image -%}
-      {{
-        section.settings.image
-        | image_url: width: 3840
-        | image_tag:
-          widths: '750, 1100, 1500, 1920, 2560, 3840',
-          sizes: '100vw',
-          loading: loading,
-          class: 'hero__image'
-      }}
-    {%- else -%}
-      {{ 'hero-apparel-1' | placeholder_svg_tag: 'hero__image hero__image--placeholder' }}
-    {%- endif -%}
-  </div>
+  # Fix for placeholder classes
+  capture img_class
+    echo 'hero-banner-' | append: section.id | append: '__image'
+  endcapture
+  
+  capture placeholder_class
+    echo 'hero-banner-' | append: section.id | append: '__image hero-banner-' | append: section.id | append: '__placeholder'
+  endcapture
+-%}
 
-  <div class="hero__content">
-    <div class="hero__inner">
-      {% content_for 'blocks' %}
-    </div>
-  </div>
-</div>
+{% style %}
+  #shopify-section-{{ section.id }} {
+    --hero-bg: {{ bg_color }};
+    --hero-text: {{ text_color }};
+    --hero-accent: {{ accent_color }};
+    --hero-padding-top: {{ section.settings.padding_top }}px;
+    --hero-padding-bottom: {{ section.settings.padding_bottom }}px;
+    --hero-image-radius: {{ section.settings.image_border_radius }}px;
+    --hero-image-border-width: {{ section.settings.image_border_width }}px;
+    --hero-image-border-color: {{ section.settings.image_border_color }};
+  }
 
-{% stylesheet %}
-  .hero {
+  .hero-banner-{{ section.id }} {
+    width: 100vw;
+    max-width: 100vw;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    left: 50%;
+    right: 50%;
     position: relative;
-    display: grid;
-    grid-template-columns: var(--content-grid);
+    min-height: 100vh;
+    background-color: var(--hero-bg);
+    color: var(--hero-text);
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
     overflow: hidden;
-    background: var(--color-background);
-    color: var(--color-foreground);
+    padding-top: var(--hero-padding-top);
+    padding-bottom: var(--hero-padding-bottom);
+    font-family: var(--font-body-family, -apple-system, sans-serif);
   }
 
-  .hero--small {
-    min-height: 24rem;
+  .hero-banner-{{ section.id }}__container {
+    width: 100%;
+    max-width: var(--page-width, 1240px);
+    margin: 0 auto;
+    padding: 0 var(--page-margin, 5%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    box-sizing: border-box;
   }
 
-  .hero--medium {
-    min-height: 34rem;
+  .hero-banner-{{ section.id }}__layout--edge_spaced {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    gap: 2vw;
+    align-items: center;
   }
 
-  .hero--large {
-    min-height: 44rem;
+  .hero-banner-{{ section.id }}__stage {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
   }
 
-  .hero--screen {
-    min-height: 100svh;
+  .hero-banner-{{ section.id }}__text-layer {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    pointer-events: none;
   }
 
-  .hero__media {
+  .hero-banner-{{ section.id }}__text-layer > * {
+    pointer-events: auto;
+  }
+
+  .hero-banner-{{ section.id }}__overlap-group {
     position: absolute;
-    inset: 0;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2; 
+    width: 28vw;
+    min-width: 280px;
+    max-width: 360px;
+    aspect-ratio: 3 / 4;
+    pointer-events: none;
   }
 
-  .hero__media::after {
-    content: '';
+  .hero-banner-{{ section.id }}__overlap-item {
     position: absolute;
-    inset: 0;
-    background: #000;
-    opacity: var(--hero-overlay);
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    border-radius: var(--hero-image-radius);
+    border: var(--hero-image-border-width) solid var(--hero-image-border-color);
+    background-color: var(--hero-bg);
+    box-shadow: 0 30px 60px rgba(43, 30, 22, 0.25);
+    transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+    overflow: hidden;
   }
 
-  .hero__image {
+  .hero-banner-{{ section.id }}__overlap-back {
+    transform: translateX(-10%) translateY(5%) rotate(-6deg);
+  }
+
+  .hero-banner-{{ section.id }}__overlap-front {
+    transform: translateX(10%) translateY(-5%) rotate(4deg);
+  }
+
+  .hero-banner-{{ section.id }}:hover .hero-banner-{{ section.id }}__overlap-back {
+    transform: translateX(-35%) translateY(12%) rotate(-12deg) scale(0.95);
+  }
+
+  .hero-banner-{{ section.id }}:hover .hero-banner-{{ section.id }}__overlap-front {
+    transform: translateX(35%) translateY(-12%) rotate(10deg) scale(1.05);
+  }
+
+  .hero-banner-{{ section.id }}__image-wrapper {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 350px;
+    border-radius: var(--hero-image-radius);
+    border: var(--hero-image-border-width) solid var(--hero-image-border-color);
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(43, 30, 22, 0.15);
+    transition: transform 0.5s ease;
+    aspect-ratio: 3 / 4;
+  }
+
+  .hero-banner-{{ section.id }}__image-left { justify-self: start; }
+  .hero-banner-{{ section.id }}__image-right { justify-self: end; }
+
+  .hero-banner-{{ section.id }}__image-wrapper:hover {
+    transform: translateY(-10px);
+  }
+
+  .hero-banner-{{ section.id }}__image {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    display: block;
   }
 
-  .hero__image--placeholder {
-    background: #e4e1dc;
+  .hero-banner-{{ section.id }}__placeholder {
+    background-color: #E8E2D9;
+    fill: #8C7A6B;
   }
 
-  .hero__content {
-    position: relative;
-    grid-column: 2;
-    display: flex;
-    padding-block: var(--section-spacing-mobile);
+  .hero-banner-{{ section.id }}__heading {
+    margin: 0;
+    padding: 0;
+    line-height: 0.9;
+    letter-spacing: -0.03em;
+    font-family: var(--font-heading-family, serif);
+    word-break: break-word;
+    width: 100%;
+    color: var(--hero-text);
   }
 
-  .hero__inner {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    max-width: 40rem;
+  .hero-banner-{{ section.id }}__description {
+    max-width: 600px;
+    line-height: 1.6;
+    margin: 0 auto;
+    color: var(--hero-text);
   }
 
-  .hero--top-left .hero__content {
-    align-items: flex-start;
-    justify-content: flex-start;
-  }
+  .hero-banner-{{ section.id }}__description p { margin: 0; }
 
-  .hero--center .hero__content {
+  .hero-banner-{{ section.id }}__button-wrapper { margin-top: 20px; }
+
+  .hero-banner-{{ section.id }}__button {
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    text-align: center;
+    padding: 16px 36px;
+    text-decoration: none;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: all 0.4s ease;
+    border: 2px solid transparent;
   }
 
-  .hero--bottom-left .hero__content {
-    align-items: flex-end;
-    justify-content: flex-start;
+  .hero-banner-{{ section.id }}__button:hover {
+    opacity: 0.9;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
   }
 
-  @media screen and (min-width: 750px) {
-    .hero__content {
-      padding-block: var(--section-spacing-desktop);
+  @media screen and (max-width: 991px) {
+    .hero-banner-{{ section.id }}__layout--edge_spaced {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+    
+    .hero-banner-{{ section.id }}__image-wrapper {
+      max-width: 100%;
+      margin: 0 auto;
+      aspect-ratio: 16 / 9;
+    }
+    
+    .hero-banner-{{ section.id }}__overlap-group {
+      width: 45vw;
     }
   }
-{% endstylesheet %}
+
+  @media screen and (max-width: 768px) {
+    .hero-banner-{{ section.id }} {
+      min-height: 80vh;
+    }
+
+    .hero-banner-{{ section.id }}__layout--edge_spaced {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .hero-banner-{{ section.id }}__image-left { order: 1; width: 100%; }
+    .hero-banner-{{ section.id }}__stage { order: 2; min-height: auto; margin: 30px 0; width: 100%; }
+    .hero-banner-{{ section.id }}__image-right { order: 3; width: 100%; }
+
+    .hero-banner-{{ section.id }}__overlap-group {
+      width: 60vw;
+      min-width: 220px;
+    }
+
+    .hero-banner-{{ section.id }}__heading {
+      font-size: clamp(2.5rem, 12vw, 4rem);
+    }
+  }
+
+  @media screen and (prefers-reduced-motion: reduce) {
+    .hero-banner-{{ section.id }}__overlap-item,
+    .hero-banner-{{ section.id }}__button,
+    .hero-banner-{{ section.id }}__image-wrapper {
+      transition: none;
+    }
+  }
+{% endstyle %}
+
+<section class="hero-banner-{{ section.id }}" id="HeroBanner-{{ section.id }}">
+  <div class="hero-banner-{{ section.id }}__container hero-banner-{{ section.id }}__layout--{{ layout_style }}">
+
+    {%- if layout_style == 'edge_spaced' -%}
+      <div class="hero-banner-{{ section.id }}__image-wrapper hero-banner-{{ section.id }}__image-left">
+        {%- if section.settings.image_left != blank -%}
+          <img 
+            src="{{ section.settings.image_left | image_url: width: 800 }}" 
+            alt="{{ section.settings.image_left.alt | default: 'Left Image' | escape }}" 
+            class="{{ img_class }}" 
+            loading="lazy" 
+            width="800" 
+            height="1066"
+          >
+        {%- else -%}
+          {{ 'image' | placeholder_svg_tag: placeholder_class }}
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    <div class="hero-banner-{{ section.id }}__stage">
+      
+      {%- if layout_style == 'center_overlap' -%}
+        <div class="hero-banner-{{ section.id }}__overlap-group">
+          <div class="hero-banner-{{ section.id }}__overlap-item hero-banner-{{ section.id }}__overlap-back">
+            {%- if section.settings.image_back != blank -%}
+              <img 
+                src="{{ section.settings.image_back | image_url: width: 800 }}" 
+                alt="{{ section.settings.image_back.alt | default: 'Back Image' | escape }}" 
+                class="{{ img_class }}" 
+                loading="lazy" 
+                width="800" 
+                height="1066"
+              >
+            {%- else -%}
+              {{ 'image' | placeholder_svg_tag: placeholder_class }}
+            {%- endif -%}
+          </div>
+          <div class="hero-banner-{{ section.id }}__overlap-item hero-banner-{{ section.id }}__overlap-front">
+            {%- if section.settings.image_front != blank -%}
+              <img 
+                src="{{ section.settings.image_front | image_url: width: 800 }}" 
+                alt="{{ section.settings.image_front.alt | default: 'Front Image' | escape }}" 
+                class="{{ img_class }}" 
+                loading="lazy" 
+                width="800" 
+                height="1066"
+              >
+            {%- else -%}
+              {{ 'image' | placeholder_svg_tag: placeholder_class }}
+            {%- endif -%}
+          </div>
+        </div>
+      {%- endif -%}
+
+      <div class="hero-banner-{{ section.id }}__text-layer">
+        {%- for block in section.blocks -%}
+          {%- case block.type -%}
+            
+            {%- when 'heading' -%}
+              <h2 
+                class="hero-banner-{{ section.id }}__heading" 
+                style="
+                  font-size: {{ block.settings.heading_size }}px;
+                  font-weight: {{ block.settings.heading_weight }};
+                  text-transform: {{ block.settings.heading_transform }};
+                  color: {{ block.settings.heading_color | default: 'inherit' }};
+                "
+                {{ block.shopify_attributes }}
+              >
+                {{ block.settings.heading_text }}
+              </h2>
+
+            {%- when 'description' -%}
+              <div 
+                class="hero-banner-{{ section.id }}__description" 
+                style="
+                  font-size: {{ block.settings.description_size }}px;
+                  color: {{ block.settings.description_color | default: 'inherit' }};
+                "
+                {{ block.shopify_attributes }}
+              >
+                {{ block.settings.description_text }}
+              </div>
+
+            {%- when 'button' -%}
+              {%- if block.settings.button_text != blank -%}
+                <div class="hero-banner-{{ section.id }}__button-wrapper" {{ block.shopify_attributes }}>
+                  <a 
+                    href="{{ block.settings.button_link | default: '#' }}" 
+                    class="hero-banner-{{ section.id }}__button"
+                    style="
+                      background-color: {{ block.settings.button_bg_color }};
+                      color: {{ block.settings.button_text_color }};
+                      font-size: {{ block.settings.button_font_size }}px;
+                      border-radius: {{ block.settings.button_border_radius }}px;
+                    "
+                  >
+                    {{ block.settings.button_text }}
+                  </a>
+                </div>
+              {%- endif -%}
+          {%- endcase -%}
+        {%- endfor -%}
+      </div>
+    </div>
+
+    {%- if layout_style == 'edge_spaced' -%}
+      <div class="hero-banner-{{ section.id }}__image-wrapper hero-banner-{{ section.id }}__image-right">
+        {%- if section.settings.image_right != blank -%}
+          <img 
+            src="{{ section.settings.image_right | image_url: width: 800 }}" 
+            alt="{{ section.settings.image_right.alt | default: 'Right Image' | escape }}" 
+            class="{{ img_class }}" 
+            loading="lazy" 
+            width="800" 
+            height="1066"
+          >
+        {%- else -%}
+          {{ 'image' | placeholder_svg_tag: placeholder_class }}
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+  </div>
+</section>
 
 {% schema %}
 {
-  "name": "t:sections.hero.name",
+  "name": "Hero Banner",
   "tag": "section",
-  "class": "section-hero",
-  "blocks": [{ "type": "@theme" }],
+  "class": "section-hero-banner",
   "settings": [
     {
-      "type": "image_picker",
-      "id": "image",
-      "label": "t:labels.image"
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "layout_style",
+      "label": "Layout style",
+      "options": [
+        { "value": "center_overlap", "label": "Center overlap (2 images behind text)" },
+        { "value": "edge_spaced", "label": "Edge spaced (images on far left & right)" }
+      ],
+      "default": "center_overlap"
+    },
+    {
+      "type": "header",
+      "content": "Image styling"
     },
     {
       "type": "range",
-      "id": "overlay_opacity",
+      "id": "image_border_radius",
       "min": 0,
-      "max": 80,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "label": "Image corner radius",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "image_border_width",
+      "min": 0,
+      "max": 12,
+      "step": 1,
+      "unit": "px",
+      "label": "Image border width",
+      "default": 4
+    },
+    {
+      "type": "color",
+      "id": "image_border_color",
+      "label": "Image border color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Images (Edge spaced layout)"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_left",
+      "label": "Left side image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_right",
+      "label": "Right side image"
+    },
+    {
+      "type": "header",
+      "content": "Images (Center overlap layout)"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_back",
+      "label": "Back layer image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_front",
+      "label": "Front layer image"
+    },
+    {
+      "type": "header",
+      "content": "Default colors"
+    },
+    {
+      "type": "color",
+      "id": "default_bg_color",
+      "label": "Background color",
+      "default": "#FAF6F0"
+    },
+    {
+      "type": "color",
+      "id": "default_text_color",
+      "label": "Text color",
+      "default": "#2B1E16"
+    },
+    {
+      "type": "color",
+      "id": "default_accent_color",
+      "label": "Accent color",
+      "default": "#9C4A1A"
+    },
+    {
+      "type": "header",
+      "content": "Custom colors (override)"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_custom_colors",
+      "label": "Enable custom colors",
+      "info": "When enabled, these override the default colors for this section only.",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "custom_bg_color",
+      "label": "Custom background color",
+      "default": "#FFFFFF",
+      "visible_if": "{{ section.settings.enable_custom_colors }}"
+    },
+    {
+      "type": "color",
+      "id": "custom_text_color",
+      "label": "Custom text color",
+      "default": "#111111",
+      "visible_if": "{{ section.settings.enable_custom_colors }}"
+    },
+    {
+      "type": "color",
+      "id": "custom_accent_color",
+      "label": "Custom accent color",
+      "default": "#000000",
+      "visible_if": "{{ section.settings.enable_custom_colors }}"
+    },
+    {
+      "type": "header",
+      "content": "Section spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 150,
       "step": 5,
-      "unit": "%",
-      "label": "t:labels.overlay_opacity",
-      "default": 20
+      "unit": "px",
+      "label": "Padding top",
+      "default": 40
     },
     {
-      "type": "select",
-      "id": "height",
-      "label": "t:labels.height",
-      "options": [
-        { "value": "hero--small", "label": "t:options.size.small" },
-        { "value": "hero--medium", "label": "t:options.size.medium" },
-        { "value": "hero--large", "label": "t:options.size.large" },
-        { "value": "hero--screen", "label": "t:options.size.screen" }
-      ],
-      "default": "hero--medium"
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 150,
+      "step": 5,
+      "unit": "px",
+      "label": "Padding bottom",
+      "default": 40
+    }
+  ],
+  "blocks": [
+    {
+      "type": "heading",
+      "name": "Heading",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading_text",
+          "label": "Heading text",
+          "default": "Digital Creative"
+        },
+        {
+          "type": "range",
+          "id": "heading_size",
+          "min": 20,
+          "max": 250,
+          "step": 5,
+          "unit": "px",
+          "label": "Font size",
+          "default": 150
+        },
+        {
+          "type": "select",
+          "id": "heading_weight",
+          "label": "Font weight",
+          "options": [
+            { "value": "400", "label": "Normal" },
+            { "value": "700", "label": "Bold" },
+            { "value": "900", "label": "Black" }
+          ],
+          "default": "900"
+        },
+        {
+          "type": "select",
+          "id": "heading_transform",
+          "label": "Text transform",
+          "options": [
+            { "value": "none", "label": "Normal" },
+            { "value": "uppercase", "label": "Uppercase" },
+            { "value": "lowercase", "label": "Lowercase" }
+          ],
+          "default": "uppercase"
+        },
+        {
+          "type": "color",
+          "id": "heading_color",
+          "label": "Heading text color",
+          "default": "#2B1E16"
+        }
+      ]
     },
     {
-      "type": "select",
-      "id": "content_position",
-      "label": "t:labels.content_position",
-      "options": [
-        { "value": "hero--top-left", "label": "t:options.content_position.top_left" },
-        { "value": "hero--center", "label": "t:options.content_position.center" },
-        { "value": "hero--bottom-left", "label": "t:options.content_position.bottom_left" }
-      ],
-      "default": "hero--center"
+      "type": "description",
+      "name": "Description",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "richtext",
+          "id": "description_text",
+          "label": "Description text",
+          "default": "<p>Discover our latest collection crafted with premium materials and timeless design.</p>"
+        },
+        {
+          "type": "range",
+          "id": "description_size",
+          "min": 12,
+          "max": 32,
+          "step": 1,
+          "unit": "px",
+          "label": "Font size",
+          "default": 18
+        },
+        {
+          "type": "color",
+          "id": "description_color",
+          "label": "Description text color",
+          "default": "#7A6B61"
+        }
+      ]
+    },
+    {
+      "type": "button",
+      "name": "Button",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "button_text",
+          "label": "Button text",
+          "default": "Explore Collection"
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "Button link"
+        },
+        {
+          "type": "range",
+          "id": "button_font_size",
+          "min": 12,
+          "max": 24,
+          "step": 1,
+          "unit": "px",
+          "label": "Font size",
+          "default": 16
+        },
+        {
+          "type": "range",
+          "id": "button_border_radius",
+          "min": 0,
+          "max": 50,
+          "step": 1,
+          "unit": "px",
+          "label": "Border radius",
+          "default": 50
+        },
+        {
+          "type": "color",
+          "id": "button_bg_color",
+          "label": "Background color",
+          "default": "#2B1E16"
+        },
+        {
+          "type": "color",
+          "id": "button_text_color",
+          "label": "Text color",
+          "default": "#FAF6F0"
+        }
+      ]
     }
   ],
   "presets": [
     {
-      "name": "t:sections.hero.name",
-      "blocks": {
-        "heading": {
-          "type": "text",
-          "settings": {
-            "text": "Crafted to carry everything",
-            "text_style": "text--title",
-            "alignment": "center"
-          }
-        },
-        "description": {
-          "type": "text",
-          "settings": {
-            "text": "Use this banner to introduce your brand, a new collection, or a seasonal offer.",
-            "text_style": "text--normal",
-            "alignment": "center"
-          }
-        }
-      },
-      "block_order": ["heading", "description"]
+      "name": "Hero Banner",
+      "category": "Image",
+      "blocks": [
+        { "type": "heading" },
+        { "type": "description" },
+        { "type": "button" }
+      ]
     }
   ]
 }

@@ -1,73 +1,401 @@
-{{ 'cart-page.css' | asset_url | stylesheet_tag }}
+{%- liquid
+  assign use_custom = section.settings.enable_custom_design
 
-{% liquid
+  if use_custom
+    assign cart_bg = section.settings.custom_bg_color
+    assign cart_text = section.settings.custom_text_color
+    assign cart_accent = section.settings.custom_accent_color
+    assign cart_border = section.settings.custom_border_color
+    assign heading_font = section.settings.custom_heading_font
+    assign body_font = section.settings.custom_body_font
+  else
+    assign cart_bg = section.settings.background_color
+    assign cart_text = section.settings.text_color
+    assign cart_accent = section.settings.accent_color
+    assign cart_border = section.settings.border_color
+    assign heading_font = 'var(--font-heading-family)'
+    assign body_font = 'var(--font-body-family)'
+  endif
+
   assign form_id = 'CartForm-' | append: section.id
-%}
+-%}
 
 <cart-items
-  class="cart-page {{ settings.cart_layout }}{% if settings.cart_sticky_summary %} cart-page--sticky{% endif %}"
+  class="cart-page-{{ section.id }}"
+  id="CartPage-{{ section.id }}"
   data-section="{{ section.id }}"
-  {% if cart.empty? %}
-    data-empty
-  {% endif %}
+  {% if cart.empty? %}data-empty{% endif %}
+  style="
+    --cart-bg: {{ cart_bg }};
+    --cart-text: {{ cart_text }};
+    --cart-accent: {{ cart_accent }};
+    --cart-border: {{ cart_border }};
+    --cart-heading-font: {{ heading_font }};
+    --cart-body-font: {{ body_font }};
+    --cart-image-width: {{ settings.cart_image_width }}px;
+    --cart-image-radius: {{ settings.cart_image_radius }}px;
+    --cart-image-border-width: {% if settings.cart_image_border %}1px{% else %}0px{% endif %};
+  "
 >
   {%- if cart.empty? -%}
-    <div class="cart-page__empty">
-      <h1 class="cart-page__title">{{ 'cart.empty.title' | t }}</h1>
-      <a href="{{ routes.all_products_collection_url }}" class="cart-page__empty-link">
-        {{- 'cart.continue_shopping' | t -}}
+    <div class="cart-page-{{ section.id }}__empty">
+      <h1 class="cart-page-{{ section.id }}__title">{{ 'cart.empty.title' | t | default: 'Your cart is empty' }}</h1>
+      <a href="{{ routes.all_products_collection_url }}" class="cart-page-{{ section.id }}__empty-link">
+        {{- 'cart.continue_shopping' | t | default: 'Continue shopping' -}}
       </a>
 
       {%- if shop.customer_accounts_enabled and customer == nil -%}
-        <p class="cart-page__login">
-          {{ 'cart.empty.login_html' | t: link: routes.account_login_url }}
+        <p class="cart-page-{{ section.id }}__login">
+          {{ 'cart.empty.login_html' | t: link: routes.account_login_url | default: 'Have an account? Log in' }}
         </p>
       {%- endif -%}
     </div>
   {%- else -%}
-    <div class="cart-page__header">
-      <h1 class="cart-page__title">{{ 'cart.title' | t }}</h1>
-      <a href="{{ routes.all_products_collection_url }}" class="cart-page__continue">
-        {{- 'cart.continue_shopping' | t -}}
+    <div class="cart-page-{{ section.id }}__header">
+      <h1 class="cart-page-{{ section.id }}__title">{{ 'cart.title' | t | default: 'Your Cart' }}</h1>
+      <a href="{{ routes.all_products_collection_url }}" class="cart-page-{{ section.id }}__continue">
+        {{- 'cart.continue_shopping' | t | default: 'Continue shopping' -}}
       </a>
     </div>
 
-    <div class="cart-page__body">
-      <form action="{{ routes.cart_url }}" method="post" id="{{ form_id }}" class="cart-page__form" novalidate>
-        <div class="cart-page__columns" aria-hidden="true">
-          <span>{{ 'cart.columns.product' | t }}</span>
-          <span>{{ 'cart.columns.quantity' | t }}</span>
-          <span>{{ 'cart.columns.total' | t }}</span>
+    <div class="cart-page-{{ section.id }}__body">
+      <form action="{{ routes.cart_url }}" method="post" id="{{ form_id }}" class="cart-page-{{ section.id }}__form" novalidate>
+        <div class="cart-page-{{ section.id }}__columns" aria-hidden="true">
+          <span>{{ 'cart.columns.product' | t | default: 'Product' }}</span>
+          <span>{{ 'cart.columns.quantity' | t | default: 'Quantity' }}</span>
+          <span>{{ 'cart.columns.total' | t | default: 'Total' }}</span>
         </div>
 
-        <ul class="cart-page__items" role="list" data-cart-region="items">
+        <ul class="cart-page-{{ section.id }}__items" role="list">
           {%- for item in cart.items -%}
             {% render 'cart-line-item', item: item, index: forloop.index, section_id: section.id %}
           {%- endfor -%}
         </ul>
 
         <noscript>
-          <button type="submit" name="update" class="cart-page__update">{{ 'cart.update' | t }}</button>
+          <button type="submit" name="update" class="cart-page-{{ section.id }}__update">{{ 'cart.update' | t | default: 'Update Cart' }}</button>
         </noscript>
       </form>
 
-      <div class="cart-page__footer">
+      <div class="cart-page-{{ section.id }}__footer">
         {% render 'cart-summary', form_id: form_id, show_express: true %}
       </div>
     </div>
   {%- endif -%}
 </cart-items>
 
-<p
-  id="CartStatus-{{ section.id }}"
-  class="visually-hidden"
-  role="status"
-  data-message="{{ 'cart.status_updated' | t }}"
-></p>
+{% style %}
+  .cart-page-{{ section.id }} {
+    display: block;
+    width: 100vw;
+    max-width: 100vw;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    left: 50%;
+    right: 50%;
+    position: relative;
+    background-color: var(--cart-bg);
+    color: var(--cart-text);
+    font-family: var(--cart-body-font), -apple-system, sans-serif;
+    padding: 60px 0 100px;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  .cart-page-{{ section.id }}__header {
+    max-width: var(--page-width, 1200px);
+    margin: 0 auto 40px;
+    padding: 0 var(--page-margin, 20px);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 15px;
+    border-bottom: 2px solid var(--cart-border);
+    padding-bottom: 20px;
+  }
+
+  .cart-page-{{ section.id }}__title {
+    font-family: var(--cart-heading-font), serif;
+    font-size: clamp(28px, 4vw, 42px);
+    text-transform: uppercase;
+    margin: 0;
+    line-height: 1.1;
+  }
+
+  .cart-page-{{ section.id }}__continue {
+    color: var(--cart-text);
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-decoration: underline;
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+  }
+
+  .cart-page-{{ section.id }}__continue:hover {
+    opacity: 1;
+    color: var(--cart-accent);
+  }
+
+  .cart-page-{{ section.id }}__body {
+    max-width: var(--page-width, 1200px);
+    margin: 0 auto;
+    padding: 0 var(--page-margin, 20px);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  @media (min-width: 900px) {
+    .cart-page-{{ section.id }}__body {
+      grid-template-columns: 2fr 1fr;
+      align-items: start;
+    }
+    .cart-page-{{ section.id }}__footer {
+      position: sticky;
+      top: 40px;
+    }
+  }
+
+  .cart-page-{{ section.id }}__columns {
+    display: none;
+    grid-template-columns: 3fr 1fr 1fr;
+    gap: 20px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--cart-border);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 700;
+    opacity: 0.5;
+  }
+
+  @media (min-width: 768px) {
+    .cart-page-{{ section.id }}__columns {
+      display: grid;
+    }
+  }
+
+  .cart-page-{{ section.id }}__items {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .cart-page-{{ section.id }}__form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .cart-page-{{ section.id }}__update {
+    align-self: flex-start;
+    padding: 10px 20px;
+    background: transparent;
+    border: 1px solid var(--cart-border);
+    color: var(--cart-text);
+    text-transform: uppercase;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .cart-page-{{ section.id }}__update:hover {
+    background: var(--cart-text);
+    color: var(--cart-bg);
+  }
+
+  .cart-page-{{ section.id }}__footer {
+    width: 100%;
+  }
+
+  .cart-page-{{ section.id }}__empty {
+    text-align: center;
+    max-width: 600px;
+    margin: 80px auto;
+    padding: 0 20px;
+  }
+
+  .cart-page-{{ section.id }}__empty-link {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 14px 30px;
+    background: var(--cart-accent);
+    color: #fff;
+    text-decoration: none;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 13px;
+    letter-spacing: 1px;
+    border-radius: 4px;
+    transition: opacity 0.3s ease;
+  }
+
+  .cart-page-{{ section.id }}__empty-link:hover {
+    opacity: 0.9;
+  }
+
+  .cart-page-{{ section.id }}__login {
+    margin-top: 20px;
+    font-size: 14px;
+    opacity: 0.7;
+  }
+
+  .cart-page-{{ section.id }}__login a {
+    color: var(--cart-accent);
+    font-weight: 600;
+  }
+
+  .cart-page-{{ section.id }} .cart-line-item {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 25px 0;
+    border-bottom: 1px solid var(--cart-border);
+    align-items: center;
+  }
+
+  @media (min-width: 768px) {
+    .cart-page-{{ section.id }} .cart-line-item {
+      grid-template-columns: 3fr 1fr 1fr;
+    }
+  }
+
+  .cart-page-{{ section.id }} .cart-line-item__media {
+    width: var(--cart-image-width);
+    aspect-ratio: var(--cart-image-ratio, 1);
+    border-radius: var(--cart-image-radius);
+    border: var(--cart-image-border-width) solid var(--cart-border);
+    overflow: hidden;
+    background: #f7f7f7;
+    flex-shrink: 0;
+  }
+
+  .cart-page-{{ section.id }} .cart-line-item__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .cart-page-{{ section.id }} .cart-line-item__info {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .cart-page-{{ section.id }} .cart-line-item__title {
+    font-family: var(--cart-heading-font), serif;
+    font-size: 16px;
+    font-weight: 700;
+    margin: 0 0 5px;
+    text-transform: uppercase;
+    color: var(--cart-text);
+    text-decoration: none;
+  }
+
+  .cart-page-{{ section.id }} .cart-line-item__variant {
+    font-size: 13px;
+    opacity: 0.7;
+    margin: 0;
+  }
+
+  .cart-page-{{ section.id }} .cart-line-item__price {
+    font-weight: 700;
+    margin-top: 10px;
+  }
+{% endstyle %}
 
 {% schema %}
 {
-  "name": "t:general.cart",
-  "settings": []
+  "name": "Cart Page",
+  "tag": "section",
+  "class": "section-cart-page",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Default Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#FAF6F0"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#2B1E16"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent Color (Buttons/Links)",
+      "default": "#9C4A1A"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border Color",
+      "default": "#E8E2DA"
+    },
+    {
+      "type": "header",
+      "content": "Custom Design (Override)"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_custom_design",
+      "label": "Enable Custom Design",
+      "info": "When enabled, these override the default colors and typography.",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "custom_bg_color",
+      "label": "Custom Background",
+      "default": "#FFFFFF",
+      "visible_if": "{{ section.settings.enable_custom_design }}"
+    },
+    {
+      "type": "color",
+      "id": "custom_text_color",
+      "label": "Custom Text Color",
+      "default": "#111111",
+      "visible_if": "{{ section.settings.enable_custom_design }}"
+    },
+    {
+      "type": "color",
+      "id": "custom_accent_color",
+      "label": "Custom Accent Color",
+      "default": "#000000",
+      "visible_if": "{{ section.settings.enable_custom_design }}"
+    },
+    {
+      "type": "color",
+      "id": "custom_border_color",
+      "label": "Custom Border Color",
+      "default": "#E0E0E0",
+      "visible_if": "{{ section.settings.enable_custom_design }}"
+    },
+    {
+      "type": "font_picker",
+      "id": "custom_heading_font",
+      "label": "Custom Heading Font",
+      "default": "assistant_n4",
+      "visible_if": "{{ section.settings.enable_custom_design }}"
+    },
+    {
+      "type": "font_picker",
+      "id": "custom_body_font",
+      "label": "Custom Body Font",
+      "default": "assistant_n4",
+      "visible_if": "{{ section.settings.enable_custom_design }}"
+    }
+  ]
 }
 {% endschema %}

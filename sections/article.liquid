@@ -1,68 +1,842 @@
-{% comment %}
-  This section is used in the article template to render the article page, which
-  displays the full content of the blog post and can optionally include a
-  comments section for customers (not shown in this example).
+{%- liquid
+  assign use_custom = section.settings.enable_custom_design
 
-  https://shopify.dev/docs/storefronts/themes/architecture/templates/article
-{% endcomment %}
+  if use_custom
+    assign article_bg = section.settings.custom_bg_color
+    assign article_text = section.settings.custom_text_color
+    assign article_accent = section.settings.custom_accent_color
+    assign article_card_bg = section.settings.custom_card_bg_color
+    assign article_border = section.settings.custom_border_color
+    assign heading_font = section.settings.custom_heading_font
+    assign body_font = section.settings.custom_body_font
+  else
+    assign article_bg = section.settings.background_color
+    assign article_text = section.settings.text_color
+    assign article_accent = section.settings.accent_color
+    assign article_card_bg = section.settings.card_background
+    assign article_border = section.settings.border_color
+    assign heading_font = 'var(--font-heading-family)'
+    assign body_font = 'var(--font-body-family)'
+  endif
 
-{% if article.image %}
-  {{ article.image | image_url: width: 1000 | image_tag }}
-{% endif %}
+  capture main_placeholder_class
+    echo 'theme-article-' | append: section.id | append: '__featured-image theme-article-' | append: section.id | append: '__placeholder'
+  endcapture
 
-<h1>{{ article.title }}</h1>
+  capture slide_placeholder_class
+    echo 'theme-article-' | append: section.id | append: '__slide-image theme-article-' | append: section.id | append: '__slide-placeholder'
+  endcapture
+-%}
 
-{% assign date = article.published_at | time_tag: format: 'date' %}
-<p>{{ 'blog.article_metadata_html' | t: date: date, author: article.author }}</p>
-
-{{ article.content }}
-
-{% if blog.comments_enabled? %}
-  <h2>{{ 'blog.article_comments' | t }}</h2>
-
-  <div id="comments">
-    {% paginate article.comments by 10 %}
-      {% for comment in article.comments %}
-        <div>
-          <p>{{ comment.author }}</p>
-          <p>
-            {{- comment.created_at | time_tag: format: 'date' -}}
-          </p>
-          <p>{{ comment.content }}</p>
+<article 
+  class="theme-article-{{ section.id }}" 
+  id="ArticleSection-{{ section.id }}"
+  style="
+    --article-bg: {{ article_bg }};
+    --article-text: {{ article_text }};
+    --article-accent: {{ article_accent }};
+    --article-card-bg: {{ article_card_bg }};
+    --article-border: {{ article_border }};
+    --article-heading-font: {{ heading_font }};
+    --article-body-font: {{ body_font }};
+  "
+>
+  <div class="theme-article-{{ section.id }}__container">
+    
+    <header class="theme-article-{{ section.id }}__header">
+      <div class="theme-article-{{ section.id }}__meta-top">
+        <span class="theme-article-{{ section.id }}__category">{{ article.tags.first | default: 'Journal' | escape }}</span>
+        <span class="theme-article-{{ section.id }}__date">{{ article.published_at | date: "%B %d, %Y" }}</span>
+      </div>
+      
+      <h1 class="theme-article-{{ section.id }}__title">{{ article.title | escape }}</h1>
+      
+      <div class="theme-article-{{ section.id }}__meta-bottom">
+        <div class="theme-article-{{ section.id }}__author">
+          <span class="theme-article-{{ section.id }}__author-avatar">
+            {{ article.author | slice: 0, 1 | upcase }}
+          </span>
+          <span class="theme-article-{{ section.id }}__author-name">By {{ article.author | escape }}</span>
         </div>
-      {% endfor %}
+        <div class="theme-article-{{ section.id }}__read-time">
+          {{ article.content | strip_html | split: ' ' | size | divided_by: 200 | plus: 1 }} min read
+        </div>
+      </div>
+    </header>
 
-      {{ paginate | default_pagination: anchor: 'comments' }}
-    {% endpaginate %}
+    <div class="theme-article-{{ section.id }}__layout">
+      
+      <div class="theme-article-{{ section.id }}__image-column">
+        <div class="theme-article-{{ section.id }}__image-card">
+          {%- if article.image != blank -%}
+            <img 
+              src="{{ article.image | image_url: width: 1200 }}" 
+              alt="{{ article.title | escape }}" 
+              class="theme-article-{{ section.id }}__featured-image"
+              loading="eager"
+            >
+          {%- else -%}
+            {{ 'lifestyle-1' | placeholder_svg_tag: main_placeholder_class }}
+          {%- endif -%}
+        </div>
+
+        <div class="theme-article-{{ section.id }}__share-card">
+          <h3 class="theme-article-{{ section.id }}__share-heading">Share this article</h3>
+          <div class="theme-article-{{ section.id }}__share-links">
+            <a href="https://www.facebook.com/sharer/sharer.php?u={{ shop.url }}{{ article.url }}" target="_blank" rel="noopener" class="theme-article-{{ section.id }}__share-btn" aria-label="Share on Facebook">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+              Facebook
+            </a>
+            <a href="https://twitter.com/intent/tweet?url={{ shop.url }}{{ article.url }}" target="_blank" rel="noopener" class="theme-article-{{ section.id }}__share-btn" aria-label="Share on X">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4l16 16M4 20L20 4"></path></svg>
+              X (Twitter)
+            </a>
+            <a href="https://pinterest.com/pin/create/button/?url={{ shop.url }}{{ article.url }}" target="_blank" rel="noopener" class="theme-article-{{ section.id }}__share-btn" aria-label="Share on Pinterest">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12c0 4.84 3.44 8.87 8 9.8-.15-1.05-.29-2.67.06-3.82.31-1.03 2-8.52 2-8.52s-.51-1.02-.51-2.53c0-2.37 1.37-4.14 3.08-4.14 1.45 0 2.15 1.09 2.15 2.4 0 1.46-.93 3.64-1.41 5.66-.4 1.7.85 3.08 2.52 3.08 3.03 0 5.07-3.89 5.07-8.49 0-3.5-2.36-6.12-6.64-6.12-4.84 0-7.86 3.61-7.86 7.64 0 1.39.41 2.37.41 2.37s-.52 2.16-.64 2.62c-.12.46-.37.57-.77.57-.57 0-1.41-.5-1.41-1.77 0-1.41 1.28-3.56 1.28-3.56l-.58-2.53C5.12 8.2 2.65 10.78 2.65 14.55c0 4.66 3.02 9.05 9.45 9.05 4.73 0 8.44-3.37 8.44-7.86 0-4.7-3.02-8.49-7.54-8.49-1.51 0-2.93.79-3.42 1.72z"></path></svg>
+              Pinterest
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="theme-article-{{ section.id }}__content-column">
+        <div class="theme-article-{{ section.id }}__content-card">
+          <div class="theme-article-{{ section.id }}__rte">
+            {{ article.content }}
+          </div>
+        </div>
+
+        <div class="theme-article-{{ section.id }}__footer-nav">
+          {%- if blog.previous_article -%}
+            <a href="{{ blog.previous_article.url }}" class="theme-article-{{ section.id }}__nav-link theme-article-{{ section.id }}__nav-prev">
+              <span class="theme-article-{{ section.id }}__nav-label">Previous</span>
+              <span class="theme-article-{{ section.id }}__nav-title">{{ blog.previous_article.title | truncate: 40 }}</span>
+            </a>
+          {%- endif -%}
+
+          {%- if blog.next_article -%}
+            <a href="{{ blog.next_article.url }}" class="theme-article-{{ section.id }}__nav-link theme-article-{{ section.id }}__nav-next">
+              <span class="theme-article-{{ section.id }}__nav-label">Next</span>
+              <span class="theme-article-{{ section.id }}__nav-title">{{ blog.next_article.title | truncate: 40 }}</span>
+            </a>
+          {%- endif -%}
+        </div>
+      </div>
+
+    </div>
+
+    {%- assign related_articles = blog.articles | where_exp: "item", "item.id != article.id" -%}
+    {%- if related_articles.size > 0 -%}
+      <div class="theme-article-{{ section.id }}__related-wrapper">
+        <h2 class="theme-article-{{ section.id }}__related-heading">Related Articles</h2>
+        
+        <div class="theme-article-{{ section.id }}__slider-container">
+          <div class="theme-article-{{ section.id }}__slider-track" id="ArticleSliderTrack-{{ section.id }}">
+            {%- for related in related_articles limit: 6 -%}
+              <div class="theme-article-{{ section.id }}__slide-card">
+                <a href="{{ related.url }}" class="theme-article-{{ section.id }}__slide-image-link">
+                  {%- if related.image != blank -%}
+                    <img src="{{ related.image | image_url: width: 600 }}" alt="{{ related.title | escape }}" class="theme-article-{{ section.id }}__slide-image" loading="lazy">
+                  {%- else -%}
+                    {{ 'image' | placeholder_svg_tag: slide_placeholder_class }}
+                  {%- endif -%}
+                </a>
+                
+                <div class="theme-article-{{ section.id }}__slide-content">
+                  <h3 class="theme-article-{{ section.id }}__slide-title">
+                    <a href="{{ related.url }}">{{ related.title | escape }}</a>
+                  </h3>
+                  <span class="theme-article-{{ section.id }}__slide-date">{{ related.published_at | date: "%B %d, %Y" }}</span>
+                  
+                  <div class="theme-article-{{ section.id }}__slide-divider"></div>
+                  
+                  <p class="theme-article-{{ section.id }}__slide-excerpt">
+                    {%- if related.excerpt != blank -%}
+                      {{ related.excerpt | strip_html | truncate: 90 }}
+                    {%- else -%}
+                      {{ related.content | strip_html | truncate: 90 }}
+                    {%- endif -%}
+                  </p>
+                  
+                  <a href="{{ related.url }}" class="theme-article-{{ section.id }}__slide-btn">READ ARTICLE</a>
+                </div>
+              </div>
+            {%- endfor -%}
+          </div>
+
+          <div class="theme-article-{{ section.id }}__slider-controls">
+            <button class="theme-article-{{ section.id }}__slider-btn" type="button" data-slide-prev="{{ section.id }}" aria-label="Previous related articles">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <button class="theme-article-{{ section.id }}__slider-btn" type="button" data-slide-next="{{ section.id }}" aria-label="Next related articles">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    {%- endif -%}
+
   </div>
+</article>
 
-  {% form 'new_comment', article %}
-    <h2>{{ 'blog.comment_form_title' | t }}</h2>
+{% style %}
+  .theme-article-{{ section.id }} {
+    width: 100vw;
+    max-width: 100vw;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    left: 50%;
+    right: 50%;
+    position: relative;
+    background-color: var(--article-bg);
+    color: var(--article-text);
+    font-family: var(--article-body-font), -apple-system, sans-serif;
+    font-size: 14px;
+    line-height: 1.7;
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+    overflow: hidden;
+  }
 
-    {{ form.errors | default_errors }}
+  .theme-article-{{ section.id }} * {
+    box-sizing: border-box;
+  }
 
-    <div>
-      <label for="author">{{ 'blog.comment_form_name' | t }}</label>
-      <input type="text" name="comment[author]" id="author" value="{{ form.author }}" required>
-    </div>
+  .theme-article-{{ section.id }}__container {
+    max-width: var(--page-width, 1300px);
+    margin: 0 auto;
+    padding: 0 var(--page-margin, 20px);
+  }
 
-    <div>
-      <label for="email">{{ 'blog.comment_form_email' | t }}</label>
-      <input type="email" name="comment[email]" id="email" value="{{ form.email }}" required>
-    </div>
+  .theme-article-{{ section.id }}__header {
+    max-width: 900px;
+    margin: 0 auto 60px;
+    text-align: center;
+  }
 
-    <div>
-      <label for="body">{{ 'blog.comment_form_body' | t }}</label>
-      <textarea name="comment[body]" id="body" required>{{ form.body }}</textarea>
-    </div>
+  .theme-article-{{ section.id }}__meta-top {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
 
-    <input type="submit" value="{{ 'blog.comment_form_submit' | t }}">
-  {% endform %}
-{% endif %}
+  .theme-article-{{ section.id }}__category {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--article-accent);
+    padding: 5px 12px;
+    border: 1px solid var(--article-accent);
+  }
+
+  .theme-article-{{ section.id }}__date {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0.6;
+  }
+
+  .theme-article-{{ section.id }}__title {
+    font-family: var(--article-heading-font), serif;
+    font-size: clamp(2.5rem, 5vw, 4.5rem);
+    line-height: 1.1;
+    text-transform: uppercase;
+    letter-spacing: -0.5px;
+    margin: 0 0 30px;
+    color: var(--article-text);
+  }
+
+  .theme-article-{{ section.id }}__meta-bottom {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+  }
+
+  .theme-article-{{ section.id }}__author {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .theme-article-{{ section.id }}__author-avatar {
+    width: 35px;
+    height: 35px;
+    background: var(--article-accent);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+  }
+
+  .theme-article-{{ section.id }}__author-name {
+    font-weight: 600;
+    font-size: 14px;
+  }
+
+  .theme-article-{{ section.id }}__read-time {
+    font-size: 13px;
+    font-weight: 600;
+    opacity: 0.6;
+  }
+
+  .theme-article-{{ section.id }}__layout {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: 40px;
+    align-items: start;
+  }
+
+  .theme-article-{{ section.id }}__image-column {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    position: sticky;
+    top: 100px;
+  }
+
+  .theme-article-{{ section.id }}__image-card {
+    width: 100%;
+    background: var(--article-card-bg);
+    border: 1px solid var(--article-border);
+    padding: 15px;
+    box-shadow: 10px 10px 0px var(--article-accent);
+    transition: transform 0.3s ease;
+  }
+
+  .theme-article-{{ section.id }}__image-card:hover {
+    transform: translate(-2px, -2px);
+  }
+
+  .theme-article-{{ section.id }}__featured-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    aspect-ratio: 4/5;
+    object-fit: cover;
+  }
+
+  .theme-article-{{ section.id }}__placeholder {
+    width: 100%;
+    aspect-ratio: 4/5;
+    background: var(--article-border);
+    fill: var(--article-text);
+    opacity: 0.2;
+  }
+
+  .theme-article-{{ section.id }}__share-card {
+    background: var(--article-text);
+    color: var(--article-bg);
+    padding: 25px;
+    box-shadow: 10px 10px 0px var(--article-accent);
+  }
+
+  .theme-article-{{ section.id }}__share-heading {
+    font-family: var(--article-heading-font), serif;
+    font-size: 18px;
+    text-transform: uppercase;
+    margin: 0 0 15px;
+    color: var(--article-bg);
+  }
+
+  .theme-article-{{ section.id }}__share-links {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .theme-article-{{ section.id }}__share-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 15px;
+    background: rgba(255,255,255,0.08);
+    color: var(--article-bg);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    transition: background 0.3s ease;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .theme-article-{{ section.id }}__share-btn:hover {
+    background: var(--article-accent);
+    color: #fff;
+    border-color: var(--article-accent);
+  }
+
+  .theme-article-{{ section.id }}__content-column {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  .theme-article-{{ section.id }}__content-card {
+    background: var(--article-card-bg);
+    border: 1px solid var(--article-border);
+    padding: 50px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+  }
+
+  .theme-article-{{ section.id }}__rte {
+    font-size: 16px;
+    line-height: 1.8;
+    color: var(--article-text);
+  }
+
+  .theme-article-{{ section.id }}__rte p {
+    margin: 0 0 25px;
+  }
+
+  .theme-article-{{ section.id }}__rte h2, 
+  .theme-article-{{ section.id }}__rte h3 {
+    font-family: var(--article-heading-font), serif;
+    text-transform: uppercase;
+    color: var(--article-text);
+    margin: 40px 0 20px;
+    letter-spacing: 0.5px;
+  }
+
+  .theme-article-{{ section.id }}__rte img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 30px 0;
+    border: 1px solid var(--article-border);
+  }
+
+  .theme-article-{{ section.id }}__rte blockquote {
+    border-left: 4px solid var(--article-accent);
+    padding-left: 20px;
+    margin: 30px 0;
+    font-style: italic;
+    font-size: 18px;
+    color: var(--article-text);
+    opacity: 0.8;
+  }
+
+  .theme-article-{{ section.id }}__footer-nav {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+  }
+
+  .theme-article-{{ section.id }}__nav-link {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 20px;
+    background: var(--article-card-bg);
+    border: 1px solid var(--article-border);
+    text-decoration: none;
+    color: var(--article-text);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .theme-article-{{ section.id }}__nav-link:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+  }
+
+  .theme-article-{{ section.id }}__nav-next {
+    text-align: right;
+  }
+
+  .theme-article-{{ section.id }}__nav-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--article-accent);
+  }
+
+  .theme-article-{{ section.id }}__nav-title {
+    font-weight: 600;
+    font-size: 15px;
+  }
+
+  .theme-article-{{ section.id }}__related-wrapper {
+    margin-top: 80px;
+    border-top: 1px solid var(--article-border);
+    padding-top: 50px;
+  }
+
+  .theme-article-{{ section.id }}__related-heading {
+    font-family: var(--article-heading-font), serif;
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    text-transform: uppercase;
+    margin: 0 0 30px;
+    color: var(--article-text);
+    text-align: center;
+  }
+
+  .theme-article-{{ section.id }}__slider-container {
+    position: relative;
+  }
+
+  .theme-article-{{ section.id }}__slider-track {
+    display: flex;
+    gap: 25px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    padding-bottom: 15px;
+  }
+
+  .theme-article-{{ section.id }}__slider-track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .theme-article-{{ section.id }}__slide-card {
+    flex: 0 0 calc(33.333% - 17px);
+    background: var(--article-card-bg);
+    border: 1px solid var(--article-border);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .theme-article-{{ section.id }}__slide-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.08);
+  }
+
+  .theme-article-{{ section.id }}__slide-image-link {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16/10;
+    overflow: hidden;
+  }
+
+  .theme-article-{{ section.id }}__slide-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+
+  .theme-article-{{ section.id }}__slide-card:hover .theme-article-{{ section.id }}__slide-image {
+    transform: scale(1.05);
+  }
+
+  .theme-article-{{ section.id }}__slide-placeholder {
+    background: var(--article-border);
+    fill: var(--article-text);
+    opacity: 0.2;
+  }
+
+  .theme-article-{{ section.id }}__slide-content {
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+
+  .theme-article-{{ section.id }}__slide-title {
+    font-family: var(--article-heading-font), serif;
+    font-size: 20px;
+    font-weight: 400;
+    text-transform: uppercase;
+    line-height: 1.2;
+    letter-spacing: 0.5px;
+    margin: 0 0 8px;
+  }
+
+  .theme-article-{{ section.id }}__slide-title a {
+    color: var(--article-text);
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+
+  .theme-article-{{ section.id }}__slide-title a:hover {
+    color: var(--article-accent);
+  }
+
+  .theme-article-{{ section.id }}__slide-date {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--article-text);
+    opacity: 0.5;
+    margin-bottom: 15px;
+  }
+
+  .theme-article-{{ section.id }}__slide-divider {
+    width: 100%;
+    height: 1px;
+    background: var(--article-text);
+    opacity: 0.15;
+    margin-bottom: 15px;
+  }
+
+  .theme-article-{{ section.id }}__slide-excerpt {
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--article-text);
+    opacity: 0.7;
+    margin: 0 0 20px;
+    flex-grow: 1;
+  }
+
+  .theme-article-{{ section.id }}__slide-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 24px;
+    border: 1px solid var(--article-text);
+    color: var(--article-text);
+    text-decoration: none;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    transition: all 0.3s ease;
+    align-self: flex-start;
+    margin-top: auto;
+  }
+
+  .theme-article-{{ section.id }}__slide-btn:hover {
+    background: var(--article-text);
+    color: var(--article-card-bg);
+  }
+
+  .theme-article-{{ section.id }}__slider-controls {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 25px;
+  }
+
+  .theme-article-{{ section.id }}__slider-btn {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--article-card-bg);
+    border: 1px solid var(--article-border);
+    color: var(--article-text);
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .theme-article-{{ section.id }}__slider-btn:hover {
+    background: var(--article-accent);
+    color: #fff;
+    border-color: var(--article-accent);
+  }
+
+  @media screen and (max-width: 991px) {
+    .theme-article-{{ section.id }}__layout {
+      grid-template-columns: 1fr;
+    }
+
+    .theme-article-{{ section.id }}__image-column {
+      position: relative;
+      top: 0;
+    }
+
+    .theme-article-{{ section.id }}__content-card {
+      padding: 30px;
+    }
+
+    .theme-article-{{ section.id }}__slide-card {
+      flex: 0 0 calc(50% - 12.5px);
+    }
+  }
+
+  @media screen and (max-width: 640px) {
+    .theme-article-{{ section.id }}__container {
+      padding: 0 15px;
+    }
+
+    .theme-article-{{ section.id }}__meta-bottom {
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .theme-article-{{ section.id }}__footer-nav {
+      flex-direction: column;
+    }
+
+    .theme-article-{{ section.id }}__nav-next {
+      text-align: left;
+    }
+
+    .theme-article-{{ section.id }}__slide-card {
+      flex: 0 0 85%;
+    }
+  }
+
+  @media screen and (prefers-reduced-motion: reduce) {
+    .theme-article-{{ section.id }}__nav-link,
+    .theme-article-{{ section.id }}__slide-card,
+    .theme-article-{{ section.id }}__slide-image,
+    .theme-article-{{ section.id }}__image-card {
+      transition: none;
+    }
+  }
+{% endstyle %}
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const sectionId = '{{ section.id }}';
+    const track = document.getElementById('ArticleSliderTrack-' + sectionId);
+    const prevBtn = document.querySelector('[data-slide-prev="' + sectionId + '"]');
+    const nextBtn = document.querySelector('[data-slide-next="' + sectionId + '"]');
+
+    if (track && prevBtn && nextBtn) {
+      const scrollAmount = track.clientWidth * 0.8;
+
+      prevBtn.addEventListener('click', function () {
+        track.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+      });
+
+      nextBtn.addEventListener('click', function () {
+        track.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+      });
+    }
+  });
+</script>
 
 {% schema %}
 {
-  "name": "t:general.article",
-  "settings": []
+  "name": "Article Page",
+  "tag": "section",
+  "class": "section-article-page",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding Top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding Bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 80
+    },
+    {
+      "type": "header",
+      "content": "Default Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Main Background",
+      "default": "#FAF6F0"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#2B1E16"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent Color",
+      "default": "#9C4A1A"
+    },
+    {
+      "type": "color",
+      "id": "card_background",
+      "label": "Card Background",
+      "default": "#FCF9F6"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border Color",
+      "default": "#E8E2DA"
+    },
+    {
+      "type": "header",
+      "content": "Custom Design (Override)"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_custom_design",
+      "label": "Enable Custom Design",
+      "info": "When enabled, these override the default colors and typography.",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "custom_bg_color",
+      "label": "Custom Background",
+      "default": "#FFFFFF",
+      "visible_if": "{{ section.settings.enable_custom_design }}"
+    },
+    {
+      "type": "color",
+      "id": "custom_text_color",
+      "label": "Custom Text Color",
+      "default": "#111111",
+      "visible_if": "{{ section.settings.enable_custom_design }}"
+    },
+    {
+      "type": "color",
+      "id": "custom_accent_color",
+      "label": "Custom Accent Color",
+      "default": "#000000",
+      "visible_if": "{{ section.settings.enable_custom_design }}"
+    },
+    {
+      "type": "color",
+      "id": "custom_card_bg_color",
+      "label": "Custom Card Background",
+      "default": "#F9F9F9",
+      "visible_if": "{{ section.settings.enable_custom_design }}"
+    },
+    {
+      "type": "color",
+      "id": "custom_border_color",
+      "label": "Custom Border Color",
+      "default": "#E0E0E0",
+      "visible_if": "{{ section.settings.enable_custom_design }}"
+    },
+    {
+      "type": "font_picker",
+      "id": "custom_heading_font",
+      "label": "Custom Heading Font",
+      "default": "assistant_n4",
+      "visible_if": "{{ section.settings.enable_custom_design }}"
+    },
+    {
+      "type": "font_picker",
+      "id": "custom_body_font",
+      "label": "Custom Body Font",
+      "default": "assistant_n4",
+      "visible_if": "{{ section.settings.enable_custom_design }}"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Article Page",
+      "category": "Blog"
+    }
+  ]
 }
 {% endschema %}

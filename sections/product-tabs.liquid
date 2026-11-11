@@ -1,0 +1,486 @@
+{%- liquid
+  assign use_custom = section.settings.enable_custom_design
+
+  if use_custom
+    assign tabs_bg = section.settings.custom_bg_color
+    assign tabs_text = section.settings.custom_text_color
+    assign tabs_accent = section.settings.custom_accent_color
+    assign tabs_border = section.settings.custom_border_color
+    assign heading_font = section.settings.custom_heading_font
+    assign body_font = section.settings.custom_body_font
+  else
+    assign tabs_bg = section.settings.background_color
+    assign tabs_text = section.settings.text_color
+    assign tabs_accent = section.settings.accent_color
+    assign tabs_border = section.settings.border_color
+    assign heading_font = 'var(--font-heading-family)'
+    assign body_font = 'var(--font-body-family)'
+  endif
+-%}
+
+<section 
+  class="product-tabs-{{ section.id }}" 
+  id="ProductTabs-{{ section.id }}"
+  style="
+    --tabs-bg: {{ tabs_bg }};
+    --tabs-text: {{ tabs_text }};
+    --tabs-accent: {{ tabs_accent }};
+    --tabs-border: {{ tabs_border }};
+    --tabs-heading-font: {{ heading_font }};
+    --tabs-body-font: {{ body_font }};
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+  "
+>
+  <div class="product-tabs-{{ section.id }}__container">
+    
+    <div class="product-tabs-{{ section.id }}__header" role="tablist" aria-label="Product Information">
+      {%- for block in section.blocks -%}
+        <button 
+          class="product-tabs-{{ section.id }}__tab-btn{% if forloop.first %} is-active{% endif %}" 
+          id="TabBtn-{{ section.id }}-{{ forloop.index }}"
+          data-tab-target="TabContent-{{ section.id }}-{{ forloop.index }}"
+          role="tab"
+          aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+          aria-controls="TabContent-{{ section.id }}-{{ forloop.index }}"
+          tabindex="{% if forloop.first %}0{% else %}-1{% endif %}"
+        >
+          {{ block.settings.tab_title | escape }}
+        </button>
+      {%- endfor -%}
+    </div>
+
+    <div class="product-tabs-{{ section.id }}__content-wrapper">
+      {%- for block in section.blocks -%}
+        <div 
+          class="product-tabs-{{ section.id }}__tab-content{% if forloop.first %} is-active{% endif %}" 
+          id="TabContent-{{ section.id }}-{{ forloop.index }}"
+          role="tabpanel"
+          aria-labelledby="TabBtn-{{ section.id }}-{{ forloop.index }}"
+          tabindex="0"
+          {% unless forloop.first %}hidden{% endunless %}
+        >
+          {%- case block.type -%}
+            
+            {%- when 'description' -%}
+              <div class="product-tabs-{{ section.id }}__rte">
+                {%- if block.settings.custom_description != blank -%}
+                  {{ block.settings.custom_description }}
+                {%- else -%}
+                  {{ product.description }}
+                {%- endif -%}
+              </div>
+
+            {%- when 'reviews' -%}
+              <div class="product-tabs-{{ section.id }}__reviews">
+                {%- if block.settings.review_content != blank -%}
+                  {{ block.settings.review_content }}
+                {%- else -%}
+                  <div class="product-tabs-{{ section.id }}__review-empty">
+                    <p>{{ block.settings.empty_state_text | escape }}</p>
+                  </div>
+                {%- endif -%}
+              </div>
+
+            {%- when 'shipping' -%}
+              <div class="product-tabs-{{ section.id }}__rte">
+                {{ block.settings.shipping_content }}
+              </div>
+
+            {%- when 'size_chart' -%}
+              <div class="product-tabs-{{ section.id }}__size-chart">
+                {%- if block.settings.size_chart_image != blank -%}
+                  <img src="{{ block.settings.size_chart_image | image_url: width: 800 }}" alt="Size Chart" class="product-tabs-{{ section.id }}__size-chart-img" loading="lazy">
+                {%- elsif block.settings.custom_size_chart != blank -%}
+                  <div class="product-tabs-{{ section.id }}__rte">{{ block.settings.custom_size_chart }}</div>
+                {%- elsif product.metafields.custom.size_chart.value != blank -%}
+                  <div class="product-tabs-{{ section.id }}__rte">{{ product.metafields.custom.size_chart.value }}</div>
+                {%- else -%}
+                  <div class="product-tabs-{{ section.id }}__review-empty">
+                    <p>{{ block.settings.empty_state_text | escape }}</p>
+                  </div>
+                {%- endif -%}
+              </div>
+
+            {%- when 'custom_html' -%}
+              <div class="product-tabs-{{ section.id }}__rte">
+                {{ block.settings.custom_content }}
+              </div>
+
+          {%- endcase -%}
+        </div>
+      {%- endfor -%}
+    </div>
+
+  </div>
+</section>
+
+{% style %}
+  .product-tabs-{{ section.id }} {
+    width: 100vw;
+    max-width: 100vw;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    left: 50%;
+    right: 50%;
+    position: relative;
+    background-color: var(--tabs-bg);
+    color: var(--tabs-text);
+    font-family: var(--tabs-body-font), -apple-system, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    overflow: hidden;
+  }
+
+  .product-tabs-{{ section.id }} * {
+    box-sizing: border-box;
+  }
+
+  .product-tabs-{{ section.id }}__container {
+    max-width: var(--page-width, 1300px);
+    margin: 0 auto;
+    padding: 0 var(--page-margin, 20px);
+  }
+
+  .product-tabs-{{ section.id }}__header {
+    display: flex;
+    flex-wrap: wrap;
+    border-bottom: 1px solid var(--tabs-border);
+    margin-bottom: 30px;
+    gap: 30px;
+  }
+
+  .product-tabs-{{ section.id }}__tab-btn {
+    background: transparent;
+    border: none;
+    padding: 15px 0;
+    font-family: var(--tabs-heading-font), serif;
+    font-size: 18px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--tabs-text);
+    opacity: 0.5;
+    cursor: pointer;
+    position: relative;
+    transition: opacity 0.3s ease;
+  }
+
+  .product-tabs-{{ section.id }}__tab-btn:hover {
+    opacity: 0.8;
+  }
+
+  .product-tabs-{{ section.id }}__tab-btn.is-active {
+    opacity: 1;
+  }
+
+  .product-tabs-{{ section.id }}__tab-btn.is-active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: var(--tabs-accent);
+  }
+
+  .product-tabs-{{ section.id }}__tab-btn:focus-visible {
+    outline: 2px solid var(--tabs-accent);
+    outline-offset: 4px;
+  }
+
+  .product-tabs-{{ section.id }}__content-wrapper {
+    width: 100%;
+  }
+
+  .product-tabs-{{ section.id }}__tab-content {
+    display: none;
+    animation: tabFadeIn-{{ section.id }} 0.4s ease;
+  }
+
+  .product-tabs-{{ section.id }}__tab-content.is-active {
+    display: block;
+  }
+
+  .product-tabs-{{ section.id }}__tab-content[hidden] {
+    display: none;
+  }
+
+  @keyframes tabFadeIn-{{ section.id }} {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .product-tabs-{{ section.id }}__rte {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--tabs-text);
+    opacity: 0.9;
+  }
+
+  .product-tabs-{{ section.id }}__rte p {
+    margin: 0 0 15px;
+  }
+
+  .product-tabs-{{ section.id }}__rte p:last-child {
+    margin-bottom: 0;
+  }
+
+  .product-tabs-{{ section.id }}__reviews {
+    max-width: 800px;
+  }
+
+  .product-tabs-{{ section.id }}__review-empty {
+    text-align: center;
+    padding: 40px 20px;
+    background: transparent;
+    border: 1px dashed var(--tabs-border);
+  }
+
+  .product-tabs-{{ section.id }}__review-empty p {
+    margin: 0;
+    font-size: 15px;
+    opacity: 0.8;
+  }
+
+  .product-tabs-{{ section.id }}__size-chart {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  .product-tabs-{{ section.id }}__size-chart-img {
+    width: 100%;
+    max-width: 800px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+  }
+
+  @media screen and (max-width: 768px) {
+    .product-tabs-{{ section.id }} {
+      padding-top: 30px;
+      padding-bottom: 30px;
+    }
+
+    .product-tabs-{{ section.id }}__header {
+      gap: 20px;
+      overflow-x: auto;
+      flex-wrap: nowrap;
+      padding-bottom: 5px;
+    }
+
+    .product-tabs-{{ section.id }}__tab-btn {
+      font-size: 16px;
+      white-space: nowrap;
+    }
+  }
+
+  @media screen and (prefers-reduced-motion: reduce) {
+    .product-tabs-{{ section.id }}__tab-content {
+      animation: none;
+    }
+  }
+{% endstyle %}
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const sectionId = '{{ section.id }}';
+    const tabButtons = document.querySelectorAll('.product-tabs-' + sectionId + '__tab-btn');
+    const tabContents = document.querySelectorAll('.product-tabs-' + sectionId + '__tab-content');
+
+    if (tabButtons.length > 0) {
+      tabButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          const targetId = this.getAttribute('data-tab-target');
+          
+          tabButtons.forEach(btn => {
+            btn.classList.remove('is-active');
+            btn.setAttribute('aria-selected', 'false');
+            btn.setAttribute('tabindex', '-1');
+          });
+
+          tabContents.forEach(content => {
+            content.classList.remove('is-active');
+            content.setAttribute('hidden', '');
+          });
+
+          this.classList.add('is-active');
+          this.setAttribute('aria-selected', 'true');
+          this.setAttribute('tabindex', '0');
+
+          const targetContent = document.getElementById(targetId);
+          if (targetContent) {
+            targetContent.classList.add('is-active');
+            targetContent.removeAttribute('hidden');
+          }
+        });
+      });
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Product Tabs",
+  "tag": "section",
+  "class": "section-product-tabs",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding Top",
+      "min": 0, "max": 100, "step": 4, "unit": "px", "default": 20
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding Bottom",
+      "min": 0, "max": 100, "step": 4, "unit": "px", "default": 40
+    },
+    {
+      "type": "header",
+      "content": "Default Colors & Typography"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#FAF6F0"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#2B1E16"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent Color (Active Tab Line)",
+      "default": "#9C4A1A"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border Color",
+      "default": "#E8E2DA"
+    },
+    {
+      "type": "header",
+      "content": "Custom Design (Override)"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_custom_design",
+      "label": "Enable Custom Design",
+      "info": "When enabled, these override the default colors and typography.",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "custom_bg_color",
+      "label": "Custom Background",
+      "default": "#FFFFFF",
+      "visible_if": "{{ section.settings.enable_custom_design }}"
+    },
+    {
+      "type": "color",
+      "id": "custom_text_color",
+      "label": "Custom Text Color",
+      "default": "#111111",
+      "visible_if": "{{ section.settings.enable_custom_design }}"
+    },
+    {
+      "type": "color",
+      "id": "custom_accent_color",
+      "label": "Custom Accent Color",
+      "default": "#000000",
+      "visible_if": "{{ section.settings.enable_custom_design }}"
+    },
+    {
+      "type": "color",
+      "id": "custom_border_color",
+      "label": "Custom Border Color",
+      "default": "#E0E0E0",
+      "visible_if": "{{ section.settings.enable_custom_design }}"
+    },
+    {
+      "type": "font_picker",
+      "id": "custom_heading_font",
+      "label": "Custom Heading Font",
+      "default": "assistant_n4",
+      "visible_if": "{{ section.settings.enable_custom_design }}"
+    },
+    {
+      "type": "font_picker",
+      "id": "custom_body_font",
+      "label": "Custom Body Font",
+      "default": "assistant_n4",
+      "visible_if": "{{ section.settings.enable_custom_design }}"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "description",
+      "name": "Description Tab",
+      "limit": 1,
+      "settings": [
+        { "type": "text", "id": "tab_title", "label": "Tab Title", "default": "Description" },
+        { "type": "richtext", "id": "custom_description", "label": "Custom Description Text", "info": "Agar blank chhodenge toh product ki default description aayegi." }
+      ]
+    },
+    {
+      "type": "reviews",
+      "name": "Reviews Tab",
+      "limit": 1,
+      "settings": [
+        { "type": "text", "id": "tab_title", "label": "Tab Title", "default": "Reviews" },
+        { "type": "richtext", "id": "review_content", "label": "Review Content", "info": "Yaha aap review ya review app ka HTML daal sakte hain." },
+        { "type": "text", "id": "empty_state_text", "label": "Empty State Text", "default": "No reviews yet. Be the first to review this product!" }
+      ]
+    },
+    {
+      "type": "shipping",
+      "name": "Shipping Tab",
+      "limit": 1,
+      "settings": [
+        { "type": "text", "id": "tab_title", "label": "Tab Title", "default": "Shipping & Returns" },
+        { "type": "richtext", "id": "shipping_content", "label": "Shipping Policy Content" }
+      ]
+    },
+    {
+      "type": "size_chart",
+      "name": "Size Chart Tab",
+      "limit": 1,
+      "settings": [
+        { "type": "text", "id": "tab_title", "label": "Tab Title", "default": "Size Chart" },
+        { "type": "image_picker", "id": "size_chart_image", "label": "Size Chart Image" },
+        { "type": "richtext", "id": "custom_size_chart", "label": "Custom Size Chart (Table/Text)", "info": "Agar image nahi hai toh yeh dikhega." },
+        { "type": "text", "id": "empty_state_text", "label": "Empty State Text", "default": "Please contact us for size details." }
+      ]
+    },
+    {
+      "type": "custom_html",
+      "name": "Custom Content Tab",
+      "settings": [
+        { "type": "text", "id": "tab_title", "label": "Tab Title" },
+        { "type": "richtext", "id": "custom_content", "label": "Content" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product Tabs",
+      "blocks": [
+        { "type": "description" },
+        { "type": "reviews" },
+        { "type": "shipping" },
+        { "type": "size_chart" }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,616 @@
+{%- liquid
+  assign section_background_color = section.settings.section_background_color
+  assign primary_text_color = section.settings.primary_text_color
+  assign primary_accent_color = section.settings.primary_accent_color
+  assign glass_card_background = section.settings.glass_card_background
+  assign countdown_end_date = section.settings.countdown_end_date
+
+  assign use_custom = section.settings.enable_custom_design
+
+  if use_custom
+    assign bg_color = section.settings.custom_bg_color
+    assign text_color = section.settings.custom_text_color
+    assign accent_color = section.settings.custom_accent_color
+    assign card_color = section.settings.custom_card_color
+    
+    assign heading_font = section.settings.custom_heading_font
+    assign body_font = section.settings.custom_body_font
+    
+    assign btn_bg_color = section.settings.custom_btn_bg_color
+    assign btn_text_color = section.settings.custom_btn_text_color
+    assign btn_size = section.settings.custom_btn_font_size
+    assign btn_radius = section.settings.custom_btn_radius
+  else
+    assign bg_color = section_background_color
+    assign text_color = primary_text_color
+    assign accent_color = primary_accent_color
+    assign card_color = glass_card_background
+    
+    assign heading_font = 'var(--font-heading-family)'
+    assign body_font = 'var(--font-body-family)'
+    
+    assign btn_bg_color = accent_color
+    assign btn_text_color = '#ffffff'
+    assign btn_size = 'var(--font-body-size)'
+    assign btn_radius = 'var(--button-radius, 8px)'
+  endif
+
+  capture placeholder_class
+    echo 'seasonal-sale-banner-' | append: section.id | append: '__image seasonal-sale-banner-' | append: section.id | append: '__placeholder'
+  endcapture
+-%}
+
+<section 
+  class="seasonal-sale-banner-{{ section.id }}" 
+  id="SeasonalSale-{{ section.id }}"
+  style="
+    --ss-bg-color: {{ bg_color }};
+    --ss-text-color: {{ text_color }};
+    --ss-accent-color: {{ accent_color }};
+    --ss-card-color: {{ card_color }};
+    --ss-heading-font: {{ heading_font }};
+    --ss-body-font: {{ body_font }};
+    --ss-btn-bg: {{ btn_bg_color }};
+    --ss-btn-text: {{ btn_text_color }};
+    --ss-btn-size: {{ btn_size }};
+    --ss-btn-radius: {{ btn_radius }};
+  "
+>
+  <div class="seasonal-sale-banner-{{ section.id }}__image-wrapper">
+    {%- if section.settings.background_image != blank -%}
+      <img 
+        src="{{ section.settings.background_image | image_url: width: 1920 }}" 
+        alt="{{ section.settings.background_image.alt | escape }}" 
+        class="seasonal-sale-banner-{{ section.id }}__image"
+        loading="lazy"
+        width="1920"
+        height="1080"
+      >
+    {%- else -%}
+      {{ 'lifestyle-1' | placeholder_svg_tag: placeholder_class }}
+    {%- endif -%}
+    <div class="seasonal-sale-banner-{{ section.id }}__overlay"></div>
+  </div>
+
+  <div class="seasonal-sale-banner-{{ section.id }}__container">
+    <div class="seasonal-sale-banner-{{ section.id }}__card">
+      
+      <div class="seasonal-sale-banner-{{ section.id }}__header">
+        <h2 class="seasonal-sale-banner-{{ section.id }}__heading">{{ section.settings.main_heading }}</h2>
+        <div class="seasonal-sale-banner-{{ section.id }}__divider"></div>
+      </div>
+
+      <div class="seasonal-sale-banner-{{ section.id }}__desc">
+        {{ section.settings.description_text }}
+      </div>
+
+      <div class="seasonal-sale-banner-{{ section.id }}__countdown-wrapper">
+        <div class="seasonal-sale-banner-{{ section.id }}__countdown" data-end-date="{{ countdown_end_date }}" id="Countdown-{{ section.id }}">
+          <div class="seasonal-sale-banner-{{ section.id }}__timer-block">
+            <span class="seasonal-sale-banner-{{ section.id }}__timer-num" data-days>00</span>
+            <span class="seasonal-sale-banner-{{ section.id }}__timer-label">{{ section.settings.days_label }}</span>
+          </div>
+          <span class="seasonal-sale-banner-{{ section.id }}__timer-sep">:</span>
+          <div class="seasonal-sale-banner-{{ section.id }}__timer-block">
+            <span class="seasonal-sale-banner-{{ section.id }}__timer-num" data-hours>00</span>
+            <span class="seasonal-sale-banner-{{ section.id }}__timer-label">{{ section.settings.hours_label }}</span>
+          </div>
+          <span class="seasonal-sale-banner-{{ section.id }}__timer-sep">:</span>
+          <div class="seasonal-sale-banner-{{ section.id }}__timer-block">
+            <span class="seasonal-sale-banner-{{ section.id }}__timer-num" data-minutes>00</span>
+            <span class="seasonal-sale-banner-{{ section.id }}__timer-label">{{ section.settings.minutes_label }}</span>
+          </div>
+          <span class="seasonal-sale-banner-{{ section.id }}__timer-sep">:</span>
+          <div class="seasonal-sale-banner-{{ section.id }}__timer-block">
+            <span class="seasonal-sale-banner-{{ section.id }}__timer-num" data-seconds>00</span>
+            <span class="seasonal-sale-banner-{{ section.id }}__timer-label">{{ section.settings.seconds_label }}</span>
+          </div>
+        </div>
+      </div>
+
+      {%- if section.settings.button_text != blank and section.settings.button_link != blank -%}
+        <a href="{{ section.settings.button_link }}" class="seasonal-sale-banner-{{ section.id }}__btn">
+          {{ section.settings.button_text }}
+        </a>
+      {%- endif -%}
+
+    </div>
+  </div>
+</section>
+
+{% style %}
+  .seasonal-sale-banner-{{ section.id }} {
+    position: relative;
+    width: 100vw;
+    max-width: 100vw;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    left: 50%;
+    right: 50%;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--ss-bg-color);
+    overflow: hidden;
+    font-family: var(--ss-body-font), -apple-system, sans-serif;
+    padding: 60px 20px;
+    box-sizing: border-box;
+  }
+
+  .seasonal-sale-banner-{{ section.id }}__image-wrapper {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+
+  .seasonal-sale-banner-{{ section.id }}__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .seasonal-sale-banner-{{ section.id }}__placeholder {
+    width: 100%;
+    height: 100%;
+    background-color: var(--ss-text-color);
+    opacity: 0.2;
+  }
+
+  .seasonal-sale-banner-{{ section.id }}__overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      135deg, 
+      rgba(43, 30, 22, 0.85) 0%, 
+      rgba(43, 30, 22, 0.5) 60%, 
+      rgba(43, 30, 22, 0.3) 100%
+    );
+    z-index: 2;
+  }
+
+  .seasonal-sale-banner-{{ section.id }}__container {
+    position: relative;
+    z-index: 3;
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .seasonal-sale-banner-{{ section.id }}__card {
+    background: var(--ss-card-color);
+    opacity: 0.95;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 24px;
+    padding: 60px 50px;
+    text-align: center;
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    color: var(--ss-text-color);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .seasonal-sale-banner-{{ section.id }}__card::before,
+  .seasonal-sale-banner-{{ section.id }}__card::after {
+    content: '';
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    border: 2px solid var(--ss-accent-color);
+    opacity: 0.3;
+    pointer-events: none;
+  }
+
+  .seasonal-sale-banner-{{ section.id }}__card::before {
+    top: 20px;
+    left: 20px;
+    border-right: none;
+    border-bottom: none;
+    border-top-left-radius: 12px;
+  }
+
+  .seasonal-sale-banner-{{ section.id }}__card::after {
+    bottom: 20px;
+    right: 20px;
+    border-left: none;
+    border-top: none;
+    border-bottom-right-radius: 12px;
+  }
+
+  .seasonal-sale-banner-{{ section.id }}__header {
+    margin-bottom: 30px;
+  }
+
+  .seasonal-sale-banner-{{ section.id }}__heading {
+    font-family: var(--ss-heading-font), serif;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: -1px;
+    line-height: 1;
+    color: var(--ss-text-color);
+    margin: 0 0 20px 0;
+  }
+
+  .seasonal-sale-banner-{{ section.id }}__divider {
+    width: 80px;
+    height: 3px;
+    background-color: var(--ss-accent-color);
+    margin: 0 auto;
+    border-radius: 2px;
+  }
+
+  .seasonal-sale-banner-{{ section.id }}__desc {
+    font-size: calc(var(--font-body-size) * 1.05);
+    line-height: 1.7;
+    color: var(--ss-text-color);
+    opacity: 0.85;
+    margin-bottom: 40px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .seasonal-sale-banner-{{ section.id }}__desc p {
+    margin: 0;
+  }
+
+  .seasonal-sale-banner-{{ section.id }}__countdown-wrapper {
+    margin-bottom: 40px;
+  }
+
+  .seasonal-sale-banner-{{ section.id }}__countdown {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+  }
+
+  .seasonal-sale-banner-{{ section.id }}__timer-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 70px;
+  }
+
+  .seasonal-sale-banner-{{ section.id }}__timer-num {
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--ss-text-color);
+    background: rgba(43, 30, 22, 0.06);
+    border: 1px solid rgba(43, 30, 22, 0.1);
+    border-radius: 12px;
+    padding: 15px 10px;
+    min-width: 70px;
+    text-align: center;
+    margin-bottom: 8px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .seasonal-sale-banner-{{ section.id }}__timer-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: 700;
+    color: var(--ss-accent-color);
+  }
+
+  .seasonal-sale-banner-{{ section.id }}__timer-sep {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--ss-accent-color);
+    margin-bottom: 25px;
+    animation: ss-pulse-{{ section.id }} 1.5s infinite alternate;
+  }
+
+  @keyframes ss-pulse-{{ section.id }} {
+    0% { opacity: 0.3; }
+    100% { opacity: 1; }
+  }
+
+  .seasonal-sale-banner-{{ section.id }}__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px 40px;
+    background-color: var(--ss-btn-bg);
+    color: var(--ss-btn-text);
+    text-decoration: none;
+    font-size: var(--ss-btn-size);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    border-radius: var(--ss-btn-radius);
+    border: 2px solid transparent;
+    box-shadow: 6px 6px 0px var(--ss-text-color);
+    transition: all 0.3s ease;
+  }
+
+  .seasonal-sale-banner-{{ section.id }}__btn:hover {
+    transform: translate(3px, 3px);
+    box-shadow: 3px 3px 0px var(--ss-text-color);
+    background-color: var(--ss-text-color);
+    color: var(--ss-card-color);
+  }
+
+  @media screen and (max-width: 768px) {
+    .seasonal-sale-banner-{{ section.id }} {
+      padding: 40px 15px;
+    }
+
+    .seasonal-sale-banner-{{ section.id }}__card {
+      padding: 40px 25px;
+    }
+
+    .seasonal-sale-banner-{{ section.id }}__card::before,
+    .seasonal-sale-banner-{{ section.id }}__card::after {
+      width: 30px;
+      height: 30px;
+    }
+
+    .seasonal-sale-banner-{{ section.id }}__timer-num {
+      font-size: 1.8rem;
+      min-width: 55px;
+      padding: 10px 8px;
+    }
+
+    .seasonal-sale-banner-{{ section.id }}__timer-label {
+      font-size: 0.65rem;
+      letter-spacing: 1px;
+    }
+
+    .seasonal-sale-banner-{{ section.id }}__timer-sep {
+      font-size: 1.5rem;
+    }
+
+    .seasonal-sale-banner-{{ section.id }}__btn {
+      padding: 14px 30px;
+      font-size: calc(var(--ss-btn-size) * 0.9);
+    }
+  }
+{% endstyle %}
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const countdownContainers = document.querySelectorAll('.seasonal-sale-banner-{{ section.id }}__countdown');
+
+    countdownContainers.forEach(container => {
+      const endDateString = container.getAttribute('data-end-date');
+      if (!endDateString) return;
+
+      const countDownDate = new Date(endDateString).getTime();
+
+      const x = setInterval(function() {
+        const now = new Date().getTime();
+        const distance = countDownDate - now;
+
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        if (container.querySelector('[data-days]')) {
+          container.querySelector('[data-days]').innerText = days < 10 ? '0' + days : days;
+          container.querySelector('[data-hours]').innerText = hours < 10 ? '0' + hours : hours;
+          container.querySelector('[data-minutes]').innerText = minutes < 10 ? '0' + minutes : minutes;
+          container.querySelector('[data-seconds]').innerText = seconds < 10 ? '0' + seconds : seconds;
+        }
+
+        if (distance < 0) {
+          clearInterval(x);
+          container.innerHTML = "<span class='seasonal-sale-banner-{{ section.id }}__timer-label'>SALE ENDED</span>";
+        }
+      }, 1000);
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Seasonal Sale Banner",
+  "tag": "section",
+  "class": "section-seasonal-sale-banner",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section Content"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Background Image"
+    },
+    {
+      "type": "text",
+      "id": "main_heading",
+      "label": "Main Heading",
+      "default": "UP TO 30% OFF"
+    },
+    {
+      "type": "richtext",
+      "id": "description_text",
+      "label": "Description Text",
+      "default": "<p>Calling all bag lovers! Our mega sale is here and it's time to make a serious style statement.</p>"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button Text",
+      "default": "Explore Collection"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button Link"
+    },
+    {
+      "type": "header",
+      "content": "Countdown Settings"
+    },
+    {
+      "type": "text",
+      "id": "countdown_end_date",
+      "label": "End Date",
+      "info": "Format: YYYY-MM-DDTHH:MM:SS (e.g., 2025-12-31T23:59:59)",
+      "default": "2025-12-31T23:59:59"
+    },
+    {
+      "type": "text",
+      "id": "days_label",
+      "label": "Days Label",
+      "default": "Days"
+    },
+    {
+      "type": "text",
+      "id": "hours_label",
+      "label": "Hours Label",
+      "default": "Hours"
+    },
+    {
+      "type": "text",
+      "id": "minutes_label",
+      "label": "Minutes Label",
+      "default": "Mins"
+    },
+    {
+      "type": "text",
+      "id": "seconds_label",
+      "label": "Seconds Label",
+      "default": "Sec"
+    },
+    {
+      "type": "header",
+      "content": "Default Colors"
+    },
+    {
+      "type": "color",
+      "id": "section_background_color",
+      "label": "Section Background",
+      "default": "#FAF6F0"
+    },
+    {
+      "type": "color",
+      "id": "primary_text_color",
+      "label": "Primary Text Color",
+      "default": "#2B1E16"
+    },
+    {
+      "type": "color",
+      "id": "primary_accent_color",
+      "label": "Primary Accent Color",
+      "default": "#9C4A1A"
+    },
+    {
+      "type": "color",
+      "id": "glass_card_background",
+      "label": "Glass Card Background",
+      "default": "#FAF6F0"
+    },
+    {
+      "type": "header",
+      "content": "Custom Design (Override)"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_custom_design",
+      "label": "Enable Custom Design",
+      "info": "When enabled, these override the default colors and typography.",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "custom_bg_color",
+      "label": "Custom Background",
+      "default": "#FFFFFF",
+      "visible_if": "{{ section.settings.enable_custom_design }}"
+    },
+    {
+      "type": "color",
+      "id": "custom_text_color",
+      "label": "Custom Text Color",
+      "default": "#111111",
+      "visible_if": "{{ section.settings.enable_custom_design }}"
+    },
+    {
+      "type": "color",
+      "id": "custom_accent_color",
+      "label": "Custom Accent Color",
+      "default": "#000000",
+      "visible_if": "{{ section.settings.enable_custom_design }}"
+    },
+    {
+      "type": "color",
+      "id": "custom_card_color",
+      "label": "Custom Glass Card Color",
+      "default": "#FFFFFF",
+      "visible_if": "{{ section.settings.enable_custom_design }}"
+    },
+    {
+      "type": "font_picker",
+      "id": "custom_heading_font",
+      "label": "Custom Heading Font",
+      "default": "assistant_n4",
+      "visible_if": "{{ section.settings.enable_custom_design }}"
+    },
+    {
+      "type": "font_picker",
+      "id": "custom_body_font",
+      "label": "Custom Body Font",
+      "default": "assistant_n4",
+      "visible_if": "{{ section.settings.enable_custom_design }}"
+    },
+    {
+      "type": "header",
+      "content": "Custom Button Settings",
+      "visible_if": "{{ section.settings.enable_custom_design }}"
+    },
+    {
+      "type": "color",
+      "id": "custom_btn_bg_color",
+      "label": "Button Background",
+      "default": "#111111",
+      "visible_if": "{{ section.settings.enable_custom_design }}"
+    },
+    {
+      "type": "color",
+      "id": "custom_btn_text_color",
+      "label": "Button Text Color",
+      "default": "#FFFFFF",
+      "visible_if": "{{ section.settings.enable_custom_design }}"
+    },
+    {
+      "type": "range",
+      "id": "custom_btn_font_size",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "label": "Button Font Size",
+      "default": 16,
+      "visible_if": "{{ section.settings.enable_custom_design }}"
+    },
+    {
+      "type": "range",
+      "id": "custom_btn_radius",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "label": "Button Border Radius",
+      "default": 8,
+      "visible_if": "{{ section.settings.enable_custom_design }}"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Seasonal Sale Banner",
+      "category": "Promotional"
+    }
+  ]
+}
+{% endschema %}

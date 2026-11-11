@@ -1,0 +1,676 @@
+{%- liquid
+  assign use_custom = section.settings.enable_custom_design
+
+  if use_custom
+    assign contact_bg = section.settings.custom_bg_color
+    assign contact_text = section.settings.custom_text_color
+    assign contact_accent = section.settings.custom_accent_color
+    assign contact_input_bg = section.settings.custom_input_bg_color
+    assign contact_input_text = section.settings.custom_input_text_color
+    assign contact_border = section.settings.custom_border_color
+    assign heading_font = section.settings.custom_heading_font
+    assign body_font = section.settings.custom_body_font
+  else
+    assign contact_bg = section.settings.background_color
+    assign contact_text = section.settings.text_color
+    assign contact_accent = section.settings.accent_color
+    assign contact_input_bg = section.settings.input_background
+    assign contact_input_text = section.settings.input_text_color
+    assign contact_border = section.settings.border_color
+    assign heading_font = 'var(--font-heading-family)'
+    assign body_font = 'var(--font-body-family)'
+  endif
+
+  capture form_class
+    echo 'contact-form-' | append: section.id | append: '__form'
+  endcapture
+-%}
+
+<section 
+  class="contact-form-{{ section.id }}" 
+  id="ContactForm-{{ section.id }}"
+  style="
+    --contact-bg: {{ contact_bg }};
+    --contact-text: {{ contact_text }};
+    --contact-accent: {{ contact_accent }};
+    --contact-input-bg: {{ contact_input_bg }};
+    --contact-input-text: {{ contact_input_text }};
+    --contact-border: {{ contact_border }};
+    --contact-heading-font: {{ heading_font }};
+    --contact-body-font: {{ body_font }};
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+  "
+>
+  <div class="contact-form-{{ section.id }}__container">
+    
+    <div class="contact-form-{{ section.id }}__header">
+      <h2 class="contact-form-{{ section.id }}__heading">{{ section.settings.heading | escape }}</h2>
+      {%- if section.settings.description != blank -%}
+        <p class="contact-form-{{ section.id }}__description">{{ section.settings.description | escape }}</p>
+      {%- endif -%}
+    </div>
+
+    <div class="contact-form-{{ section.id }}__layout">
+      
+      <div class="contact-form-{{ section.id }}__info-column">
+        <div class="contact-form-{{ section.id }}__info-card">
+          <div class="contact-form-{{ section.id }}__decor-line"></div>
+          
+          {%- if section.settings.email != blank -%}
+            <div class="contact-form-{{ section.id }}__info-item">
+              <div class="contact-form-{{ section.id }}__icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+              </div>
+              <div class="contact-form-{{ section.id }}__info-text">
+                <span class="contact-form-{{ section.id }}__label">Email</span>
+                <a href="mailto:{{ section.settings.email }}" class="contact-form-{{ section.id }}__value">{{ section.settings.email }}</a>
+              </div>
+            </div>
+          {%- endif -%}
+
+          {%- if section.settings.phone != blank -%}
+            <div class="contact-form-{{ section.id }}__info-item">
+              <div class="contact-form-{{ section.id }}__icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+              </div>
+              <div class="contact-form-{{ section.id }}__info-text">
+                <span class="contact-form-{{ section.id }}__label">Phone</span>
+                <a href="tel:{{ section.settings.phone | remove: ' ' }}" class="contact-form-{{ section.id }}__value">{{ section.settings.phone }}</a>
+              </div>
+            </div>
+          {%- endif -%}
+
+          {%- if section.settings.address != blank -%}
+            <div class="contact-form-{{ section.id }}__info-item">
+              <div class="contact-form-{{ section.id }}__icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+              </div>
+              <div class="contact-form-{{ section.id }}__info-text">
+                <span class="contact-form-{{ section.id }}__label">Address</span>
+                <span class="contact-form-{{ section.id }}__value">{{ section.settings.address }}</span>
+              </div>
+            </div>
+          {%- endif -%}
+
+        </div>
+      </div>
+
+      <div class="contact-form-{{ section.id }}__form-column">
+        <div class="contact-form-{{ section.id }}__form-card">
+          
+          {%- form 'contact', class: form_class -%}
+            
+            {%- if form.posted_successfully? -%}
+              <div class="contact-form-{{ section.id }}__success">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                <p>{{ section.settings.success_message | escape }}</p>
+              </div>
+            {%- endif -%}
+
+            {%- if form.errors -%}
+              <div class="contact-form-{{ section.id }}__error">
+                <p>{{ form.errors.translated_fields.name | capitalize }} {{ form.errors.messages.name }}</p>
+              </div>
+            {%- endif -%}
+
+            <div class="contact-form-{{ section.id }}__field-row">
+              <div class="contact-form-{{ section.id }}__field-group">
+                <label for="ContactName-{{ section.id }}" class="contact-form-{{ section.id }}__label-text">Name</label>
+                <input 
+                  type="text" 
+                  id="ContactName-{{ section.id }}" 
+                  name="contact[name]" 
+                  class="contact-form-{{ section.id }}__input" 
+                  placeholder="Your Name"
+                  required
+                >
+              </div>
+              
+              <div class="contact-form-{{ section.id }}__field-group">
+                <label for="ContactEmail-{{ section.id }}" class="contact-form-{{ section.id }}__label-text">Email</label>
+                <input 
+                  type="email" 
+                  id="ContactEmail-{{ section.id }}" 
+                  name="contact[email]" 
+                  class="contact-form-{{ section.id }}__input" 
+                  placeholder="Your Email"
+                  required
+                >
+              </div>
+            </div>
+
+            <div class="contact-form-{{ section.id }}__field-group">
+              <label for="ContactPhone-{{ section.id }}" class="contact-form-{{ section.id }}__label-text">Phone (Optional)</label>
+              <input 
+                type="tel" 
+                id="ContactPhone-{{ section.id }}" 
+                name="contact[phone]" 
+                class="contact-form-{{ section.id }}__input" 
+                placeholder="Your Phone"
+              >
+            </div>
+
+            <div class="contact-form-{{ section.id }}__field-group">
+              <label for="ContactMessage-{{ section.id }}" class="contact-form-{{ section.id }}__label-text">Message</label>
+              <textarea 
+                id="ContactMessage-{{ section.id }}" 
+                name="contact[body]" 
+                class="contact-form-{{ section.id }}__textarea" 
+                placeholder="How can we help you?"
+                rows="4"
+                required
+              ></textarea>
+            </div>
+
+            <button type="submit" class="contact-form-{{ section.id }}__submit">
+              {{ section.settings.button_text | escape }}
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
+
+          {%- endform -%}
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+{% style %}
+  .contact-form-{{ section.id }} {
+    width: 100vw;
+    max-width: 100vw;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    left: 50%;
+    right: 50%;
+    position: relative;
+    background-color: var(--contact-bg);
+    color: var(--contact-text);
+    font-family: var(--contact-body-font), -apple-system, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    overflow: hidden;
+  }
+
+  .contact-form-{{ section.id }} * {
+    box-sizing: border-box;
+  }
+
+  .contact-form-{{ section.id }}__container {
+    max-width: var(--page-width, 1100px);
+    margin: 0 auto;
+    padding: 0 var(--page-margin, 20px);
+  }
+
+  .contact-form-{{ section.id }}__header {
+    text-align: center;
+    margin-bottom: 60px;
+  }
+
+  .contact-form-{{ section.id }}__heading {
+    font-family: var(--contact-heading-font), serif;
+    font-size: clamp(2.2rem, 5vw, 3.5rem);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin: 0 0 15px;
+    color: var(--contact-text);
+  }
+
+  .contact-form-{{ section.id }}__description {
+    font-size: 16px;
+    color: var(--contact-text);
+    opacity: 0.7;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .contact-form-{{ section.id }}__layout {
+    display: flex;
+    position: relative;
+    align-items: stretch;
+  }
+
+  .contact-form-{{ section.id }}__info-column {
+    width: 40%;
+    padding-right: 30px;
+    z-index: 2;
+    position: relative;
+  }
+
+  .contact-form-{{ section.id }}__form-column {
+    width: 60%;
+    z-index: 1;
+    position: relative;
+  }
+
+  .contact-form-{{ section.id }}__info-card {
+    background: var(--contact-text);
+    color: var(--contact-bg);
+    padding: 40px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 30px;
+    box-shadow: 10px 10px 0px var(--contact-accent);
+    position: relative;
+    border-radius: 0;
+  }
+
+  .contact-form-{{ section.id }}__decor-line {
+    width: 50px;
+    height: 4px;
+    background: var(--contact-accent);
+    margin-bottom: 10px;
+  }
+
+  .contact-form-{{ section.id }}__info-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .contact-form-{{ section.id }}__icon {
+    width: 36px;
+    height: 36px;
+    background: rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--contact-accent);
+    flex-shrink: 0;
+    border-radius: 0;
+  }
+
+  .contact-form-{{ section.id }}__label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--contact-bg);
+    opacity: 0.6;
+    margin-bottom: 4px;
+  }
+
+  .contact-form-{{ section.id }}__value {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--contact-bg);
+    text-decoration: none;
+    display: block;
+    word-break: break-word;
+  }
+
+  .contact-form-{{ section.id }}__form-card {
+    background: var(--contact-bg);
+    border: 1px solid var(--contact-border);
+    padding: 50px 40px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+    position: relative;
+    border-radius: 0;
+    height: 100%;
+  }
+
+  .contact-form-{{ section.id }}__form-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(225deg, var(--contact-input-bg) 50%, transparent 50%);
+    border-bottom: 1px solid var(--contact-border);
+    border-left: 1px solid var(--contact-border);
+  }
+
+  .contact-form-{{ section.id }}__form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .contact-form-{{ section.id }}__field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .contact-form-{{ section.id }}__field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .contact-form-{{ section.id }}__label-text {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--contact-text);
+    opacity: 0.7;
+  }
+
+  .contact-form-{{ section.id }}__input,
+  .contact-form-{{ section.id }}__textarea {
+    width: 100%;
+    padding: 14px 16px;
+    background-color: var(--contact-input-bg);
+    color: var(--contact-input-text);
+    border: 1px solid var(--contact-border);
+    border-radius: 0;
+    font-family: inherit;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .contact-form-{{ section.id }}__input::placeholder,
+  .contact-form-{{ section.id }}__textarea::placeholder {
+    color: var(--contact-input-text);
+    opacity: 0.4;
+  }
+
+  .contact-form-{{ section.id }}__input:focus,
+  .contact-form-{{ section.id }}__textarea:focus {
+    border-color: var(--contact-accent);
+    box-shadow: 0 0 0 3px rgba(156, 74, 26, 0.1);
+  }
+
+  .contact-form-{{ section.id }}__textarea {
+    resize: vertical;
+    min-height: 120px;
+  }
+
+  .contact-form-{{ section.id }}__submit {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 16px;
+    background-color: var(--contact-accent);
+    color: #fff;
+    border: none;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 0;
+    margin-top: 10px;
+  }
+
+  .contact-form-{{ section.id }}__submit:hover {
+    background-color: var(--contact-text);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  .contact-form-{{ section.id }}__submit svg {
+    transition: transform 0.3s ease;
+  }
+
+  .contact-form-{{ section.id }}__submit:hover svg {
+    transform: translateX(4px);
+  }
+
+  .contact-form-{{ section.id }}__success,
+  .contact-form-{{ section.id }}__error {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .contact-form-{{ section.id }}__success {
+    background: rgba(46, 125, 50, 0.1);
+    border-left: 3px solid #2e7d32;
+    color: #2e7d32;
+  }
+
+  .contact-form-{{ section.id }}__error {
+    background: rgba(211, 47, 47, 0.1);
+    border-left: 3px solid #d32f2f;
+    color: #d32f2f;
+  }
+
+  @media screen and (max-width: 991px) {
+    .contact-form-{{ section.id }}__layout {
+      flex-direction: column;
+    }
+    
+    .contact-form-{{ section.id }}__info-column,
+    .contact-form-{{ section.id }}__form-column {
+      width: 100%;
+      padding-right: 0;
+    }
+
+    .contact-form-{{ section.id }}__info-card {
+      box-shadow: none;
+      margin-bottom: 20px;
+      padding: 30px;
+    }
+    
+    .contact-form-{{ section.id }}__form-card {
+      padding: 30px;
+    }
+  }
+
+  @media screen and (max-width: 640px) {
+    .contact-form-{{ section.id }}__field-row {
+      grid-template-columns: 1fr;
+    }
+
+    .contact-form-{{ section.id }}__container {
+      padding: 0 15px;
+    }
+
+    .contact-form-{{ section.id }}__header {
+      margin-bottom: 40px;
+    }
+  }
+
+  @media screen and (prefers-reduced-motion: reduce) {
+    .contact-form-{{ section.id }}__input,
+    .contact-form-{{ section.id }}__textarea,
+    .contact-form-{{ section.id }}__submit {
+      transition: none;
+    }
+  }
+{% endstyle %}
+
+{% schema %}
+{
+  "name": "Contact Form",
+  "tag": "section",
+  "class": "section-contact-form",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Contact Us"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "Have a question or need assistance? Our team is here to help."
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button Text",
+      "default": "Send Message"
+    },
+    {
+      "type": "text",
+      "id": "success_message",
+      "label": "Success Message",
+      "default": "Thanks for contacting us. We'll get back to you as soon as possible."
+    },
+    {
+      "type": "header",
+      "content": "Contact Information"
+    },
+    {
+      "type": "text",
+      "id": "email",
+      "label": "Email Address",
+      "default": "hello@yourstore.com"
+    },
+    {
+      "type": "text",
+      "id": "phone",
+      "label": "Phone Number",
+      "default": "+1 234 567 890"
+    },
+    {
+      "type": "textarea",
+      "id": "address",
+      "label": "Address",
+      "default": "123 Fashion Street, New York, NY 10001"
+    },
+    {
+      "type": "header",
+      "content": "Section Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding Top",
+      "min": 0, "max": 100, "step": 4, "unit": "px", "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding Bottom",
+      "min": 0, "max": 100, "step": 4, "unit": "px", "default": 60
+    },
+    {
+      "type": "header",
+      "content": "Default Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#FAF6F0"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#2B1E16"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent Color (Button & Icons)",
+      "default": "#9C4A1A"
+    },
+    {
+      "type": "color",
+      "id": "input_background",
+      "label": "Input Background",
+      "default": "#F3EFEA"
+    },
+    {
+      "type": "color",
+      "id": "input_text_color",
+      "label": "Input Text Color",
+      "default": "#2B1E16"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border Color",
+      "default": "#E8E2DA"
+    },
+    {
+      "type": "header",
+      "content": "Custom Design (Override)"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_custom_design",
+      "label": "Enable Custom Design",
+      "info": "When enabled, these override the default colors and typography.",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "custom_bg_color",
+      "label": "Custom Background",
+      "default": "#FFFFFF",
+      "visible_if": "{{ section.settings.enable_custom_design }}"
+    },
+    {
+      "type": "color",
+      "id": "custom_text_color",
+      "label": "Custom Text Color",
+      "default": "#111111",
+      "visible_if": "{{ section.settings.enable_custom_design }}"
+    },
+    {
+      "type": "color",
+      "id": "custom_accent_color",
+      "label": "Custom Accent Color",
+      "default": "#000000",
+      "visible_if": "{{ section.settings.enable_custom_design }}"
+    },
+    {
+      "type": "color",
+      "id": "custom_input_bg_color",
+      "label": "Custom Input Background",
+      "default": "#F9F9F9",
+      "visible_if": "{{ section.settings.enable_custom_design }}"
+    },
+    {
+      "type": "color",
+      "id": "custom_input_text_color",
+      "label": "Custom Input Text",
+      "default": "#333333",
+      "visible_if": "{{ section.settings.enable_custom_design }}"
+    },
+    {
+      "type": "color",
+      "id": "custom_border_color",
+      "label": "Custom Border Color",
+      "default": "#E0E0E0",
+      "visible_if": "{{ section.settings.enable_custom_design }}"
+    },
+    {
+      "type": "font_picker",
+      "id": "custom_heading_font",
+      "label": "Custom Heading Font",
+      "default": "assistant_n4",
+      "visible_if": "{{ section.settings.enable_custom_design }}"
+    },
+    {
+      "type": "font_picker",
+      "id": "custom_body_font",
+      "label": "Custom Body Font",
+      "default": "assistant_n4",
+      "visible_if": "{{ section.settings.enable_custom_design }}"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Contact Form",
+      "category": "Contact"
+    }
+  ]
+}
+{% endschema %}

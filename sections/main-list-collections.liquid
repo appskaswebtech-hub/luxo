@@ -1,0 +1,523 @@
+{%- liquid
+  assign use_custom_colors = section.settings.enable_custom_colors
+  
+  assign bg_color = section.settings.default_bg_color
+  assign text_color = section.settings.default_text_color
+  assign accent_color = section.settings.default_accent_color
+
+  if use_custom_colors
+    assign bg_color = section.settings.custom_bg_color
+    assign text_color = section.settings.custom_text_color
+    assign accent_color = section.settings.custom_accent_color
+  endif
+-%}
+
+<section 
+  class="category-collection-{{ section.id }}" 
+  id="CategoryCollection-{{ section.id }}"
+  style="
+    background-color: {{ bg_color }}; 
+    --category-text-color: {{ text_color }};
+    --category-accent-color: {{ accent_color }};
+    --cc-default-heading-font: var(--font-heading-family);
+    --cc-default-heading-size: var(--font-heading-size);
+    --cc-default-body-font: var(--font-body-family);
+    --cc-default-body-size: var(--font-body-size);
+    {% if use_custom_colors %}
+      --cc-heading-font: {{ section.settings.custom_heading_font }};
+      --cc-heading-size: {{ section.settings.custom_heading_size }}px;
+      --cc-body-font: {{ section.settings.custom_body_font }};
+      --cc-body-size: {{ section.settings.custom_body_size }}px;
+    {% else %}
+      --cc-heading-font: var(--cc-default-heading-font);
+      --cc-heading-size: var(--cc-default-heading-size);
+      --cc-body-font: var(--cc-default-body-font);
+      --cc-body-size: var(--cc-default-body-size);
+    {% endif %}
+  "
+>
+  <div class="category-collection__inner">
+    <div class="category-collection__container">
+      <div class="category-collection__title-group">
+        <h2 class="category-collection__heading">{{ section.settings.heading_text }}</h2>
+      </div>
+      <div class="category-collection__grid-layout">
+        
+        {%- for block in section.blocks -%}
+          {%- liquid
+            assign collection = collections[block.settings.collection]
+            
+            if block.settings.custom_image != blank
+              assign card_image = block.settings.custom_image
+            elsif collection != blank and collection.image != blank
+              assign card_image = collection.image
+            elsif collection != blank and collection.products.first.featured_image != blank
+              assign card_image = collection.products.first.featured_image
+            else
+              assign card_image = blank
+            endif
+            
+            assign card_title = block.settings.custom_title
+            if card_title == blank and collection != blank
+              assign card_title = collection.title
+            elsif card_title == blank
+              assign card_title = "Category Name"
+            endif
+
+            assign card_desc = block.settings.custom_description
+            if card_desc == blank and collection != blank and collection.description != blank
+              assign card_desc = collection.description | strip_html | truncate: 100
+            elsif card_desc == blank
+              assign card_desc = "Discover our latest collection with premium quality and unique style."
+            endif
+
+            assign card_link = collection.url | default: '#'
+          -%}
+
+          <div class="category-collection__column {% if block.settings.layout_center %}category-collection__column-center{% endif %}" {{ block.shopify_attributes }}>
+            
+            {%- if block.settings.layout_center == false -%}
+              <p class="category-collection__description">{{ card_desc }}</p>
+            {%- endif -%}
+
+            <div class="category-collection__card-wrapper">
+              <div class="category-collection__card">
+                <a href="{{ card_link }}" class="category-collection__btn">
+                  {{ section.settings.button_text }}
+                </a>
+                
+                {%- if card_image != blank -%}
+                  <img 
+                    src="{{ card_image | image_url: width: 600 }}" 
+                    alt="{{ card_title | escape }}" 
+                    class="category-collection__image"
+                    loading="lazy"
+                    width="600"
+                    height="750"
+                  >
+                {%- else -%}
+                  <div class="category-collection__placeholder">
+                    <span class="category-collection__placeholder-text">{{ card_title }}</span>
+                  </div>
+                {%- endif -%}
+                
+                <div class="category-collection__tag">{{ card_title | truncate: 20 }}</div>
+              </div>
+            </div>
+
+            {%- if block.settings.layout_center -%}
+              <p class="category-collection__description">{{ card_desc }}</p>
+            {%- endif -%}
+
+          </div>
+        {%- endfor -%}
+
+      </div>
+    </div>
+  </div>
+</section>
+
+{% style %}
+  .category-collection-{{ section.id }} {
+    width: 100vw;
+    max-width: 100vw;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    left: 50%;
+    right: 50%;
+    position: relative;
+    box-sizing: border-box;
+    padding-top: {{ section.settings.section_padding_top }}px;
+    padding-bottom: {{ section.settings.section_padding_bottom }}px;
+    overflow: hidden;
+  }
+
+  .category-collection__inner {
+    width: 100%;
+    font-family: var(--cc-body-font), -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: var(--cc-body-size);
+  }
+
+  .category-collection__container {
+    width: 100%;
+    max-width: var(--page-width, 1300px);
+    margin: 0 auto;
+    padding: 0 var(--page-margin, 20px);
+    box-sizing: border-box;
+  }
+
+  .category-collection__title-group {
+    position: relative;
+    text-align: center;
+    margin: 0 auto;
+    margin-bottom: 4rem;
+  }
+
+  .category-collection__heading {
+    font-family: var(--cc-heading-font), sans-serif;
+    font-size: var(--cc-heading-size);
+    color: var(--category-text-color);
+    line-height: 1;
+    position: relative;
+    padding-bottom: 0.5rem;
+    text-transform: uppercase;
+    margin: 0;
+    letter-spacing: 1px;
+  }
+
+  .category-collection__heading::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 6px;
+    width: 100%;
+    background-color: var(--category-text-color);
+  }
+
+  .category-collection__grid-layout {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3rem;
+    align-items: center;
+  }
+
+  .category-collection__column {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    text-align: center;
+  }
+
+  .category-collection__description {
+    font-size: calc(var(--cc-body-size) * 0.95);
+    color: var(--category-text-color);
+    opacity: 0.8;
+    padding: 0 1rem;
+    margin: 1.5rem 0;
+    line-height: 1.6;
+  }
+
+  .category-collection__card-wrapper {
+    position: relative;
+    width: 100%;
+  }
+
+  .category-collection__card {
+    background-color: #ffffff;
+    padding: 1.5rem;
+    position: relative;
+    width: 100%;
+    box-shadow: 0 10px 30px rgba(43, 30, 22, 0.08);
+    border-radius: 4px;
+    transition: transform 0.3s ease;
+  }
+
+  .category-collection__card:hover {
+    transform: translateY(-5px);
+  }
+
+  .category-collection__column-center .category-collection__card {
+    background-color: var(--category-text-color);
+    box-shadow: 0 20px 40px rgba(43, 30, 22, 0.15);
+  }
+
+  .category-collection__image {
+    width: 100%;
+    display: block;
+    object-fit: cover;
+    aspect-ratio: 4 / 5;
+    border-radius: 2px;
+  }
+
+  .category-collection__placeholder {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    background-color: #F3EFEA;
+    border: 1px dashed rgba(43, 30, 22, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 2px;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+
+  .category-collection__placeholder-text {
+    font-family: var(--cc-heading-font), sans-serif;
+    font-size: calc(var(--cc-heading-size) * 0.5);
+    color: var(--category-text-color);
+    opacity: 0.4;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-align: center;
+    line-height: 1.2;
+    word-break: break-word;
+  }
+
+  .category-collection__column-center .category-collection__placeholder {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+  
+  .category-collection__column-center .category-collection__placeholder-text {
+    color: #ffffff;
+    opacity: 0.6;
+  }
+
+  .category-collection__btn {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translate(-50%, 50%);
+    z-index: 10;
+    background-color: var(--category-accent-color);
+    color: #ffffff;
+    text-decoration: none;
+    padding: 0.8rem 1.8rem;
+    font-size: calc(var(--cc-body-size) * 0.85);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    white-space: nowrap;
+    border: 2px solid var(--category-text-color);
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  }
+
+  .category-collection__btn:hover {
+    background-color: #ffffff;
+    color: var(--category-accent-color);
+    border-color: var(--category-accent-color);
+  }
+
+  .category-collection__tag {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #ffffff;
+    color: var(--category-text-color);
+    padding: 0.8rem 2.5rem;
+    font-weight: 700;
+    font-size: calc(var(--cc-body-size) * 0.9);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border: 2px solid var(--category-text-color);
+    white-space: nowrap;
+    z-index: 10;
+  }
+
+  @media screen and (max-width: 991px) {
+    .category-collection__grid-layout {
+      gap: 2rem;
+    }
+    .category-collection__description {
+      padding: 0;
+    }
+    .category-collection__tag {
+      padding: 0.6rem 1.5rem;
+    }
+  }
+
+  @media screen and (max-width: 768px) {
+    .category-collection__grid-layout {
+      grid-template-columns: 1fr;
+      gap: 5rem;
+    }
+    .category-collection__column {
+      max-width: 420px;
+      margin: 0 auto;
+      width: 100%;
+    }
+    .category-collection__title-group {
+      margin-bottom: 3rem;
+    }
+    .category-collection__heading {
+      font-size: clamp(2rem, 10vw, var(--cc-heading-size));
+    }
+  }
+{% endstyle %}
+
+{% schema %}
+{
+  "name": "Category Collection",
+  "tag": "section",
+  "class": "section-category-collection",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section Settings"
+    },
+    {
+      "type": "text",
+      "id": "heading_text",
+      "label": "Heading Text",
+      "default": "TRENDING CARDS IDEA"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button Text",
+      "default": "SHOP NOW"
+    },
+    {
+      "type": "range",
+      "id": "section_padding_top",
+      "min": 0,
+      "max": 150,
+      "step": 5,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "section_padding_bottom",
+      "min": 0,
+      "max": 150,
+      "step": 5,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 80
+    },
+    {
+      "type": "header",
+      "content": "Default Colors"
+    },
+    {
+      "type": "color",
+      "id": "default_bg_color",
+      "label": "Section Background",
+      "default": "#FAF6F0"
+    },
+    {
+      "type": "color",
+      "id": "default_text_color",
+      "label": "Text & Dark Elements",
+      "default": "#2B1E16"
+    },
+    {
+      "type": "color",
+      "id": "default_accent_color",
+      "label": "Accent Color (Buttons)",
+      "default": "#9C4A1A"
+    },
+    {
+      "type": "header",
+      "content": "Custom Design (Override)"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_custom_colors",
+      "label": "Enable Custom Design",
+      "info": "When enabled, these override the default colors and fonts for this section.",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "custom_bg_color",
+      "label": "Custom Background",
+      "default": "#FFFFFF",
+      "visible_if": "{{ section.settings.enable_custom_colors }}"
+    },
+    {
+      "type": "color",
+      "id": "custom_text_color",
+      "label": "Custom Text Color",
+      "default": "#111111",
+      "visible_if": "{{ section.settings.enable_custom_colors }}"
+    },
+    {
+      "type": "color",
+      "id": "custom_accent_color",
+      "label": "Custom Accent Color",
+      "default": "#000000",
+      "visible_if": "{{ section.settings.enable_custom_colors }}"
+    },
+    {
+      "type": "font_picker",
+      "id": "custom_heading_font",
+      "label": "Custom Heading Font",
+      "default": "assistant_n4",
+      "visible_if": "{{ section.settings.enable_custom_colors }}"
+    },
+    {
+      "type": "range",
+      "id": "custom_heading_size",
+      "min": 16,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "label": "Custom Heading Size",
+      "default": 48,
+      "visible_if": "{{ section.settings.enable_custom_colors }}"
+    },
+    {
+      "type": "font_picker",
+      "id": "custom_body_font",
+      "label": "Custom Body Font",
+      "default": "assistant_n4",
+      "visible_if": "{{ section.settings.enable_custom_colors }}"
+    },
+    {
+      "type": "range",
+      "id": "custom_body_size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "label": "Custom Body Size",
+      "default": 16,
+      "visible_if": "{{ section.settings.enable_custom_colors }}"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "category",
+      "name": "Category Card",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Select Collection"
+        },
+        {
+          "type": "image_picker",
+          "id": "custom_image",
+          "label": "Custom Image",
+          "info": "Overrides Collection image if selected"
+        },
+        {
+          "type": "text",
+          "id": "custom_title",
+          "label": "Custom Tag Title",
+          "info": "Overrides Collection title (e.g., CASUAL, LEISURE)"
+        },
+        {
+          "type": "textarea",
+          "id": "custom_description",
+          "label": "Custom Description",
+          "info": "Overrides Collection description"
+        },
+        {
+          "type": "checkbox",
+          "id": "layout_center",
+          "label": "Move description below image?",
+          "default": false
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Category Collection",
+      "blocks": [
+        { "type": "category" },
+        { "type": "category", "settings": { "layout_center": true } },
+        { "type": "category" }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,806 @@
+{%- liquid
+  assign target_collection = section.settings.collection
+  if target_collection == blank and product != blank
+    assign target_collection = product.collections.first
+  endif
+
+  assign products_per_row = section.settings.products_per_row
+  assign layout_type = section.settings.layout_type
+  assign container_width = section.settings.container_width
+  assign image_ratio = section.settings.image_ratio
+  assign image_fit = section.settings.image_fit
+
+  assign use_custom = section.settings.enable_custom_design
+
+  if use_custom
+    assign rp_bg = section.settings.custom_bg_color
+    assign rp_text = section.settings.custom_text_color
+    assign rp_accent = section.settings.custom_accent_color
+    assign heading_font = section.settings.custom_heading_font
+    assign body_font = section.settings.custom_body_font
+  else
+    assign rp_bg = section.settings.background_color
+    assign rp_text = section.settings.text_color
+    assign rp_accent = section.settings.accent_color
+    assign heading_font = 'var(--font-heading-family)'
+    assign body_font = 'var(--font-body-family)'
+  endif
+
+  capture placeholder_class
+    echo 'related-products-' | append: section.id | append: '__product-image related-products-' | append: section.id | append: '__placeholder-image'
+  endcapture
+
+  capture form_class
+    echo 'related-products-' | append: section.id | append: '__product-form'
+  endcapture
+-%}
+
+<section 
+  class="related-products-{{ section.id }}" 
+  id="RelatedProducts-{{ section.id }}"
+  style="
+    background-color: {{ rp_bg }};
+    --rp-accent-color: {{ rp_accent }};
+    --rp-text-color: {{ rp_text }};
+    --rp-bg-color: {{ rp_bg }};
+    --rp-heading-font: {{ heading_font }};
+    --rp-body-font: {{ body_font }};
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+  "
+>
+  <div class="related-products-{{ section.id }}__container {% if container_width == 'full' %}related-products-{{ section.id }}__container--full{% else %}related-products-{{ section.id }}__container--page{% endif %}">
+    
+    <div class="related-products-{{ section.id }}__header">
+      <div class="related-products-{{ section.id }}__header-text">
+        {%- if section.settings.heading != blank -%}
+          <h2 class="related-products-{{ section.id }}__heading">{{ section.settings.heading }}</h2>
+        {%- endif -%}
+        {%- if section.settings.subheading != blank -%}
+          <p class="related-products-{{ section.id }}__subheading">{{ section.settings.subheading }}</p>
+        {%- endif -%}
+      </div>
+      
+      {%- if section.settings.show_view_all and target_collection != blank -%}
+        <a href="{{ target_collection.url }}" class="related-products-{{ section.id }}__view-all">
+          {{ section.settings.view_all_text | default: 'View All' }}
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      {%- endif -%}
+    </div>
+
+    {%- if target_collection != blank and target_collection.products.size > 0 -%}
+      
+      <div class="related-products-{{ section.id }}__wrapper {% if layout_type == 'slider' %}related-products-{{ section.id }}__is-slider{% endif %}" data-layout="{{ layout_type }}">
+        
+        <div class="related-products-{{ section.id }}__track {% if layout_type == 'slider' %}related-products-{{ section.id }}__slider-track{% else %}related-products-{{ section.id }}__grid related-products-{{ section.id }}__columns-{{ products_per_row }}{% endif %}" id="RelatedProductsTrack-{{ section.id }}">
+          
+          {%- assign current_product_id = product.id -%}
+          {%- assign product_counter = 0 -%}
+
+          {%- for related_product in target_collection.products -%}
+            {%- if related_product.id != current_product_id and product_counter < section.settings.products_limit -%}
+              {%- assign product_counter = product_counter | plus: 1 -%}
+              
+              <div class="related-products-{{ section.id }}__product-wrapper">
+                <div class="related-products-{{ section.id }}__product-card">
+                  
+                  <div class="related-products-{{ section.id }}__product-top">
+                    <span class="related-products-{{ section.id }}__product-badge">
+                      {%- liquid
+                        assign badge_text = related_product.vendor
+                        if badge_text == blank
+                          assign badge_text = related_product.type
+                        endif
+                        if badge_text == blank and related_product.tags.size > 0
+                          assign badge_text = related_product.tags.first
+                        endif
+                        if badge_text == blank
+                          assign badge_text = 'Product'
+                        endif
+                      -%}
+                      {%- if related_product.available == false -%}
+                        Sold Out
+                      {%- else -%}
+                        {{ badge_text | escape }}
+                      {%- endif -%}
+                    </span>
+                    <span class="related-products-{{ section.id }}__product-sku">
+                      {%- if related_product.selected_or_first_available_variant.sku != blank -%}
+                        Style No. {{ related_product.selected_or_first_available_variant.sku }}
+                      {%- else -%}
+                        {{ related_product.type | default: 'Collection' | escape }}
+                      {%- endif -%}
+                    </span>
+                  </div>
+
+                  <a href="{{ related_product.url }}" class="related-products-{{ section.id }}__image-wrapper related-products-{{ section.id }}__ratio-{{ image_ratio }}">
+                    {%- if related_product.featured_image != blank -%}
+                      <img 
+                        src="{{ related_product.featured_image | image_url: width: 800 }}" 
+                        alt="{{ related_product.featured_image.alt | escape }}" 
+                        class="related-products-{{ section.id }}__product-image related-products-{{ section.id }}__fit-{{ image_fit }}"
+                        loading="lazy"
+                        width="800"
+                        height="800"
+                      >
+                    {%- else -%}
+                      {{ 'product-1' | placeholder_svg_tag: placeholder_class }}
+                    {%- endif -%}
+                    
+                    <span class="related-products-{{ section.id }}__corner related-products-{{ section.id }}__corner--tl"></span>
+                    <span class="related-products-{{ section.id }}__corner related-products-{{ section.id }}__corner--tr"></span>
+                    <span class="related-products-{{ section.id }}__corner related-products-{{ section.id }}__corner--bl"></span>
+                    <span class="related-products-{{ section.id }}__corner related-products-{{ section.id }}__corner--br"></span>
+                  </a>
+
+                  <div class="related-products-{{ section.id }}__product-body">
+                    <h3 class="related-products-{{ section.id }}__product-title">
+                      <a href="{{ related_product.url }}">{{ related_product.title }}<span>.</span></a>
+                    </h3>
+                    
+                    <p class="related-products-{{ section.id }}__product-desc">
+                      {%- if related_product.description != blank -%}
+                        {{ related_product.description | strip_html | truncate: 90 }}
+                      {%- else -%}
+                        {{ related_product.metafields.custom.short_description | default: 'Premium quality product crafted with excellence and style.' }}
+                      {%- endif -%}
+                    </p>
+                  </div>
+
+                  <div class="related-products-{{ section.id }}__product-bottom">
+                    <span class="related-products-{{ section.id }}__product-price">{{ related_product.price | money }}</span>
+                    
+                    {%- form 'product', related_product, class: form_class -%}
+                      <input type="hidden" name="id" value="{{ related_product.selected_or_first_available_variant.id }}">
+                      <button type="submit" name="add" class="related-products-{{ section.id }}__add-btn" {% if related_product.available == false %}disabled{% endif %}>
+                        <span>{% if related_product.available %}Add to Cart{% else %}Sold Out{% endif %}</span>
+                        <svg width="13" height="5" viewBox="0 0 13 5" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M9.45052 4.21172C9.63052 3.82772 9.80452 3.49172 9.97252 3.20372C10.1525 2.91572 10.3265 2.67572 10.4945 2.48372H0.000515878V1.72772H10.4945C10.3265 1.52372 10.1525 1.27772 9.97252 0.989718C9.80452 0.701718 9.63052 0.371718 9.45052 -0.000281632H10.0805C10.8365 0.875719 11.6285 1.52372 12.4565 1.94372V2.26772C11.6285 2.67572 10.8365 3.32372 10.0805 4.21172H9.45052Z" fill="currentColor"></path>
+                        </svg>
+                      </button>
+                    {%- endform -%}
+                  </div>
+
+                </div>
+              </div>
+            {%- endif -%}
+          {%- endfor -%}
+          
+        </div>
+        
+        {%- if layout_type == 'slider' -%}
+          <button class="related-products-{{ section.id }}__slider-prev" aria-label="Previous" data-slider-prev="{{ section.id }}">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <button class="related-products-{{ section.id }}__slider-next" aria-label="Next" data-slider-next="{{ section.id }}">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+        {%- endif -%}
+        
+      </div>
+      
+    {%- else -%}
+      <p class="related-products-{{ section.id }}__empty-text">No related products found.</p>
+    {%- endif -%}
+
+  </div>
+</section>
+
+{% style %}
+  .related-products-{{ section.id }} {
+    width: 100vw;
+    max-width: 100vw;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    left: 50%;
+    right: 50%;
+    position: relative;
+    box-sizing: border-box;
+    font-family: var(--rp-body-font), -apple-system, BlinkMacSystemFont, sans-serif;
+    overflow: hidden;
+  }
+
+  .related-products-{{ section.id }}__container {
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .related-products-{{ section.id }}__container--full {
+    max-width: 100%;
+    padding: 0 2%;
+  }
+
+  .related-products-{{ section.id }}__container--page {
+    max-width: var(--page-width, 1400px);
+    padding: 0 var(--page-margin, 20px);
+  }
+
+  .related-products-{{ section.id }}__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 3rem;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .related-products-{{ section.id }}__header-text {
+    max-width: 700px;
+  }
+
+  .related-products-{{ section.id }}__heading {
+    font-family: var(--rp-heading-font), serif;
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    font-weight: 900;
+    color: var(--rp-text-color);
+    margin: 0 0 10px 0;
+    text-transform: uppercase;
+    line-height: 1.1;
+    letter-spacing: -1px;
+  }
+
+  .related-products-{{ section.id }}__subheading {
+    font-size: 1rem;
+    color: var(--rp-text-color);
+    opacity: 0.7;
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  .related-products-{{ section.id }}__view-all {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background-color: transparent;
+    color: var(--rp-text-color);
+    border: 1px solid var(--rp-text-color);
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+  }
+
+  .related-products-{{ section.id }}__view-all:hover {
+    background-color: var(--rp-accent-color);
+    border-color: var(--rp-accent-color);
+    color: #fff;
+  }
+
+  .related-products-{{ section.id }}__wrapper {
+    position: relative;
+    width: 100%;
+  }
+
+  .related-products-{{ section.id }}__grid {
+    display: grid;
+    gap: 2rem;
+  }
+
+  .related-products-{{ section.id }}__columns-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .related-products-{{ section.id }}__columns-4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .related-products-{{ section.id }}__is-slider .related-products-{{ section.id }}__slider-track {
+    display: flex;
+    gap: 2rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding-bottom: 10px;
+  }
+  
+  .related-products-{{ section.id }}__is-slider .related-products-{{ section.id }}__slider-track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .related-products-{{ section.id }}__is-slider .related-products-{{ section.id }}__product-wrapper {
+    flex: 0 0 calc(33.333% - 1.33rem);
+    scroll-snap-align: start;
+  }
+
+  .related-products-{{ section.id }}__product-card {
+    max-width: 100%;
+    background-color: hsla(43, 30%, 95%, 50%);
+    border: 1px solid hsl(0, 0%, 4%);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .related-products-{{ section.id }}__product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+  }
+
+  .related-products-{{ section.id }}__product-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.675rem 1.25rem;
+    border-bottom: 1px solid hsl(0, 0%, 4%);
+  }
+
+  .related-products-{{ section.id }}__product-top span {
+    font-weight: 400;
+    font-size: 0.675rem;
+    line-height: 1.3;
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
+    color: hsl(49, 5%, 40%);
+  }
+
+  .related-products-{{ section.id }}__product-badge {
+    font-weight: 500;
+    letter-spacing: 2.16px;
+    color: var(--rp-accent-color);
+    padding-left: 0.875rem;
+    position: relative;
+  }
+
+  .related-products-{{ section.id }}__product-badge::before {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    content: "";
+    width: 0.375rem;
+    height: 0.375rem;
+    background-color: var(--rp-accent-color);
+  }
+
+  .related-products-{{ section.id }}__image-wrapper {
+    display: block;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+    background-color: #f7f7f7;
+  }
+
+  .related-products-{{ section.id }}__ratio-square { aspect-ratio: 1 / 1; }
+  .related-products-{{ section.id }}__ratio-portrait { aspect-ratio: 4 / 5; }
+  .related-products-{{ section.id }}__ratio-landscape { aspect-ratio: 16 / 9; }
+
+  .related-products-{{ section.id }}__product-image {
+    width: 100%;
+    height: 100%;
+    transition: transform 0.5s ease;
+  }
+
+  .related-products-{{ section.id }}__fit-cover { object-fit: cover; }
+  .related-products-{{ section.id }}__fit-contain { object-fit: contain; }
+
+  .related-products-{{ section.id }}__product-card:hover .related-products-{{ section.id }}__product-image {
+    transform: scale(1.05);
+  }
+
+  .related-products-{{ section.id }}__placeholder-image {
+    background-color: #f0f0f0;
+    fill: #a0a0a0;
+  }
+
+  .related-products-{{ section.id }}__corner {
+    position: absolute;
+    width: 0.75rem;
+    height: 0.75rem;
+    border-style: solid;
+    border-color: #0A0A0A;
+    z-index: 2;
+  }
+
+  .related-products-{{ section.id }}__corner--tl { left: 0.5rem; top: 0.5rem; border-width: 1px 0px 0px 1px; }
+  .related-products-{{ section.id }}__corner--tr { right: 0.5rem; top: 0.5rem; border-width: 1px 1px 0px 0px; }
+  .related-products-{{ section.id }}__corner--bl { left: 0.5rem; bottom: 0.5rem; border-width: 0px 0px 1px 1px; }
+  .related-products-{{ section.id }}__corner--br { right: 0.5rem; bottom: 0.5rem; border-width: 0px 1px 1px 0px; }
+
+  .related-products-{{ section.id }}__product-body {
+    padding: 1.25rem;
+    border-block: 1px solid hsl(0, 0%, 4%);
+    flex-grow: 1;
+  }
+
+  .related-products-{{ section.id }}__product-title {
+    font-family: var(--rp-heading-font), serif;
+    font-weight: 900;
+    font-size: 2rem;
+    line-height: 0.9;
+    letter-spacing: -0.8px;
+    text-transform: uppercase;
+    position: relative;
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.5rem;
+    margin-top: 0;
+  }
+
+  .related-products-{{ section.id }}__product-title a {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .related-products-{{ section.id }}__product-title span {
+    color: var(--rp-accent-color);
+  }
+
+  .related-products-{{ section.id }}__product-title::after {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    content: "";
+    width: 34px;
+    height: 3px;
+    background: var(--rp-accent-color);
+  }
+
+  .related-products-{{ section.id }}__product-desc {
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: hsl(49, 5%, 40%);
+    margin: 0;
+  }
+
+  .related-products-{{ section.id }}__product-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+
+  .related-products-{{ section.id }}__product-price {
+    font-weight: 900;
+    font-size: 1.563rem;
+    line-height: 1;
+    letter-spacing: -0.64px;
+    padding: 1.25rem;
+    display: inline-block;
+    white-space: nowrap;
+  }
+
+  .related-products-{{ section.id }}__product-form {
+    display: flex;
+    flex: 1;
+  }
+
+  .related-products-{{ section.id }}__add-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    padding: 1.25rem 1rem;
+    width: 100%;
+    font-family: inherit;
+    font-weight: 500;
+    font-size: 0.675rem;
+    line-height: 1;
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
+    color: hsl(43, 30%, 95%);
+    background-color: hsl(0, 0%, 4%);
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .related-products-{{ section.id }}__add-btn:hover {
+    background-color: var(--rp-accent-color);
+  }
+
+  .related-products-{{ section.id }}__add-btn:disabled {
+    background-color: #666;
+    cursor: not-allowed;
+  }
+
+  .related-products-{{ section.id }}__slider-prev,
+  .related-products-{{ section.id }}__slider-next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 44px;
+    height: 44px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+  }
+
+  .related-products-{{ section.id }}__slider-prev:hover,
+  .related-products-{{ section.id }}__slider-next:hover {
+    background: var(--rp-accent-color);
+    color: #fff;
+    border-color: var(--rp-accent-color);
+  }
+
+  .related-products-{{ section.id }}__slider-prev { left: -20px; }
+  .related-products-{{ section.id }}__slider-next { right: -20px; }
+
+  .related-products-{{ section.id }}__empty-text {
+    text-align: center;
+    padding: 40px;
+    font-size: 1.1rem;
+    color: var(--rp-text-color);
+  }
+
+  @media (max-width: 1100px) {
+    .related-products-{{ section.id }}__is-slider .related-products-{{ section.id }}__product-wrapper {
+      flex: 0 0 calc(50% - 1rem);
+    }
+  }
+
+  @media (max-width: 991px) {
+    .related-products-{{ section.id }}__columns-4,
+    .related-products-{{ section.id }}__columns-3 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .related-products-{{ section.id }}__slider-prev { left: 0; }
+    .related-products-{{ section.id }}__slider-next { right: 0; }
+  }
+
+  @media (max-width: 768px) {
+    .related-products-{{ section.id }}__header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .related-products-{{ section.id }}__columns-4,
+    .related-products-{{ section.id }}__columns-3 {
+      grid-template-columns: 1fr;
+    }
+    .related-products-{{ section.id }}__product-title {
+      font-size: 1.5rem;
+    }
+    .related-products-{{ section.id }}__is-slider .related-products-{{ section.id }}__product-wrapper {
+      flex: 0 0 85%;
+    }
+  }
+{% endstyle %}
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const sectionId = "{{ section.id }}";
+    const track = document.getElementById('RelatedProductsTrack-' + sectionId);
+    const prevBtn = document.querySelector('[data-slider-prev="' + sectionId + '"]');
+    const nextBtn = document.querySelector('[data-slider-next="' + sectionId + '"]');
+
+    if (track && prevBtn && nextBtn) {
+      const scrollAmount = track.clientWidth * 0.8;
+      
+      prevBtn.addEventListener('click', () => {
+        track.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+      });
+      
+      nextBtn.addEventListener('click', () => {
+        track.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+      });
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Related Products",
+  "tag": "section",
+  "class": "section-related-products",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "You May Also Like"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Discover more pieces from our collection."
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Select Specific Collection",
+      "info": "Agar khali chhodenge toh product ki default collection se related products aayenge."
+    },
+    {
+      "type": "range",
+      "id": "products_limit",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "label": "Maximum products to show",
+      "default": 4
+    },
+    {
+      "type": "header",
+      "content": "Layout Settings"
+    },
+    {
+      "type": "select",
+      "id": "container_width",
+      "label": "Container Width",
+      "options": [
+        { "value": "page", "label": "Page Width (Boxed)" },
+        { "value": "full", "label": "Full Width (Stretched)" }
+      ],
+      "default": "page"
+    },
+    {
+      "type": "select",
+      "id": "layout_type",
+      "label": "Layout Type",
+      "options": [
+        { "value": "grid", "label": "Grid" },
+        { "value": "slider", "label": "Slider (Carousel)" }
+      ],
+      "default": "slider"
+    },
+    {
+      "type": "select",
+      "id": "products_per_row",
+      "label": "Products Per Row (Grid only)",
+      "options": [
+        { "value": "3", "label": "3 Products" },
+        { "value": "4", "label": "4 Products" }
+      ],
+      "default": "4"
+    },
+    {
+      "type": "header",
+      "content": "Product Image Style"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Image Aspect Ratio",
+      "options": [
+        { "value": "square", "label": "Square (1:1)" },
+        { "value": "portrait", "label": "Portrait (4:5)" },
+        { "value": "landscape", "label": "Landscape (16:9)" }
+      ],
+      "default": "portrait"
+    },
+    {
+      "type": "select",
+      "id": "image_fit",
+      "label": "Image Fit",
+      "options": [
+        { "value": "cover", "label": "Cover (Crop to fill)" },
+        { "value": "contain", "label": "Contain (Show full image)" }
+      ],
+      "default": "cover"
+    },
+    {
+      "type": "header",
+      "content": "Button & Header"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_view_all",
+      "label": "Show 'View All' Button",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "view_all_text",
+      "label": "View All Button Text",
+      "default": "View All"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 5,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 5,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 60
+    },
+    {
+      "type": "header",
+      "content": "Default Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#FAF6F0"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#2B1E16"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent Color (Red/Dots)",
+      "default": "#9C4A1A"
+    },
+    {
+      "type": "header",
+      "content": "Custom Design (Override)"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_custom_design",
+      "label": "Enable Custom Design",
+      "info": "When enabled, these override the default colors and typography.",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "custom_bg_color",
+      "label": "Custom Background",
+      "default": "#FFFFFF",
+      "visible_if": "{{ section.settings.enable_custom_design }}"
+    },
+    {
+      "type": "color",
+      "id": "custom_text_color",
+      "label": "Custom Text Color",
+      "default": "#111111",
+      "visible_if": "{{ section.settings.enable_custom_design }}"
+    },
+    {
+      "type": "color",
+      "id": "custom_accent_color",
+      "label": "Custom Accent Color",
+      "default": "#000000",
+      "visible_if": "{{ section.settings.enable_custom_design }}"
+    },
+    {
+      "type": "font_picker",
+      "id": "custom_heading_font",
+      "label": "Custom Heading Font",
+      "default": "assistant_n4",
+      "visible_if": "{{ section.settings.enable_custom_design }}"
+    },
+    {
+      "type": "font_picker",
+      "id": "custom_body_font",
+      "label": "Custom Body Font",
+      "default": "assistant_n4",
+      "visible_if": "{{ section.settings.enable_custom_design }}"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Related Products",
+      "category": "Product"
+    }
+  ]
+}
+{% endschema %}
