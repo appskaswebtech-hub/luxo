@@ -111,5 +111,14 @@
     --variant-block-margin: {{ settings.variant_block_margin_top }}px {{ settings.variant_block_margin_right }}px {{ settings.variant_block_margin_bottom }}px {{ settings.variant_block_margin_left }}px;
 
     --variant-swatch-size: {{ settings.variant_swatch_size }}px;
+    --variant-swatch-radius: {% case settings.variant_swatch_shape %}{% when 'square' %}0{% when 'square_rounded' %}20%{% else %}50%{% endcase %};
+
+    --pill-text: {{ settings.pills_text_color }};
+    --pill-background: {{ settings.pills_background_color }};
+    --pill-border: {{ settings.pills_border_color }};
+    --pill-selected-text: {{ settings.pills_selected_text_color }};
+    --pill-selected-background: {{ settings.pills_selected_bg_color }};
+    --pill-radius: {{ settings.pills_border_radius }}px;
+    --pill-border-width: {{ settings.pills_border_thickness }}px;
   }
 {% endstyle %}

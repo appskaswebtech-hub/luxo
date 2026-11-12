@@ -310,22 +310,6 @@
       },
       {
         "type": "image_picker",
-        "id": "logo_inverse",
-        "label": "t:labels.logo_inverse",
-        "info": "t:info.logo_inverse"
-      },
-      {
-        "type": "range",
-        "id": "logo_inverse_width",
-        "min": 50,
-        "max": 300,
-        "step": 10,
-        "default": 90,
-        "unit": "px",
-        "label": "t:labels.width"
-      },
-      {
-        "type": "image_picker",
         "id": "favicon",
         "label": "t:labels.favicon",
         "info": "t:info.favicon"
@@ -504,7 +488,7 @@
         "type": "checkbox",
         "id": "card_show_vendor",
         "label": "t:labels.show_vendor",
-        "default": false
+        "default": true
       },
       {
         "type": "header",
@@ -561,50 +545,49 @@
         "options": [
           { "value": "dropdown", "label": "t:options.variant_picker.dropdown" },
           { "value": "pills", "label": "t:options.variant_picker.pills" },
-          { "value": "color", "label": "t:options.variant_picker.color" },
-          { "value": "image", "label": "t:options.variant_picker.image" }
+          { "value": "swatch", "label": "t:options.variant_picker.swatch" }
         ],
         "default": "pills"
       },
       {
         "type": "paragraph",
         "content": "t:info.pills_settings",
-        "visible_if": "{{ settings.variant_picker_type == 'pills' }}"
+        "visible_if": "{{ settings.variant_picker_type == 'pills' or settings.variant_picker_type == 'swatch' }}"
       },
       {
         "type": "color",
         "id": "pills_text_color",
         "label": "t:labels.text_color",
         "default": "#000000",
-        "visible_if": "{{ settings.variant_picker_type == 'pills' }}"
+        "visible_if": "{{ settings.variant_picker_type == 'pills' or settings.variant_picker_type == 'swatch' }}"
       },
       {
         "type": "color",
         "id": "pills_background_color",
         "label": "t:labels.background",
         "default": "#FFFFFF",
-        "visible_if": "{{ settings.variant_picker_type == 'pills' }}"
+        "visible_if": "{{ settings.variant_picker_type == 'pills' or settings.variant_picker_type == 'swatch' }}"
       },
       {
         "type": "color",
         "id": "pills_border_color",
         "label": "t:labels.border",
         "default": "#CCCCCC",
-        "visible_if": "{{ settings.variant_picker_type == 'pills' }}"
+        "visible_if": "{{ settings.variant_picker_type == 'pills' or settings.variant_picker_type == 'swatch' }}"
       },
       {
         "type": "color",
         "id": "pills_selected_text_color",
         "label": "t:labels.selected_text",
         "default": "#FFFFFF",
-        "visible_if": "{{ settings.variant_picker_type == 'pills' }}"
+        "visible_if": "{{ settings.variant_picker_type == 'pills' or settings.variant_picker_type == 'swatch' }}"
       },
       {
         "type": "color",
         "id": "pills_selected_bg_color",
         "label": "t:labels.selected_background",
         "default": "#000000",
-        "visible_if": "{{ settings.variant_picker_type == 'pills' }}"
+        "visible_if": "{{ settings.variant_picker_type == 'pills' or settings.variant_picker_type == 'swatch' }}"
       },
       {
         "type": "range",
@@ -615,7 +598,7 @@
         "unit": "px",
         "label": "t:labels.corner_radius",
         "default": 20,
-        "visible_if": "{{ settings.variant_picker_type == 'pills' }}"
+        "visible_if": "{{ settings.variant_picker_type == 'pills' or settings.variant_picker_type == 'swatch' }}"
       },
       {
         "type": "range",
@@ -626,20 +609,36 @@
         "unit": "px",
         "label": "t:labels.border_thickness",
         "default": 1,
-        "visible_if": "{{ settings.variant_picker_type == 'pills' }}"
+        "visible_if": "{{ settings.variant_picker_type == 'pills' or settings.variant_picker_type == 'swatch' }}"
       },
       {
         "type": "paragraph",
         "content": "t:info.swatch_settings",
-        "visible_if": "{{ settings.variant_picker_type == 'color' or settings.variant_picker_type == 'image' }}"
+        "visible_if": "{{ settings.variant_picker_type == 'swatch' }}"
+      },
+      {
+        "type": "text",
+        "id": "variant_color_options",
+        "label": "t:labels.color_swatch_options",
+        "info": "t:info.swatch_options",
+        "default": "Color",
+        "visible_if": "{{ settings.variant_picker_type == 'swatch' }}"
       },
       {
         "type": "text",
         "id": "variant_image_options",
-        "label": "t:labels.swatch_options",
+        "label": "t:labels.image_swatch_options",
         "info": "t:info.swatch_options",
-        "default": "Color, Material",
-        "visible_if": "{{ settings.variant_picker_type == 'color' or settings.variant_picker_type == 'image' }}"
+        "placeholder": "t:placeholders.image_swatch_options",
+        "visible_if": "{{ settings.variant_picker_type == 'swatch' }}"
+      },
+      {
+        "type": "textarea",
+        "id": "variant_custom_colors",
+        "label": "t:labels.custom_swatch_colors",
+        "info": "t:info.custom_swatch_colors",
+        "placeholder": "t:placeholders.custom_swatch_colors",
+        "visible_if": "{{ settings.variant_picker_type == 'swatch' }}"
       },
       {
         "type": "select",
@@ -651,7 +650,7 @@
           { "value": "square_rounded", "label": "t:options.swatch_shape.rounded" }
         ],
         "default": "circle",
-        "visible_if": "{{ settings.variant_picker_type == 'color' or settings.variant_picker_type == 'image' }}"
+        "visible_if": "{{ settings.variant_picker_type == 'swatch' }}"
       },
       {
         "type": "range",
@@ -662,7 +661,14 @@
         "unit": "px",
         "label": "t:labels.swatch_size",
         "default": 50,
-        "visible_if": "{{ settings.variant_picker_type == 'color' or settings.variant_picker_type == 'image' }}"
+        "visible_if": "{{ settings.variant_picker_type == 'swatch' }}"
+      },
+      {
+        "type": "checkbox",
+        "id": "variant_swatch_labels",
+        "label": "t:labels.swatch_labels",
+        "default": false,
+        "visible_if": "{{ settings.variant_picker_type == 'swatch' }}"
       },
       {
         "type": "header",
@@ -744,6 +750,14 @@
         "unit": "px",
         "label": "t:labels.cart_drawer_width",
         "default": 416,
+        "visible_if": "{{ settings.cart_type == 'drawer' }}"
+      },
+      {
+        "type": "checkbox",
+        "id": "cart_drawer_sticky_summary",
+        "label": "t:labels.sticky_summary",
+        "info": "t:info.cart_drawer_sticky_summary",
+        "default": true,
         "visible_if": "{{ settings.cart_type == 'drawer' }}"
       },
       {

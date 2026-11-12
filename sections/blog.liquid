@@ -37,7 +37,7 @@
   <div class="editorial-blog-{{ section.id }}__container">
     
     <header class="editorial-blog-{{ section.id }}__header">
-      <h1 class="editorial-blog-{{ section.id }}__heading">{{ blog.title | default: 'Latest Articles' }}</h1>
+      <h1 class="editorial-blog-{{ section.id }}__heading">{%- assign blog_fallback = 'blog_listing.title_fallback' | t -%}{{ blog.title | default: blog_fallback }}</h1>
     </header>
 
     {% paginate blog.articles by 6 %}
@@ -80,7 +80,7 @@
                 </p>
                 
                 <a href="{{ article.url }}" class="editorial-blog-{{ section.id }}__read-more">
-                  Read Article
+                  {{ 'article.read' | t }}
                 </a>
               </div>
 
@@ -89,7 +89,7 @@
           {%- endfor -%}
         {%- else -%}
           <div class="editorial-blog-{{ section.id }}__empty">
-            No articles found in this blog.
+            {{ 'blog_listing.empty' | t }}
           </div>
         {%- endif -%}
       </div>
@@ -315,88 +315,88 @@
 
 {% schema %}
 {
-  "name": "Blog Template",
+  "name": "t:sections.blog.name",
   "tag": "section",
   "class": "section-blog-template",
   "settings": [
     {
       "type": "header",
-      "content": "Default Colors"
+      "content": "t:sections.blog.headers.default_colors"
     },
     {
       "type": "color",
       "id": "background_color",
-      "label": "Background Color",
+      "label": "t:sections.blog.settings.background_color.label",
       "default": "#FAF6F0"
     },
     {
       "type": "color",
       "id": "text_color",
-      "label": "Text Color",
+      "label": "t:sections.blog.settings.text_color.label",
       "default": "#2B1E16"
     },
     {
       "type": "color",
       "id": "accent_color",
-      "label": "Accent Color (Hover)",
+      "label": "t:sections.blog.settings.accent_color.label",
       "default": "#9C4A1A"
     },
     {
       "type": "color",
       "id": "border_color",
-      "label": "Border Color",
+      "label": "t:sections.blog.settings.border_color.label",
       "default": "#2B1E16"
     },
     {
       "type": "header",
-      "content": "Custom Design (Override)"
+      "content": "t:sections.blog.headers.custom_design_override"
     },
     {
       "type": "checkbox",
       "id": "enable_custom_design",
-      "label": "Enable Custom Design",
-      "info": "When enabled, these override the default colors and typography.",
+      "label": "t:sections.blog.settings.enable_custom_design.label",
+      "info": "t:sections.blog.settings.enable_custom_design.info",
       "default": false
     },
     {
       "type": "color",
       "id": "custom_bg_color",
-      "label": "Custom Background",
+      "label": "t:sections.blog.settings.custom_bg_color.label",
       "default": "#FFFFFF",
       "visible_if": "{{ section.settings.enable_custom_design }}"
     },
     {
       "type": "color",
       "id": "custom_text_color",
-      "label": "Custom Text Color",
+      "label": "t:sections.blog.settings.custom_text_color.label",
       "default": "#111111",
       "visible_if": "{{ section.settings.enable_custom_design }}"
     },
     {
       "type": "color",
       "id": "custom_accent_color",
-      "label": "Custom Accent Color",
+      "label": "t:sections.blog.settings.custom_accent_color.label",
       "default": "#000000",
       "visible_if": "{{ section.settings.enable_custom_design }}"
     },
     {
       "type": "color",
       "id": "custom_border_color",
-      "label": "Custom Border Color",
+      "label": "t:sections.blog.settings.custom_border_color.label",
       "default": "#E0E0E0",
       "visible_if": "{{ section.settings.enable_custom_design }}"
     },
     {
       "type": "font_picker",
       "id": "custom_heading_font",
-      "label": "Custom Heading Font",
+      "label": "t:sections.blog.settings.custom_heading_font.label",
       "default": "assistant_n4",
       "visible_if": "{{ section.settings.enable_custom_design }}"
     },
     {
       "type": "font_picker",
       "id": "custom_body_font",
-      "label": "Custom Body Font",
+      "label": "t:sections.blog.settings.custom_body_font.label",
       "default": "assistant_n4",
       "visible_if": "{{ section.settings.enable_custom_design }}"
     }

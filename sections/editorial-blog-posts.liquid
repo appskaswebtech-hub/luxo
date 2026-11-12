@@ -82,7 +82,7 @@
               </p>
               
               <a href="{{ article.url }}" class="editorial-blog-{{ section.id }}__read-more">
-                Read Article
+                {{ 'article.read' | t }}
               </a>
             </div>
 
@@ -97,14 +97,14 @@
             </div>
             <div class="editorial-blog-{{ section.id }}__content">
               <h3 class="editorial-blog-{{ section.id }}__title">
-                <a href="#">Sample Blog Post Title</a>
+                <a href="#">{{ 'blog_listing.sample_title' | t }}</a>
               </h3>
-              <p class="editorial-blog-{{ section.id }}__date">January 01, 2024</p>
+              <p class="editorial-blog-{{ section.id }}__date">{{ 'blog_listing.sample_date' | t }}</p>
               <hr class="editorial-blog-{{ section.id }}__divider" />
               <p class="editorial-blog-{{ section.id }}__excerpt">
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Blanditiis impedit illo velit tempore repudiandae officia.
+                {{ 'blog_listing.sample_excerpt' | t }}
               </p>
-              <a href="#" class="editorial-blog-{{ section.id }}__read-more">Read Article</a>
+              <a href="#" class="editorial-blog-{{ section.id }}__read-more">{{ 'article.read' | t }}</a>
             </div>
           </article>
         {%- endfor -%}
@@ -295,29 +295,29 @@
 
 {% schema %}
 {
-  "name": "Editorial Blog Posts",
+  "name": "t:sections.editorial_blog_posts.name",
   "tag": "section",
   "class": "section-editorial-blog",
   "settings": [
     {
       "type": "header",
-      "content": "Content Settings"
+      "content": "t:sections.editorial_blog_posts.headers.content_settings"
     },
     {
       "type": "text",
       "id": "heading",
-      "label": "Heading",
+      "label": "t:sections.editorial_blog_posts.settings.heading.label",
       "default": "Latest Articles"
     },
     {
       "type": "blog",
       "id": "blog",
-      "label": "Select Blog"
+      "label": "t:sections.editorial_blog_posts.settings.blog.label"
     },
     {
       "type": "range",
       "id": "posts_limit",
-      "label": "Number of Posts to Show",
+      "label": "t:sections.editorial_blog_posts.settings.posts_limit.label",
       "min": 2,
       "max": 9,
       "step": 1,
@@ -325,90 +325,90 @@
     },
     {
       "type": "header",
-      "content": "Default Colors"
+      "content": "t:sections.editorial_blog_posts.headers.default_colors"
     },
     {
       "type": "color",
       "id": "background_color",
-      "label": "Background Color",
+      "label": "t:sections.editorial_blog_posts.settings.background_color.label",
       "default": "#FAF6F0"
     },
     {
       "type": "color",
       "id": "text_color",
-      "label": "Text Color",
+      "label": "t:sections.editorial_blog_posts.settings.text_color.label",
       "default": "#2B1E16"
     },
     {
       "type": "color",
       "id": "accent_color",
-      "label": "Accent Color (Hover)",
+      "label": "t:sections.editorial_blog_posts.settings.accent_color.label",
       "default": "#9C4A1A"
     },
     {
       "type": "color",
       "id": "border_color",
-      "label": "Border Color",
+      "label": "t:sections.editorial_blog_posts.settings.border_color.label",
       "default": "#2B1E16"
     },
     {
       "type": "header",
-      "content": "Custom Design (Override)"
+      "content": "t:sections.editorial_blog_posts.headers.custom_design_override"
     },
     {
       "type": "checkbox",
       "id": "enable_custom_design",
-      "label": "Enable Custom Design",
-      "info": "When enabled, these override the default colors and typography.",
+      "label": "t:sections.editorial_blog_posts.settings.enable_custom_design.label",
+      "info": "t:sections.editorial_blog_posts.settings.enable_custom_design.info",
       "default": false
     },
     {
       "type": "color",
       "id": "custom_bg_color",
-      "label": "Custom Background",
+      "label": "t:sections.editorial_blog_posts.settings.custom_bg_color.label",
       "default": "#FFFFFF",
       "visible_if": "{{ section.settings.enable_custom_design }}"
     },
     {
       "type": "color",
       "id": "custom_text_color",
-      "label": "Custom Text Color",
+      "label": "t:sections.editorial_blog_posts.settings.custom_text_color.label",
       "default": "#111111",
       "visible_if": "{{ section.settings.enable_custom_design }}"
     },
     {
       "type": "color",
       "id": "custom_accent_color",
-      "label": "Custom Accent Color",
+      "label": "t:sections.editorial_blog_posts.settings.custom_accent_color.label",
       "default": "#000000",
       "visible_if": "{{ section.settings.enable_custom_design }}"
     },
     {
       "type": "color",
       "id": "custom_border_color",
-      "label": "Custom Border Color",
+      "label": "t:sections.editorial_blog_posts.settings.custom_border_color.label",
       "default": "#E0E0E0",
       "visible_if": "{{ section.settings.enable_custom_design }}"
     },
     {
       "type": "font_picker",
       "id": "custom_heading_font",
-      "label": "Custom Heading Font",
+      "label": "t:sections.editorial_blog_posts.settings.custom_heading_font.label",
       "default": "assistant_n4",
       "visible_if": "{{ section.settings.enable_custom_design }}"
     },
     {
       "type": "font_picker",
       "id": "custom_body_font",
-      "label": "Custom Body Font",
+      "label": "t:sections.editorial_blog_posts.settings.custom_body_font.label",
       "default": "assistant_n4",
       "visible_if": "{{ section.settings.enable_custom_design }}"
     }
   ],
   "presets": [
     {
-      "name": "Editorial Blog Posts",
-      "category": "Blog"
+      "name": "t:sections.editorial_blog_posts.name",
+      "category": "t:general.categories.blog"
     }
   ]
 }

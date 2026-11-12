@@ -1,43 +1,170 @@
-/*
- * ------------------------------------------------------------
- * IMPORTANT: The contents of this file are auto-generated.
- *
- * This file may be updated by the Shopify admin theme editor
- * or related systems. Please exercise caution as any changes
- * made to this file may be overwritten.
- * ------------------------------------------------------------
- */
 {
   "sections": {
     "hero": {
       "type": "hero",
       "blocks": {
         "heading": {
-          "type": "text",
-          "settings": {
-            "text": "Crafted to carry everything",
-            "text_style": "text--title",
-            "alignment": "center"
-          }
+          "type": "heading"
         },
         "description": {
-          "type": "text",
+          "type": "description"
+        },
+        "button": {
+          "type": "button"
+        }
+      },
+      "block_order": ["heading", "description", "button"],
+      "settings": {
+        "layout_style": "center_overlap"
+      }
+    },
+    "trending_categories": {
+      "type": "main-list-collections",
+      "blocks": {
+        "category_1": {
+          "type": "category"
+        },
+        "category_2": {
+          "type": "category",
           "settings": {
-            "text": "Use this banner to introduce your brand, a new collection, or a seasonal offer.",
-            "text_style": "text--normal",
-            "alignment": "center"
+            "layout_center": true
+          }
+        },
+        "category_3": {
+          "type": "category"
+        }
+      },
+      "block_order": ["category_1", "category_2", "category_3"],
+      "settings": {}
+    },
+    "featured_products": {
+      "type": "featured-collection",
+      "settings": {}
+    },
+    "seasonal_sale": {
+      "type": "seasonal-sale-banner",
+      "settings": {}
+    },
+    "digital_creative": {
+      "type": "hero",
+      "blocks": {
+        "heading": {
+          "type": "heading"
+        },
+        "description": {
+          "type": "description"
+        },
+        "button": {
+          "type": "button"
+        }
+      },
+      "block_order": ["heading", "description", "button"],
+      "settings": {
+        "layout_style": "edge_spaced"
+      }
+    },
+    "lookbook": {
+      "type": "lookbook",
+      "blocks": {
+        "slide_1": {
+          "type": "lookbook_slide"
+        },
+        "slide_2": {
+          "type": "lookbook_slide"
+        },
+        "slide_3": {
+          "type": "lookbook_slide"
+        }
+      },
+      "block_order": ["slide_1", "slide_2", "slide_3"],
+      "settings": {}
+    },
+    "customer_reviews": {
+      "type": "customer-reviews",
+      "blocks": {
+        "review_1": {
+          "type": "review"
+        },
+        "review_2": {
+          "type": "review",
+          "settings": {
+            "customer_name": "Customer Name",
+            "customer_role": "Verified customer"
+          }
+        },
+        "review_3": {
+          "type": "review",
+          "settings": {
+            "customer_name": "Customer Name",
+            "customer_role": "Verified customer"
+          }
+        },
+        "review_4": {
+          "type": "review",
+          "settings": {
+            "customer_name": "Customer Name",
+            "customer_role": "Verified customer"
+          }
+        },
+        "review_5": {
+          "type": "review",
+          "settings": {
+            "customer_name": "Customer Name",
+            "customer_role": "Verified customer"
+          }
+        },
+        "review_6": {
+          "type": "review",
+          "settings": {
+            "customer_name": "Customer Name",
+            "customer_role": "Verified customer"
           }
         }
       },
-      "block_order": ["heading", "description"],
-      "settings": {
-        "overlay_opacity": 20,
-        "height": "hero--medium",
-        "content_position": "hero--center"
-      }
+      "block_order": ["review_1", "review_2", "review_3", "review_4", "review_5", "review_6"],
+      "settings": {}
+    },
+    "latest_articles": {
+      "type": "editorial-blog-posts",
+      "settings": {}
+    },
+    "community_gallery": {
+      "type": "instagram-feed-gallery",
+      "blocks": {
+        "photo_1": {
+          "type": "photo"
+        },
+        "photo_2": {
+          "type": "photo"
+        },
+        "photo_3": {
+          "type": "photo"
+        },
+        "photo_4": {
+          "type": "photo"
+        },
+        "photo_5": {
+          "type": "photo"
+        }
+      },
+      "block_order": ["photo_1", "photo_2", "photo_3", "photo_4", "photo_5"],
+      "settings": {}
+    },
+    "newsletter": {
+      "type": "newsletter-email",
+      "settings": {}
     }
   },
   "order": [
-    "hero"
+    "hero",
+    "trending_categories",
+    "featured_products",
+    "seasonal_sale",
+    "digital_creative",
+    "lookbook",
+    "customer_reviews",
+    "latest_articles",
+    "community_gallery",
+    "newsletter"
   ]
 }

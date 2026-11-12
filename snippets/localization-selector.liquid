@@ -1,0 +1,140 @@
+{% doc %}
+  Renders a country (market and currency) or language selector that switches
+  as soon as the customer picks an option. Without JavaScript a submit button
+  is shown instead.
+
+  @param {string} type - `country` or `language`
+  @param {string} form_id - Unique id for the form
+  @param {string} [style] - `compact` for small bars like the header top bar, `boxed` (default) for footers
+  @param {string} [class_prefix] - Adds `{prefix}__select-wrapper`, `{prefix}__select` and `{prefix}__chevron` so a section can keep its own styles; the built-in style is then skipped
+
+  @example
+  {% render 'localization-selector', type: 'country', form_id: 'FooterCountryForm' %}
+  {% render 'localization-selector', type: 'language', form_id: 'HeaderLanguageForm', style: 'compact' %}
+{% enddoc %}
+
+{%- liquid
+  assign style = style | default: 'boxed'
+  if class_prefix
+    assign style = 'custom'
+  endif
+  assign select_id = form_id | append: '-select'
+
+  if type == 'language'
+    assign field_name = 'locale_code'
+    assign label = 'general.localization.language' | t
+  else
+    assign field_name = 'country_code'
+    assign label = 'general.localization.country' | t
+  endif
+
+  if class_prefix
+    assign wrapper_class = class_prefix | append: '__select-wrapper'
+    assign select_class = class_prefix | append: '__select'
+    assign chevron_class = class_prefix | append: '__chevron'
+  endif
+-%}
+
+<localization-selector class="localization-selector localization-selector--{{ style }}">
+  {%- form 'localization', id: form_id, class: 'localization-selector__form' -%}
+    <input type="hidden" name="return_to" value="{{ request.path }}">
+    <label for="{{ select_id }}" class="visually-hidden">{{ label }}</label>
+    <div class="localization-selector__field {{ wrapper_class }}">
+      <select id="{{ select_id }}" name="{{ field_name }}" class="localization-selector__select {{ select_class }}">
+        {%- if type == 'language' -%}
+          {%- for language in localization.available_languages -%}
+            <option
+              value="{{ language.iso_code }}"
+              lang="{{ language.iso_code }}"
+              {% if language.iso_code == localization.language.iso_code %}
+                selected
+              {% endif %}
+            >
+              {{- language.endonym_name | capitalize -}}
+            </option>
+          {%- endfor -%}
+        {%- else -%}
+          {%- for country in localization.available_countries -%}
+            <option
+              value="{{ country.iso_code }}"
+              {% if country.iso_code == localization.country.iso_code %}
+                selected
+              {% endif %}
+            >
+              {{- country.name }} ({{ country.currency.iso_code }} {{ country.currency.symbol -}})
+            </option>
+          {%- endfor -%}
+        {%- endif -%}
+      </select>
+      <svg class="localization-selector__chevron {{ chevron_class }}" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+    <noscript>
+      <button type="submit" class="localization-selector__submit">{{ 'general.localization.update' | t }}</button>
+    </noscript>
+  {%- endform -%}
+</localization-selector>
+
+{% stylesheet %}
+  .localization-selector {
+    display: inline-block;
+  }
+
+  .localization-selector__field {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .localization-selector__select {
+    appearance: none;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .localization-selector__chevron {
+    position: absolute;
+    right: 0.5rem;
+    pointer-events: none;
+  }
+
+  .localization-selector--compact .localization-selector__select {
+    max-width: 14rem;
+    padding: 0.25rem 1.5rem 0.25rem 0;
+    border: 0;
+    background: transparent;
+    font-size: inherit;
+    font-weight: 500;
+    text-overflow: ellipsis;
+  }
+
+  .localization-selector--compact .localization-selector__select option {
+    color: #000;
+  }
+
+  .localization-selector--compact .localization-selector__chevron {
+    right: 0.25rem;
+  }
+
+  .localization-selector--boxed .localization-selector__select {
+    min-height: 2.75rem;
+    padding: 0.5rem 2rem 0.5rem 0.875rem;
+    border: 1px solid currentColor;
+    background: transparent;
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  if (!customElements.get('localization-selector')) {
+    customElements.define(
+      'localization-selector',
+      class LocalizationSelector extends HTMLElement {
+        connectedCallback() {
+          this.querySelector('select')?.addEventListener('change', (event) => {
+            event.target.form.requestSubmit();
+          });
+        }
+      }
+    );
+  }
+{% endjavascript %}

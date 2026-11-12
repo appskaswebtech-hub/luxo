@@ -272,7 +272,7 @@
         {%- if section.settings.image_left != blank -%}
           <img 
             src="{{ section.settings.image_left | image_url: width: 800 }}" 
-            alt="{{ section.settings.image_left.alt | default: 'Left Image' | escape }}" 
+            alt="{{ section.settings.image_left.alt | escape }}" 
             class="{{ img_class }}" 
             loading="lazy" 
             width="800" 
@@ -292,7 +292,7 @@
             {%- if section.settings.image_back != blank -%}
               <img 
                 src="{{ section.settings.image_back | image_url: width: 800 }}" 
-                alt="{{ section.settings.image_back.alt | default: 'Back Image' | escape }}" 
+                alt="{{ section.settings.image_back.alt | escape }}" 
                 class="{{ img_class }}" 
                 loading="lazy" 
                 width="800" 
@@ -306,7 +306,7 @@
             {%- if section.settings.image_front != blank -%}
               <img 
                 src="{{ section.settings.image_front | image_url: width: 800 }}" 
-                alt="{{ section.settings.image_front.alt | default: 'Front Image' | escape }}" 
+                alt="{{ section.settings.image_front.alt | escape }}" 
                 class="{{ img_class }}" 
                 loading="lazy" 
                 width="800" 
@@ -376,7 +376,7 @@
         {%- if section.settings.image_right != blank -%}
           <img 
             src="{{ section.settings.image_right | image_url: width: 800 }}" 
-            alt="{{ section.settings.image_right.alt | default: 'Right Image' | escape }}" 
+            alt="{{ section.settings.image_right.alt | escape }}" 
             class="{{ img_class }}" 
             loading="lazy" 
             width="800" 
@@ -393,27 +393,33 @@
 
 {% schema %}
 {
-  "name": "Hero Banner",
+  "name": "t:sections.hero.name",
   "tag": "section",
   "class": "section-hero-banner",
   "settings": [
     {
       "type": "header",
-      "content": "Layout"
+      "content": "t:sections.hero.headers.layout"
     },
     {
       "type": "select",
       "id": "layout_style",
-      "label": "Layout style",
+      "label": "t:sections.hero.settings.layout_style.label",
       "options": [
-        { "value": "center_overlap", "label": "Center overlap (2 images behind text)" },
-        { "value": "edge_spaced", "label": "Edge spaced (images on far left & right)" }
+        {
+          "value": "center_overlap",
+          "label": "t:sections.hero.settings.layout_style.options.center_overlap"
+        },
+        {
+          "value": "edge_spaced",
+          "label": "t:sections.hero.settings.layout_style.options.edge_spaced"
+        }
       ],
       "default": "center_overlap"
     },
     {
       "type": "header",
-      "content": "Image styling"
+      "content": "t:sections.hero.headers.image_styling"
     },
     {
       "type": "range",
@@ -422,7 +428,7 @@
       "max": 60,
       "step": 2,
       "unit": "px",
-      "label": "Image corner radius",
+      "label": "t:sections.hero.settings.image_border_radius.label",
       "default": 16
     },
     {
@@ -432,100 +438,100 @@
       "max": 12,
       "step": 1,
       "unit": "px",
-      "label": "Image border width",
+      "label": "t:sections.hero.settings.image_border_width.label",
       "default": 4
     },
     {
       "type": "color",
       "id": "image_border_color",
-      "label": "Image border color",
+      "label": "t:sections.hero.settings.image_border_color.label",
       "default": "#ffffff"
     },
     {
       "type": "header",
-      "content": "Images (Edge spaced layout)"
+      "content": "t:sections.hero.headers.images_edge_spaced_layout"
     },
     {
       "type": "image_picker",
       "id": "image_left",
-      "label": "Left side image"
+      "label": "t:sections.hero.settings.image_left.label"
     },
     {
       "type": "image_picker",
       "id": "image_right",
-      "label": "Right side image"
+      "label": "t:sections.hero.settings.image_right.label"
     },
     {
       "type": "header",
-      "content": "Images (Center overlap layout)"
+      "content": "t:sections.hero.headers.images_center_overlap_layout"
     },
     {
       "type": "image_picker",
       "id": "image_back",
-      "label": "Back layer image"
+      "label": "t:sections.hero.settings.image_back.label"
     },
     {
       "type": "image_picker",
       "id": "image_front",
-      "label": "Front layer image"
+      "label": "t:sections.hero.settings.image_front.label"
     },
     {
       "type": "header",
-      "content": "Default colors"
+      "content": "t:sections.hero.headers.default_colors"
     },
     {
       "type": "color",
       "id": "default_bg_color",
-      "label": "Background color",
+      "label": "t:sections.hero.settings.default_bg_color.label",
       "default": "#FAF6F0"
     },
     {
       "type": "color",
       "id": "default_text_color",
-      "label": "Text color",
+      "label": "t:sections.hero.settings.default_text_color.label",
       "default": "#2B1E16"
     },
     {
       "type": "color",
       "id": "default_accent_color",
-      "label": "Accent color",
+      "label": "t:sections.hero.settings.default_accent_color.label",
       "default": "#9C4A1A"
     },
     {
       "type": "header",
-      "content": "Custom colors (override)"
+      "content": "t:sections.hero.headers.custom_colors_override"
     },
     {
       "type": "checkbox",
       "id": "enable_custom_colors",
-      "label": "Enable custom colors",
-      "info": "When enabled, these override the default colors for this section only.",
+      "label": "t:sections.hero.settings.enable_custom_colors.label",
+      "info": "t:sections.hero.settings.enable_custom_colors.info",
       "default": false
     },
     {
       "type": "color",
       "id": "custom_bg_color",
-      "label": "Custom background color",
+      "label": "t:sections.hero.settings.custom_bg_color.label",
       "default": "#FFFFFF",
       "visible_if": "{{ section.settings.enable_custom_colors }}"
     },
     {
       "type": "color",
       "id": "custom_text_color",
-      "label": "Custom text color",
+      "label": "t:sections.hero.settings.custom_text_color.label",
       "default": "#111111",
       "visible_if": "{{ section.settings.enable_custom_colors }}"
     },
     {
       "type": "color",
       "id": "custom_accent_color",
-      "label": "Custom accent color",
+      "label": "t:sections.hero.settings.custom_accent_color.label",
       "default": "#000000",
       "visible_if": "{{ section.settings.enable_custom_colors }}"
     },
     {
       "type": "header",
-      "content": "Section spacing"
+      "content": "t:sections.hero.headers.section_spacing"
     },
     {
       "type": "range",
@@ -534,7 +540,7 @@
       "max": 150,
       "step": 5,
       "unit": "px",
-      "label": "Padding top",
+      "label": "t:sections.hero.settings.padding_top.label",
       "default": 40
     },
     {
@@ -544,20 +550,20 @@
       "max": 150,
       "step": 5,
       "unit": "px",
-      "label": "Padding bottom",
+      "label": "t:sections.hero.settings.padding_bottom.label",
       "default": 40
     }
   ],
   "blocks": [
     {
       "type": "heading",
-      "name": "Heading",
+      "name": "t:sections.hero.blocks.heading.name",
       "limit": 1,
       "settings": [
         {
           "type": "text",
           "id": "heading_text",
-          "label": "Heading text",
+          "label": "t:sections.hero.blocks.heading.settings.heading_text.label",
           "default": "Digital Creative"
         },
         {
@@ -567,48 +573,66 @@
           "max": 250,
           "step": 5,
           "unit": "px",
-          "label": "Font size",
+          "label": "t:sections.hero.blocks.heading.settings.heading_size.label",
           "default": 150
         },
         {
           "type": "select",
           "id": "heading_weight",
-          "label": "Font weight",
+          "label": "t:sections.hero.blocks.heading.settings.heading_weight.label",
           "options": [
-            { "value": "400", "label": "Normal" },
-            { "value": "700", "label": "Bold" },
-            { "value": "900", "label": "Black" }
+            {
+              "value": "400",
+              "label": "t:sections.hero.blocks.heading.settings.heading_weight.options.400"
+            },
+            {
+              "value": "700",
+              "label": "t:sections.hero.blocks.heading.settings.heading_weight.options.700"
+            },
+            {
+              "value": "900",
+              "label": "t:sections.hero.blocks.heading.settings.heading_weight.options.900"
+            }
           ],
           "default": "900"
         },
         {
           "type": "select",
           "id": "heading_transform",
-          "label": "Text transform",
+          "label": "t:sections.hero.blocks.heading.settings.heading_transform.label",
           "options": [
-            { "value": "none", "label": "Normal" },
-            { "value": "uppercase", "label": "Uppercase" },
-            { "value": "lowercase", "label": "Lowercase" }
+            {
+              "value": "none",
+              "label": "t:sections.hero.blocks.heading.settings.heading_transform.options.none"
+            },
+            {
+              "value": "uppercase",
+              "label": "t:sections.hero.blocks.heading.settings.heading_transform.options.uppercase"
+            },
+            {
+              "value": "lowercase",
+              "label": "t:sections.hero.blocks.heading.settings.heading_transform.options.lowercase"
+            }
           ],
           "default": "uppercase"
         },
         {
           "type": "color",
           "id": "heading_color",
-          "label": "Heading text color",
+          "label": "t:sections.hero.blocks.heading.settings.heading_color.label",
           "default": "#2B1E16"
         }
       ]
     },
     {
       "type": "description",
-      "name": "Description",
+      "name": "t:sections.hero.blocks.description.name",
       "limit": 1,
       "settings": [
         {
           "type": "richtext",
           "id": "description_text",
-          "label": "Description text",
+          "label": "t:sections.hero.blocks.description.settings.description_text.label",
           "default": "<p>Discover our latest collection crafted with premium materials and timeless design.</p>"
         },
         {
@@ -618,32 +642,32 @@
           "max": 32,
           "step": 1,
           "unit": "px",
-          "label": "Font size",
+          "label": "t:sections.hero.blocks.description.settings.description_size.label",
           "default": 18
         },
         {
           "type": "color",
           "id": "description_color",
-          "label": "Description text color",
+          "label": "t:sections.hero.blocks.description.settings.description_color.label",
           "default": "#7A6B61"
         }
       ]
     },
     {
       "type": "button",
-      "name": "Button",
+      "name": "t:sections.hero.blocks.button.name",
       "limit": 1,
       "settings": [
         {
           "type": "text",
           "id": "button_text",
-          "label": "Button text",
+          "label": "t:sections.hero.blocks.button.settings.button_text.label",
           "default": "Explore Collection"
         },
         {
           "type": "url",
           "id": "button_link",
-          "label": "Button link"
+          "label": "t:sections.hero.blocks.button.settings.button_link.label"
         },
         {
           "type": "range",
@@ -652,7 +676,7 @@
           "max": 24,
           "step": 1,
           "unit": "px",
-          "label": "Font size",
+          "label": "t:sections.hero.blocks.button.settings.button_font_size.label",
           "default": 16
         },
         {
@@ -662,19 +686,19 @@
           "max": 50,
           "step": 1,
           "unit": "px",
-          "label": "Border radius",
+          "label": "t:sections.hero.blocks.button.settings.button_border_radius.label",
           "default": 50
         },
         {
           "type": "color",
           "id": "button_bg_color",
-          "label": "Background color",
+          "label": "t:sections.hero.blocks.button.settings.button_bg_color.label",
           "default": "#2B1E16"
         },
         {
           "type": "color",
           "id": "button_text_color",
-          "label": "Text color",
+          "label": "t:sections.hero.blocks.button.settings.button_text_color.label",
           "default": "#FAF6F0"
         }
       ]
@@ -682,12 +706,18 @@
   ],
   "presets": [
     {
-      "name": "Hero Banner",
-      "category": "Image",
+      "name": "t:sections.hero.name",
+      "category": "t:general.categories.image",
       "blocks": [
-        { "type": "heading" },
-        { "type": "description" },
-        { "type": "button" }
+        {
+          "type": "heading"
+        },
+        {
+          "type": "description"
+        },
+        {
+          "type": "button"
+        }
       ]
     }
   ]

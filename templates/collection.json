@@ -11,7 +11,16 @@
   "sections": {
     "main": {
       "type": "collection",
-      "settings": {}
+      "settings": {
+        "container_width": "full",
+        "show_banner": true,
+        "products_per_page": 24,
+        "columns_desktop": 4,
+        "columns_mobile": "2",
+        "show_filters": true,
+        "filter_layout": "vertical",
+        "show_sorting": true
+      }
     }
   },
   "order": [

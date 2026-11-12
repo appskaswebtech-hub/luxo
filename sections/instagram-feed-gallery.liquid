@@ -59,7 +59,7 @@
       <div class="instagram-feed-gallery-{{ section.id }}__item instagram-feed-gallery-{{ section.id }}__item--top-left">
         {%- assign block = section.blocks[0] -%}
         {%- if block != blank -%}
-          <a href="{{ block.settings.link | default: '#' }}" class="instagram-feed-gallery-{{ section.id }}__link" target="_blank" rel="noopener noreferrer" aria-label="View on Instagram">
+          <a href="{{ block.settings.link | default: '#' }}" class="instagram-feed-gallery-{{ section.id }}__link" target="_blank" rel="noopener noreferrer" aria-label="{{ 'general.social.view_instagram' | t }}">
             {%- if block.settings.image != blank -%}
               {{ block.settings.image | image_url: width: 600 | image_tag: class: main_img_class, loading: 'lazy', alt: block.settings.image.alt }}
             {%- else -%}
@@ -75,7 +75,7 @@
       <div class="instagram-feed-gallery-{{ section.id }}__item instagram-feed-gallery-{{ section.id }}__item--center">
         {%- assign block = section.blocks[1] -%}
         {%- if block != blank -%}
-          <a href="{{ block.settings.link | default: '#' }}" class="instagram-feed-gallery-{{ section.id }}__link" target="_blank" rel="noopener noreferrer" aria-label="View on Instagram">
+          <a href="{{ block.settings.link | default: '#' }}" class="instagram-feed-gallery-{{ section.id }}__link" target="_blank" rel="noopener noreferrer" aria-label="{{ 'general.social.view_instagram' | t }}">
             {%- if block.settings.image != blank -%}
               {{ block.settings.image | image_url: width: 1200 | image_tag: class: main_img_class, loading: 'lazy', alt: block.settings.image.alt }}
             {%- else -%}
@@ -91,7 +91,7 @@
       <div class="instagram-feed-gallery-{{ section.id }}__item instagram-feed-gallery-{{ section.id }}__item--top-right">
         {%- assign block = section.blocks[2] -%}
         {%- if block != blank -%}
-          <a href="{{ block.settings.link | default: '#' }}" class="instagram-feed-gallery-{{ section.id }}__link" target="_blank" rel="noopener noreferrer" aria-label="View on Instagram">
+          <a href="{{ block.settings.link | default: '#' }}" class="instagram-feed-gallery-{{ section.id }}__link" target="_blank" rel="noopener noreferrer" aria-label="{{ 'general.social.view_instagram' | t }}">
             {%- if block.settings.image != blank -%}
               {{ block.settings.image | image_url: width: 600 | image_tag: class: main_img_class, loading: 'lazy', alt: block.settings.image.alt }}
             {%- else -%}
@@ -107,7 +107,7 @@
       <div class="instagram-feed-gallery-{{ section.id }}__item instagram-feed-gallery-{{ section.id }}__item--bottom-left">
         {%- assign block = section.blocks[3] -%}
         {%- if block != blank -%}
-          <a href="{{ block.settings.link | default: '#' }}" class="instagram-feed-gallery-{{ section.id }}__link" target="_blank" rel="noopener noreferrer" aria-label="View on Instagram">
+          <a href="{{ block.settings.link | default: '#' }}" class="instagram-feed-gallery-{{ section.id }}__link" target="_blank" rel="noopener noreferrer" aria-label="{{ 'general.social.view_instagram' | t }}">
             {%- if block.settings.image != blank -%}
               {{ block.settings.image | image_url: width: 600 | image_tag: class: main_img_class, loading: 'lazy', alt: block.settings.image.alt }}
             {%- else -%}
@@ -123,7 +123,7 @@
       <div class="instagram-feed-gallery-{{ section.id }}__item instagram-feed-gallery-{{ section.id }}__item--bottom-right">
         {%- assign block = section.blocks[4] -%}
         {%- if block != blank -%}
-          <a href="{{ block.settings.link | default: '#' }}" class="instagram-feed-gallery-{{ section.id }}__link" target="_blank" rel="noopener noreferrer" aria-label="View on Instagram">
+          <a href="{{ block.settings.link | default: '#' }}" class="instagram-feed-gallery-{{ section.id }}__link" target="_blank" rel="noopener noreferrer" aria-label="{{ 'general.social.view_instagram' | t }}">
             {%- if block.settings.image != blank -%}
               {{ block.settings.image | image_url: width: 600 | image_tag: class: main_img_class, loading: 'lazy', alt: block.settings.image.alt }}
             {%- else -%}
@@ -387,40 +387,40 @@
 
 {% schema %}
 {
-  "name": "Instagram Feed Gallery",
+  "name": "t:sections.instagram_feed_gallery.name",
   "tag": "section",
   "class": "section-instagram-feed-gallery",
   "max_blocks": 5,
   "settings": [
     {
       "type": "header",
-      "content": "Content Settings"
+      "content": "t:sections.instagram_feed_gallery.headers.content_settings"
     },
     {
       "type": "text",
       "id": "heading",
-      "label": "Heading",
+      "label": "t:sections.instagram_feed_gallery.settings.heading.label",
       "default": "Loved by our community"
     },
     {
       "type": "text",
       "id": "button_label",
-      "label": "Instagram Button Text",
+      "label": "t:sections.instagram_feed_gallery.settings.button_label.label",
       "default": "Visit Instagram"
     },
     {
       "type": "url",
       "id": "instagram_url",
-      "label": "Instagram Page URL"
+      "label": "t:sections.instagram_feed_gallery.settings.instagram_url.label"
     },
     {
       "type": "header",
-      "content": "Image Styling"
+      "content": "t:sections.instagram_feed_gallery.headers.image_styling"
     },
     {
       "type": "range",
       "id": "border_radius",
-      "label": "Image Border Radius",
+      "label": "t:sections.instagram_feed_gallery.settings.border_radius.label",
       "min": 0,
       "max": 40,
       "step": 2,
@@ -430,7 +430,7 @@
     {
       "type": "range",
       "id": "border_width",
-      "label": "Image Border Width",
+      "label": "t:sections.instagram_feed_gallery.settings.border_width.label",
       "min": 0,
       "max": 8,
       "step": 1,
@@ -439,34 +439,34 @@
     },
     {
       "type": "header",
-      "content": "Default Colors"
+      "content": "t:sections.instagram_feed_gallery.headers.default_colors"
     },
     {
       "type": "color",
       "id": "background_color",
-      "label": "Section Background",
+      "label": "t:sections.instagram_feed_gallery.settings.background_color.label",
       "default": "#FAF6F0"
     },
     {
       "type": "color",
       "id": "text_color",
-      "label": "Heading Text Color",
+      "label": "t:sections.instagram_feed_gallery.settings.text_color.label",
       "default": "#2B1E16"
     },
     {
       "type": "color",
       "id": "accent_color",
-      "label": "Button & Border Color",
+      "label": "t:sections.instagram_feed_gallery.settings.accent_color.label",
       "default": "#9C4A1A"
     },
     {
       "type": "header",
-      "content": "Section Spacing"
+      "content": "t:sections.instagram_feed_gallery.headers.section_spacing"
     },
     {
       "type": "range",
       "id": "padding_top",
-      "label": "Padding Top",
+      "label": "t:sections.instagram_feed_gallery.settings.padding_top.label",
       "min": 0,
       "max": 120,
       "step": 4,
@@ -476,7 +476,7 @@
     {
       "type": "range",
       "id": "padding_bottom",
-      "label": "Padding Bottom",
+      "label": "t:sections.instagram_feed_gallery.settings.padding_bottom.label",
       "min": 0,
       "max": 120,
       "step": 4,
@@ -485,47 +485,47 @@
     },
     {
       "type": "header",
-      "content": "Custom Design (Override)"
+      "content": "t:sections.instagram_feed_gallery.headers.custom_design_override"
     },
     {
       "type": "checkbox",
       "id": "enable_custom_design",
-      "label": "Enable Custom Design",
-      "info": "When enabled, these override the default colors and typography.",
+      "label": "t:sections.instagram_feed_gallery.settings.enable_custom_design.label",
+      "info": "t:sections.instagram_feed_gallery.settings.enable_custom_design.info",
       "default": false
     },
     {
       "type": "color",
       "id": "custom_bg_color",
-      "label": "Custom Background",
+      "label": "t:sections.instagram_feed_gallery.settings.custom_bg_color.label",
       "default": "#FFFFFF",
       "visible_if": "{{ section.settings.enable_custom_design }}"
     },
     {
       "type": "color",
       "id": "custom_text_color",
-      "label": "Custom Text Color",
+      "label": "t:sections.instagram_feed_gallery.settings.custom_text_color.label",
       "default": "#111111",
       "visible_if": "{{ section.settings.enable_custom_design }}"
     },
     {
       "type": "color",
       "id": "custom_accent_color",
-      "label": "Custom Accent Color",
+      "label": "t:sections.instagram_feed_gallery.settings.custom_accent_color.label",
       "default": "#000000",
       "visible_if": "{{ section.settings.enable_custom_design }}"
     },
     {
       "type": "font_picker",
       "id": "custom_heading_font",
-      "label": "Custom Heading Font",
+      "label": "t:sections.instagram_feed_gallery.settings.custom_heading_font.label",
       "default": "assistant_n4",
       "visible_if": "{{ section.settings.enable_custom_design }}"
     },
     {
       "type": "font_picker",
       "id": "custom_body_font",
-      "label": "Custom Body Font",
+      "label": "t:sections.instagram_feed_gallery.settings.custom_body_font.label",
       "default": "assistant_n4",
       "visible_if": "{{ section.settings.enable_custom_design }}"
     }
@@ -533,30 +533,40 @@
   "blocks": [
     {
       "type": "photo",
-      "name": "Community Photo",
+      "name": "t:sections.instagram_feed_gallery.blocks.photo.name",
       "settings": [
         {
           "type": "image_picker",
           "id": "image",
-          "label": "Image"
+          "label": "t:sections.instagram_feed_gallery.blocks.photo.settings.image.label"
         },
         {
           "type": "url",
           "id": "link",
-          "label": "Instagram Post URL"
+          "label": "t:sections.instagram_feed_gallery.blocks.photo.settings.link.label"
         }
       ]
     }
   ],
   "presets": [
     {
-      "name": "Instagram Feed Gallery",
+      "name": "t:sections.instagram_feed_gallery.name",
       "blocks": [
-        { "type": "photo" },
-        { "type": "photo" },
-        { "type": "photo" },
-        { "type": "photo" },
-        { "type": "photo" }
+        {
+          "type": "photo"
+        },
+        {
+          "type": "photo"
+        },
+        {
+          "type": "photo"
+        },
+        {
+          "type": "photo"
+        },
+        {
+          "type": "photo"
+        }
       ]
     }
   ]

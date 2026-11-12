@@ -1,4 +1,8 @@
 {
+  "placeholders": {
+    "custom_swatch_colors": "bronze: #CD7F32\nnavy: #1F2A44",
+    "image_swatch_options": "Material"
+  },
   "general": {
     "404": "Not found",
     "accent": "Accent",
@@ -33,10 +37,12 @@
     "margin": "Margin",
     "page": "Page",
     "password": "Password",
+    "predictive_search": "Predictive search",
     "primary": "Primary",
     "product": "Product",
     "product_cards": "Product cards",
     "product_image": "Product image",
+    "product_media": "Product media",
     "row": "Row",
     "search": "Search",
     "secondary": "Secondary",
@@ -49,7 +55,16 @@
     "text": "Text",
     "theme": "Theme",
     "typography": "Typography",
-    "variant_picker": "Variant picker"
+    "variant_picker": "Variant picker",
+    "categories": {
+      "blog": "Blog",
+      "contact": "Contact",
+      "collection": "Collection",
+      "footer": "Footer",
+      "image": "Image",
+      "promotional": "Promotional",
+      "product": "Product"
+    }
   },
   "labels": {
     "alignment": "Alignment",
@@ -89,7 +104,6 @@
     "letter_spacing": "Letter spacing",
     "line_height": "Line height",
     "logo": "Logo",
-    "logo_inverse": "Inverse logo",
     "margin_bottom": "Margin bottom",
     "margin_left": "Margin left",
     "margin_right": "Margin right",
@@ -114,8 +128,12 @@
     "show_vendor": "Show vendor",
     "sold_out_badge": "Show sold out badge",
     "sticky_summary": "Keep summary visible while scrolling",
-    "swatch_options": "Options shown as swatches",
+    "color_swatch_options": "Options shown as color swatches",
+    "custom_swatch_colors": "Custom swatch colors",
+    "image_swatch_options": "Options shown as image swatches",
     "swatch_shape": "Swatch shape",
+    "swatch_labels": "Show name below swatch",
+    "thumbnail_position": "Thumbnail position",
     "swatch_size": "Swatch size",
     "text_color": "Text color",
     "text_style": "Text style",
@@ -130,19 +148,1853 @@
     "cart_layout": "Side by side applies to screens 990px and wider. Smaller screens always show the summary below the items",
     "cart_popup_trigger": "Touch screens always open the popup on tap. With hover, clicking the cart icon opens the cart page",
     "favicon": "Displayed at 32 x 32 px",
-    "logo_inverse": "Shown when the header uses a transparent background",
     "pills_settings": "Pills settings",
     "reduced_motion": "Animations stay off for visitors who have reduced motion turned on in their device settings",
     "search_suggestions": "Products, collections, and pages appear in a dropdown as customers type",
     "show_currency_code": "For example, $25.00 USD. Useful when selling in more than one currency",
     "social_links": "Add the full link to each profile. Empty fields are hidden on the storefront",
-    "swatch_options": "Option names separated by commas, for example: Color, Material",
-    "swatch_settings": "Color and image swatch settings",
+    "swatch_options": "Option names separated by commas. Options in neither list show as pills",
+    "thumbnail_position": "On tablets and phones, thumbnails always show below the main image",
+    "cart_drawer_sticky_summary": "Keeps the total and checkout button at the bottom of the drawer while items scroll",
+    "custom_swatch_colors": "One color per line as name: color, for example bronze: #CD7F32. Used when a value has no Shopify swatch",
+    "swatch_settings": "Swatch settings",
     "variant_picker": "Choose how product variants are displayed"
   },
   "sections": {
     "hero": {
-      "name": "Hero banner"
+      "name": "Hero banner",
+      "headers": {
+        "layout": "Layout",
+        "image_styling": "Image styling",
+        "images_edge_spaced_layout": "Images (Edge spaced layout)",
+        "images_center_overlap_layout": "Images (Center overlap layout)",
+        "default_colors": "Default colors",
+        "custom_colors_override": "Custom colors (override)",
+        "section_spacing": "Section spacing"
+      },
+      "settings": {
+        "layout_style": {
+          "label": "Layout style",
+          "options": {
+            "center_overlap": "Center overlap (2 images behind text)",
+            "edge_spaced": "Edge spaced (images on far left & right)"
+          }
+        },
+        "image_border_radius": {
+          "label": "Image corner radius"
+        },
+        "image_border_width": {
+          "label": "Image border width"
+        },
+        "image_border_color": {
+          "label": "Image border color"
+        },
+        "image_left": {
+          "label": "Left side image"
+        },
+        "image_right": {
+          "label": "Right side image"
+        },
+        "image_back": {
+          "label": "Back layer image"
+        },
+        "image_front": {
+          "label": "Front layer image"
+        },
+        "default_bg_color": {
+          "label": "Background color"
+        },
+        "default_text_color": {
+          "label": "Text color"
+        },
+        "default_accent_color": {
+          "label": "Accent color"
+        },
+        "enable_custom_colors": {
+          "label": "Enable custom colors",
+          "info": "When enabled, these override the default colors for this section only."
+        },
+        "custom_bg_color": {
+          "label": "Custom background color"
+        },
+        "custom_text_color": {
+          "label": "Custom text color"
+        },
+        "custom_accent_color": {
+          "label": "Custom accent color"
+        },
+        "padding_top": {
+          "label": "Padding top"
+        },
+        "padding_bottom": {
+          "label": "Padding bottom"
+        }
+      },
+      "blocks": {
+        "heading": {
+          "name": "Heading",
+          "settings": {
+            "heading_text": {
+              "label": "Heading text"
+            },
+            "heading_size": {
+              "label": "Font size"
+            },
+            "heading_weight": {
+              "label": "Font weight",
+              "options": {
+                "400": "Normal",
+                "700": "Bold",
+                "900": "Black"
+              }
+            },
+            "heading_transform": {
+              "label": "Text transform",
+              "options": {
+                "none": "Normal",
+                "uppercase": "Uppercase",
+                "lowercase": "Lowercase"
+              }
+            },
+            "heading_color": {
+              "label": "Heading text color"
+            }
+          }
+        },
+        "description": {
+          "name": "Description",
+          "settings": {
+            "description_text": {
+              "label": "Description text"
+            },
+            "description_size": {
+              "label": "Font size"
+            },
+            "description_color": {
+              "label": "Description text color"
+            }
+          }
+        },
+        "button": {
+          "name": "Button",
+          "settings": {
+            "button_text": {
+              "label": "Button text"
+            },
+            "button_link": {
+              "label": "Button link"
+            },
+            "button_font_size": {
+              "label": "Font size"
+            },
+            "button_border_radius": {
+              "label": "Border radius"
+            },
+            "button_bg_color": {
+              "label": "Background color"
+            },
+            "button_text_color": {
+              "label": "Text color"
+            }
+          }
+        }
+      }
+    },
+    "article": {
+      "name": "Article Page",
+      "headers": {
+        "section_spacing": "Section Spacing",
+        "default_colors": "Default Colors",
+        "custom_design_override": "Custom Design (Override)"
+      },
+      "settings": {
+        "padding_top": {
+          "label": "Padding Top"
+        },
+        "padding_bottom": {
+          "label": "Padding Bottom"
+        },
+        "background_color": {
+          "label": "Main Background"
+        },
+        "text_color": {
+          "label": "Text Color"
+        },
+        "accent_color": {
+          "label": "Accent Color"
+        },
+        "card_background": {
+          "label": "Card Background"
+        },
+        "border_color": {
+          "label": "Border Color"
+        },
+        "enable_custom_design": {
+          "label": "Enable Custom Design",
+          "info": "When enabled, these override the default colors and typography."
+        },
+        "custom_bg_color": {
+          "label": "Custom Background"
+        },
+        "custom_text_color": {
+          "label": "Custom Text Color"
+        },
+        "custom_accent_color": {
+          "label": "Custom Accent Color"
+        },
+        "custom_card_bg_color": {
+          "label": "Custom Card Background"
+        },
+        "custom_border_color": {
+          "label": "Custom Border Color"
+        },
+        "custom_heading_font": {
+          "label": "Custom Heading Font"
+        },
+        "custom_body_font": {
+          "label": "Custom Body Font"
+        }
+      }
+    },
+    "blog": {
+      "name": "Blog Template",
+      "headers": {
+        "default_colors": "Default Colors",
+        "custom_design_override": "Custom Design (Override)"
+      },
+      "settings": {
+        "background_color": {
+          "label": "Background Color"
+        },
+        "text_color": {
+          "label": "Text Color"
+        },
+        "accent_color": {
+          "label": "Accent Color (Hover)"
+        },
+        "border_color": {
+          "label": "Border Color"
+        },
+        "enable_custom_design": {
+          "label": "Enable Custom Design",
+          "info": "When enabled, these override the default colors and typography."
+        },
+        "custom_bg_color": {
+          "label": "Custom Background"
+        },
+        "custom_text_color": {
+          "label": "Custom Text Color"
+        },
+        "custom_accent_color": {
+          "label": "Custom Accent Color"
+        },
+        "custom_border_color": {
+          "label": "Custom Border Color"
+        },
+        "custom_heading_font": {
+          "label": "Custom Heading Font"
+        },
+        "custom_body_font": {
+          "label": "Custom Body Font"
+        }
+      }
+    },
+    "cart": {
+      "name": "Cart Page",
+      "headers": {
+        "default_colors": "Default Colors",
+        "custom_design_override": "Custom Design (Override)"
+      },
+      "settings": {
+        "background_color": {
+          "label": "Background Color"
+        },
+        "text_color": {
+          "label": "Text Color"
+        },
+        "accent_color": {
+          "label": "Accent Color (Buttons/Links)"
+        },
+        "border_color": {
+          "label": "Border Color"
+        },
+        "enable_custom_design": {
+          "label": "Enable Custom Design",
+          "info": "When enabled, these override the default colors and typography."
+        },
+        "custom_bg_color": {
+          "label": "Custom Background"
+        },
+        "custom_text_color": {
+          "label": "Custom Text Color"
+        },
+        "custom_accent_color": {
+          "label": "Custom Accent Color"
+        },
+        "custom_border_color": {
+          "label": "Custom Border Color"
+        },
+        "custom_heading_font": {
+          "label": "Custom Heading Font"
+        },
+        "custom_body_font": {
+          "label": "Custom Body Font"
+        }
+      }
+    },
+    "collection": {
+      "name": "Collection Grid",
+      "headers": {
+        "layout": "Layout",
+        "product_card": "Product Card",
+        "filtering_and_sorting": "Filtering and sorting",
+        "featured_sidebar_product": "Featured Sidebar Product",
+        "padding": "Padding",
+        "colors": "Colors"
+      },
+      "settings": {
+        "container_width": {
+          "label": "Container width",
+          "options": {
+            "page": "Page width",
+            "full": "Full width"
+          }
+        },
+        "show_banner": {
+          "label": "Show Collection Banner"
+        },
+        "products_per_page": {
+          "label": "Products per page"
+        },
+        "columns_desktop": {
+          "label": "Columns (Desktop)"
+        },
+        "columns_mobile": {
+          "label": "Columns (Mobile)",
+          "options": {
+            "1": "1 Column",
+            "2": "2 Columns"
+          }
+        },
+        "quick_add": {
+          "label": "Quick add",
+          "options": {
+            "none": "None",
+            "standard": "Standard"
+          }
+        },
+        "show_filters": {
+          "label": "Show filters"
+        },
+        "filter_layout": {
+          "label": "Filter layout",
+          "options": {
+            "horizontal": "Horizontal",
+            "vertical": "Vertical (Left Sidebar)"
+          }
+        },
+        "show_sorting": {
+          "label": "Show sorting"
+        },
+        "featured_product": {
+          "label": "Select Featured Product (Sale Product)"
+        },
+        "padding_top": {
+          "label": "Padding top"
+        },
+        "padding_bottom": {
+          "label": "Padding bottom"
+        },
+        "background_color": {
+          "label": "Background"
+        },
+        "text_color": {
+          "label": "Text"
+        },
+        "accent_color": {
+          "label": "Accent"
+        },
+        "border_color": {
+          "label": "Border"
+        }
+      }
+    },
+    "collections": {
+      "name": "Collection List Template",
+      "headers": {
+        "section_settings": "Section Settings",
+        "default_colors": "Default Colors",
+        "custom_design_override": "Custom Design (Override)"
+      },
+      "settings": {
+        "heading_text": {
+          "label": "Heading Text"
+        },
+        "button_text": {
+          "label": "Button Text"
+        },
+        "section_padding_top": {
+          "label": "Padding Top"
+        },
+        "section_padding_bottom": {
+          "label": "Padding Bottom"
+        },
+        "default_bg_color": {
+          "label": "Section Background"
+        },
+        "default_text_color": {
+          "label": "Text & Dark Elements"
+        },
+        "default_accent_color": {
+          "label": "Accent Color (Buttons)"
+        },
+        "enable_custom_design": {
+          "label": "Enable Custom Design",
+          "info": "When enabled, these override the default colors and typography."
+        },
+        "custom_bg_color": {
+          "label": "Custom Background"
+        },
+        "custom_text_color": {
+          "label": "Custom Text Color"
+        },
+        "custom_accent_color": {
+          "label": "Custom Accent Color"
+        },
+        "custom_heading_font": {
+          "label": "Custom Heading Font"
+        },
+        "custom_body_font": {
+          "label": "Custom Body Font"
+        }
+      }
+    },
+    "contact_form": {
+      "name": "Contact Form",
+      "headers": {
+        "section_content": "Section Content",
+        "contact_information": "Contact Information",
+        "section_spacing": "Section Spacing",
+        "default_colors": "Default Colors",
+        "custom_design_override": "Custom Design (Override)"
+      },
+      "settings": {
+        "heading": {
+          "label": "Heading"
+        },
+        "description": {
+          "label": "Description"
+        },
+        "button_text": {
+          "label": "Button Text"
+        },
+        "success_message": {
+          "label": "Success Message"
+        },
+        "email": {
+          "label": "Email Address"
+        },
+        "phone": {
+          "label": "Phone Number"
+        },
+        "address": {
+          "label": "Address"
+        },
+        "padding_top": {
+          "label": "Padding Top"
+        },
+        "padding_bottom": {
+          "label": "Padding Bottom"
+        },
+        "background_color": {
+          "label": "Background Color"
+        },
+        "text_color": {
+          "label": "Text Color"
+        },
+        "accent_color": {
+          "label": "Accent Color (Button & Icons)"
+        },
+        "input_background": {
+          "label": "Input Background"
+        },
+        "input_text_color": {
+          "label": "Input Text Color"
+        },
+        "border_color": {
+          "label": "Border Color"
+        },
+        "enable_custom_design": {
+          "label": "Enable Custom Design",
+          "info": "When enabled, these override the default colors and typography."
+        },
+        "custom_bg_color": {
+          "label": "Custom Background"
+        },
+        "custom_text_color": {
+          "label": "Custom Text Color"
+        },
+        "custom_accent_color": {
+          "label": "Custom Accent Color"
+        },
+        "custom_input_bg_color": {
+          "label": "Custom Input Background"
+        },
+        "custom_input_text_color": {
+          "label": "Custom Input Text"
+        },
+        "custom_border_color": {
+          "label": "Custom Border Color"
+        },
+        "custom_heading_font": {
+          "label": "Custom Heading Font"
+        },
+        "custom_body_font": {
+          "label": "Custom Body Font"
+        }
+      }
+    },
+    "customer_reviews": {
+      "name": "Customer reviews slider",
+      "settings": {
+        "heading": {
+          "label": "Heading"
+        },
+        "description": {
+          "label": "Description"
+        },
+        "autoplay": {
+          "label": "Enable automatic sliding"
+        },
+        "interval": {
+          "label": "Slide interval"
+        },
+        "card_width": {
+          "label": "Desktop card width"
+        },
+        "show_controls": {
+          "label": "Show arrows and dots"
+        },
+        "heading_size": {
+          "label": "Desktop heading size"
+        },
+        "review_text_size": {
+          "label": "Desktop review text size"
+        },
+        "quote_icon_size": {
+          "label": "Quote icon size"
+        },
+        "background_color": {
+          "label": "Background color"
+        },
+        "text_color": {
+          "label": "Text color"
+        },
+        "muted_color": {
+          "label": "Secondary text color"
+        },
+        "accent_color": {
+          "label": "Star and active color"
+        },
+        "padding_top": {
+          "label": "Top spacing"
+        },
+        "padding_bottom": {
+          "label": "Bottom spacing"
+        },
+        "enable_custom_design": {
+          "label": "Enable Custom Design",
+          "info": "When enabled, these override the default colors and typography."
+        },
+        "custom_bg_color": {
+          "label": "Custom Background"
+        },
+        "custom_text_color": {
+          "label": "Custom Text Color"
+        },
+        "custom_muted_color": {
+          "label": "Custom Secondary Text"
+        },
+        "custom_accent_color": {
+          "label": "Custom Accent Color"
+        },
+        "custom_card_border": {
+          "label": "Custom Card Border Color"
+        },
+        "custom_heading_font": {
+          "label": "Custom Heading Font"
+        },
+        "custom_heading_size": {
+          "label": "Custom Heading Size"
+        },
+        "custom_body_font": {
+          "label": "Custom Body Font"
+        },
+        "custom_quote_size": {
+          "label": "Custom Review Text Size"
+        }
+      },
+      "headers": {
+        "slider_settings": "Slider settings",
+        "default_typography_and_sizes": "Default Typography & Sizes",
+        "default_colors": "Default Colors",
+        "spacing": "Spacing",
+        "custom_design_override": "Custom Design (Override)"
+      },
+      "blocks": {
+        "review": {
+          "name": "Customer review",
+          "settings": {
+            "customer_image": {
+              "label": "Customer photo"
+            },
+            "customer_name": {
+              "label": "Customer name"
+            },
+            "customer_role": {
+              "label": "Customer title"
+            },
+            "review": {
+              "label": "Review text"
+            },
+            "rating": {
+              "label": "Star rating"
+            }
+          }
+        }
+      }
+    },
+    "editorial_blog_posts": {
+      "name": "Editorial Blog Posts",
+      "headers": {
+        "content_settings": "Content Settings",
+        "default_colors": "Default Colors",
+        "custom_design_override": "Custom Design (Override)"
+      },
+      "settings": {
+        "heading": {
+          "label": "Heading"
+        },
+        "blog": {
+          "label": "Select Blog"
+        },
+        "posts_limit": {
+          "label": "Number of Posts to Show"
+        },
+        "background_color": {
+          "label": "Background Color"
+        },
+        "text_color": {
+          "label": "Text Color"
+        },
+        "accent_color": {
+          "label": "Accent Color (Hover)"
+        },
+        "border_color": {
+          "label": "Border Color"
+        },
+        "enable_custom_design": {
+          "label": "Enable Custom Design",
+          "info": "When enabled, these override the default colors and typography."
+        },
+        "custom_bg_color": {
+          "label": "Custom Background"
+        },
+        "custom_text_color": {
+          "label": "Custom Text Color"
+        },
+        "custom_accent_color": {
+          "label": "Custom Accent Color"
+        },
+        "custom_border_color": {
+          "label": "Custom Border Color"
+        },
+        "custom_heading_font": {
+          "label": "Custom Heading Font"
+        },
+        "custom_body_font": {
+          "label": "Custom Body Font"
+        }
+      }
+    },
+    "featured_collection": {
+      "name": "Featured Collection",
+      "headers": {
+        "section_content": "Section Content",
+        "layout_settings": "Layout Settings",
+        "product_card_settings": "Product Card Settings",
+        "button_and_header": "Button & Header",
+        "spacing": "Spacing",
+        "default_colors": "Default Colors",
+        "custom_design_override": "Custom Design (Override)"
+      },
+      "settings": {
+        "heading": {
+          "label": "Heading"
+        },
+        "subheading": {
+          "label": "Subheading"
+        },
+        "collection": {
+          "label": "Select Collection"
+        },
+        "products_limit": {
+          "label": "Maximum products to show"
+        },
+        "container_width": {
+          "label": "Container Width",
+          "options": {
+            "page": "Page Width (Boxed)",
+            "full": "Full Width (Stretched)"
+          }
+        },
+        "layout_type": {
+          "label": "Layout Type",
+          "options": {
+            "grid": "Grid",
+            "slider": "Slider (Carousel)"
+          }
+        },
+        "products_per_row": {
+          "label": "Products Per Row (Grid only)",
+          "options": {
+            "3": "3 Products",
+            "4": "4 Products"
+          }
+        },
+        "image_fit": {
+          "label": "Image Fit",
+          "options": {
+            "cover": "Cover (Crop to fill)",
+            "contain": "Contain (Show full image)"
+          }
+        },
+        "show_view_all": {
+          "label": "Show 'View All' Button"
+        },
+        "view_all_text": {
+          "label": "View All Button Text"
+        },
+        "padding_top": {
+          "label": "Padding Top"
+        },
+        "padding_bottom": {
+          "label": "Padding Bottom"
+        },
+        "default_bg_color": {
+          "label": "Background Color"
+        },
+        "default_text_color": {
+          "label": "Text Color"
+        },
+        "default_accent_color": {
+          "label": "Accent Color (Dots/Buttons)"
+        },
+        "enable_custom_design": {
+          "label": "Enable Custom Design",
+          "info": "When enabled, these override the default colors and typography."
+        },
+        "custom_bg_color": {
+          "label": "Custom Background"
+        },
+        "custom_text_color": {
+          "label": "Custom Text Color"
+        },
+        "custom_accent_color": {
+          "label": "Custom Accent Color"
+        },
+        "custom_heading_font": {
+          "label": "Custom Heading Font"
+        },
+        "custom_heading_size": {
+          "label": "Custom Heading Size"
+        },
+        "custom_title_color": {
+          "label": "Custom Title Color"
+        },
+        "custom_title_size": {
+          "label": "Custom Title Size"
+        },
+        "custom_body_font": {
+          "label": "Custom Body Font"
+        },
+        "custom_body_size": {
+          "label": "Custom Body Size"
+        },
+        "custom_price_size": {
+          "label": "Custom Price Size"
+        }
+      }
+    },
+    "footer": {
+      "name": "Footer",
+      "headers": {
+        "localization": "Localization",
+        "default_colors": "Default Colors",
+        "menu_links_style": "Menu Links Style",
+        "social_links_style": "Social Links Style",
+        "newsletter_input_style": "Newsletter Input Style",
+        "bottom_bar_style": "Bottom Bar Style",
+        "custom_design_override": "Custom Design (Override)"
+      },
+      "settings": {
+        "show_country_selector": {
+          "label": "Show Country Selector"
+        },
+        "show_language_selector": {
+          "label": "Show Language Selector"
+        },
+        "scallop_color": {
+          "label": "Top Scallop Border Color"
+        },
+        "background_color": {
+          "label": "Footer Background"
+        },
+        "text_color": {
+          "label": "Global Text Color"
+        },
+        "accent_color": {
+          "label": "Accent Color (Button)"
+        },
+        "card_background": {
+          "label": "Card/Box Background"
+        },
+        "link_bg_color": {
+          "label": "Link Background"
+        },
+        "link_text_color": {
+          "label": "Link Text Color"
+        },
+        "link_font_size": {
+          "label": "Link Font Size"
+        },
+        "link_shadow_color": {
+          "label": "Link Box Shadow"
+        },
+        "social_bg_color": {
+          "label": "Social Background"
+        },
+        "social_text_color": {
+          "label": "Social Text Color"
+        },
+        "social_font_size": {
+          "label": "Social Font Size"
+        },
+        "input_bg_color": {
+          "label": "Input Background"
+        },
+        "input_text_color": {
+          "label": "Input Text Color"
+        },
+        "bottom_bg_color": {
+          "label": "Bottom Bar Background"
+        },
+        "bottom_text_color": {
+          "label": "Bottom Bar Text Color"
+        },
+        "bottom_font_size": {
+          "label": "Bottom Bar Font Size"
+        },
+        "enable_custom_design": {
+          "label": "Enable Custom Design",
+          "info": "When enabled, these override the default colors and typography."
+        },
+        "custom_bg_color": {
+          "label": "Custom Background"
+        },
+        "custom_text_color": {
+          "label": "Custom Text Color"
+        },
+        "custom_accent_color": {
+          "label": "Custom Accent Color"
+        },
+        "custom_card_bg": {
+          "label": "Custom Card Background"
+        },
+        "custom_scallop_color": {
+          "label": "Custom Scallop Color"
+        },
+        "custom_link_bg": {
+          "label": "Custom Link Background"
+        },
+        "custom_link_text": {
+          "label": "Custom Link Text"
+        },
+        "custom_link_shadow": {
+          "label": "Custom Link Shadow"
+        },
+        "custom_bottom_bg": {
+          "label": "Custom Bottom Bar Background"
+        },
+        "custom_bottom_text": {
+          "label": "Custom Bottom Bar Text"
+        },
+        "custom_heading_font": {
+          "label": "Custom Heading Font"
+        },
+        "custom_body_font": {
+          "label": "Custom Body Font"
+        }
+      },
+      "blocks": {
+        "brand_info": {
+          "name": "Brand Info (Left)",
+          "settings": {
+            "brand_logo": {
+              "label": "Brand Logo"
+            },
+            "mission_text": {
+              "label": "Brand Mission Text"
+            }
+          }
+        },
+        "newsletter": {
+          "name": "Newsletter (Left)",
+          "settings": {
+            "newsletter_title": {
+              "label": "Newsletter Title"
+            },
+            "newsletter_text": {
+              "label": "Newsletter Subtext"
+            }
+          }
+        },
+        "menu": {
+          "name": "Menu Column (Right)",
+          "settings": {
+            "menu_title": {
+              "label": "Menu Title"
+            },
+            "menu": {
+              "label": "Select Menu"
+            },
+            "show_policies": {
+              "label": "Show Store Policies"
+            }
+          }
+        },
+        "social_links": {
+          "name": "Social Links (Right)",
+          "settings": {
+            "social_title": {
+              "label": "Social Title"
+            },
+            "social_twitter": {
+              "label": "Twitter URL"
+            },
+            "social_facebook": {
+              "label": "Facebook URL"
+            },
+            "social_instagram": {
+              "label": "Instagram URL"
+            },
+            "social_pinterest": {
+              "label": "Pinterest URL"
+            },
+            "social_youtube": {
+              "label": "YouTube URL"
+            }
+          }
+        }
+      }
+    },
+    "header": {
+      "name": "Header",
+      "headers": {
+        "style_options": "Style Options",
+        "custom_design_override": "Custom Design Override",
+        "branding": "Branding",
+        "top_bar": "Top Bar",
+        "main_bar": "Main Bar",
+        "navigation": "Navigation"
+      },
+      "settings": {
+        "header_style": {
+          "label": "Header style",
+          "info": "Animated = premium motion, Minimal = flat clean, Classic = default",
+          "options": {
+            "classic": "Classic",
+            "animated": "Animated (premium)",
+            "minimal": "Minimal (flat)"
+          }
+        },
+        "enable_sticky": {
+          "label": "Sticky header on scroll"
+        },
+        "hide_on_scroll": {
+          "label": "Hide on scroll down, show on scroll up",
+          "info": "Only works when sticky is enabled"
+        },
+        "enable_custom_design": {
+          "label": "Enable custom design override",
+          "info": "When enabled, these values override theme settings for this header only"
+        },
+        "custom_bg": {
+          "label": "Background color"
+        },
+        "custom_bg_2": {
+          "label": "Top bar background"
+        },
+        "custom_text": {
+          "label": "Text color"
+        },
+        "custom_accent": {
+          "label": "Accent color"
+        },
+        "custom_accent_2": {
+          "label": "Secondary accent"
+        },
+        "custom_border": {
+          "label": "Border color"
+        },
+        "custom_font_size": {
+          "label": "Base font size"
+        },
+        "custom_nav_font_size": {
+          "label": "Navigation font size"
+        },
+        "custom_padding_top": {
+          "label": "Padding top"
+        },
+        "custom_padding_bottom": {
+          "label": "Padding bottom"
+        },
+        "custom_radius": {
+          "label": "Corner radius"
+        },
+        "logo": {
+          "label": "Logo image",
+          "info": "Leave blank to use theme logo from theme settings"
+        },
+        "topbar_menu": {
+          "label": "Top bar menu"
+        },
+        "phone": {
+          "label": "Phone number"
+        },
+        "show_currency": {
+          "label": "Show country/currency selector",
+          "info": "Shown when the store sells in more than one market. Add markets in Settings > Markets"
+        },
+        "show_search": {
+          "label": "Show search bar"
+        },
+        "show_compare": {
+          "label": "Show compare icon"
+        },
+        "compare_url": {
+          "label": "Compare page URL"
+        },
+        "mega_label": {
+          "label": "Mega menu button label"
+        },
+        "main_menu": {
+          "label": "Main menu"
+        },
+        "deal_text": {
+          "label": "Deal badge text",
+          "info": "Leave blank to hide"
+        },
+        "deal_link": {
+          "label": "Deal badge link"
+        },
+        "show_language": {
+          "label": "Show language selector",
+          "info": "Shown when the store has more than one published language. Add languages in Settings > Languages"
+        }
+      },
+      "blocks": {
+        "menu_item": {
+          "name": "Mega Menu Item",
+          "settings": {
+            "title": {
+              "label": "Title"
+            },
+            "link": {
+              "label": "Link"
+            },
+            "submenu": {
+              "label": "Submenu HTML (optional)"
+            }
+          }
+        }
+      }
+    },
+    "instagram_feed_gallery": {
+      "name": "Instagram Feed Gallery",
+      "headers": {
+        "content_settings": "Content Settings",
+        "image_styling": "Image Styling",
+        "default_colors": "Default Colors",
+        "section_spacing": "Section Spacing",
+        "custom_design_override": "Custom Design (Override)"
+      },
+      "settings": {
+        "heading": {
+          "label": "Heading"
+        },
+        "button_label": {
+          "label": "Instagram Button Text"
+        },
+        "instagram_url": {
+          "label": "Instagram Page URL"
+        },
+        "border_radius": {
+          "label": "Image Border Radius"
+        },
+        "border_width": {
+          "label": "Image Border Width"
+        },
+        "background_color": {
+          "label": "Section Background"
+        },
+        "text_color": {
+          "label": "Heading Text Color"
+        },
+        "accent_color": {
+          "label": "Button & Border Color"
+        },
+        "padding_top": {
+          "label": "Padding Top"
+        },
+        "padding_bottom": {
+          "label": "Padding Bottom"
+        },
+        "enable_custom_design": {
+          "label": "Enable Custom Design",
+          "info": "When enabled, these override the default colors and typography."
+        },
+        "custom_bg_color": {
+          "label": "Custom Background"
+        },
+        "custom_text_color": {
+          "label": "Custom Text Color"
+        },
+        "custom_accent_color": {
+          "label": "Custom Accent Color"
+        },
+        "custom_heading_font": {
+          "label": "Custom Heading Font"
+        },
+        "custom_body_font": {
+          "label": "Custom Body Font"
+        }
+      },
+      "blocks": {
+        "photo": {
+          "name": "Community Photo",
+          "settings": {
+            "image": {
+              "label": "Image"
+            },
+            "link": {
+              "label": "Instagram Post URL"
+            }
+          }
+        }
+      }
+    },
+    "lookbook": {
+      "name": "Lookbook Slider",
+      "settings": {
+        "accessible_label": {
+          "label": "Section Label"
+        },
+        "container_width": {
+          "label": "Container Width",
+          "options": {
+            "page": "Page Width (Boxed)",
+            "full": "Full Width (Stretched)"
+          }
+        },
+        "background_color": {
+          "label": "Background Color"
+        },
+        "text_color": {
+          "label": "Text Color"
+        },
+        "accent_color": {
+          "label": "Accent Color (Buttons & Highlights)"
+        },
+        "enable_custom_design": {
+          "label": "Enable Custom Design",
+          "info": "When enabled, these override the default colors and typography."
+        },
+        "custom_bg_color": {
+          "label": "Custom Background"
+        },
+        "custom_text_color": {
+          "label": "Custom Text Color"
+        },
+        "custom_accent_color": {
+          "label": "Custom Accent Color"
+        },
+        "custom_heading_font": {
+          "label": "Custom Heading Font"
+        },
+        "custom_body_font": {
+          "label": "Custom Body Font"
+        }
+      },
+      "headers": {
+        "default_colors": "Default Colors",
+        "custom_design_override": "Custom Design (Override)"
+      },
+      "blocks": {
+        "lookbook_slide": {
+          "name": "Lookbook Slide",
+          "settings": {
+            "hero_image": {
+              "label": "Main Hero Image"
+            },
+            "thumbnail_image": {
+              "label": "Thumbnail Image (Optional)"
+            },
+            "eyebrow": {
+              "label": "Small Top Label"
+            },
+            "title": {
+              "label": "Heading"
+            },
+            "description": {
+              "label": "Description"
+            },
+            "button_label": {
+              "label": "Button Label"
+            },
+            "button_link": {
+              "label": "Button Link"
+            }
+          }
+        }
+      }
+    },
+    "main_list_collections": {
+      "name": "Category Collection",
+      "headers": {
+        "section_settings": "Section Settings",
+        "default_colors": "Default Colors",
+        "custom_design_override": "Custom Design (Override)"
+      },
+      "settings": {
+        "heading_text": {
+          "label": "Heading Text"
+        },
+        "button_text": {
+          "label": "Button Text"
+        },
+        "section_padding_top": {
+          "label": "Padding Top"
+        },
+        "section_padding_bottom": {
+          "label": "Padding Bottom"
+        },
+        "default_bg_color": {
+          "label": "Section Background"
+        },
+        "default_text_color": {
+          "label": "Text & Dark Elements"
+        },
+        "default_accent_color": {
+          "label": "Accent Color (Buttons)"
+        },
+        "enable_custom_colors": {
+          "label": "Enable Custom Design",
+          "info": "When enabled, these override the default colors and fonts for this section."
+        },
+        "custom_bg_color": {
+          "label": "Custom Background"
+        },
+        "custom_text_color": {
+          "label": "Custom Text Color"
+        },
+        "custom_accent_color": {
+          "label": "Custom Accent Color"
+        },
+        "custom_heading_font": {
+          "label": "Custom Heading Font"
+        },
+        "custom_heading_size": {
+          "label": "Custom Heading Size"
+        },
+        "custom_body_font": {
+          "label": "Custom Body Font"
+        },
+        "custom_body_size": {
+          "label": "Custom Body Size"
+        }
+      },
+      "blocks": {
+        "category": {
+          "name": "Category Card",
+          "settings": {
+            "collection": {
+              "label": "Select Collection"
+            },
+            "custom_image": {
+              "label": "Custom Image",
+              "info": "Overrides Collection image if selected"
+            },
+            "custom_title": {
+              "label": "Custom Tag Title",
+              "info": "Overrides Collection title (e.g., CASUAL, LEISURE)"
+            },
+            "custom_description": {
+              "label": "Custom Description",
+              "info": "Overrides Collection description"
+            },
+            "layout_center": {
+              "label": "Move description below image?"
+            }
+          }
+        }
+      }
+    },
+    "newsletter_email": {
+      "name": "Email Signup Hero",
+      "headers": {
+        "content": "Content",
+        "form_settings": "Form Settings",
+        "default_colors": "Default Colors",
+        "custom_design_override": "Custom Design (Override)"
+      },
+      "settings": {
+        "top_text": {
+          "label": "Top Cursive Text"
+        },
+        "heading_line_1": {
+          "label": "Heading Line 1"
+        },
+        "heading_line_2": {
+          "label": "Heading Line 2"
+        },
+        "image": {
+          "label": "Floating Image"
+        },
+        "placeholder_text": {
+          "label": "Input Placeholder"
+        },
+        "button_text": {
+          "label": "Button Text"
+        },
+        "background_color": {
+          "label": "Background Color"
+        },
+        "text_color": {
+          "label": "Text Color (Headings)"
+        },
+        "accent_color": {
+          "label": "Button Hover Color"
+        },
+        "form_bg_color": {
+          "label": "Form Background"
+        },
+        "form_text_color": {
+          "label": "Form Text Color"
+        },
+        "enable_custom_design": {
+          "label": "Enable Custom Design",
+          "info": "When enabled, these override the default colors and typography."
+        },
+        "custom_bg_color": {
+          "label": "Custom Background"
+        },
+        "custom_text_color": {
+          "label": "Custom Text Color"
+        },
+        "custom_accent_color": {
+          "label": "Custom Accent Color"
+        },
+        "custom_form_bg_color": {
+          "label": "Custom Form Background"
+        },
+        "custom_form_text_color": {
+          "label": "Custom Form Text Color"
+        },
+        "custom_heading_font": {
+          "label": "Custom Heading Font"
+        },
+        "custom_body_font": {
+          "label": "Custom Body Font"
+        },
+        "custom_top_text_size": {
+          "label": "Custom Top Text Size"
+        },
+        "custom_heading_size": {
+          "label": "Custom Heading Size"
+        },
+        "custom_input_size": {
+          "label": "Custom Input Size"
+        },
+        "custom_button_size": {
+          "label": "Custom Button Size"
+        }
+      }
+    },
+    "product_tabs": {
+      "name": "Product Tabs",
+      "headers": {
+        "section_spacing": "Section Spacing",
+        "default_colors_and_typography": "Default Colors & Typography",
+        "custom_design_override": "Custom Design (Override)"
+      },
+      "settings": {
+        "padding_top": {
+          "label": "Padding Top"
+        },
+        "padding_bottom": {
+          "label": "Padding Bottom"
+        },
+        "background_color": {
+          "label": "Background Color"
+        },
+        "text_color": {
+          "label": "Text Color"
+        },
+        "accent_color": {
+          "label": "Accent Color (Active Tab Line)"
+        },
+        "border_color": {
+          "label": "Border Color"
+        },
+        "enable_custom_design": {
+          "label": "Enable Custom Design",
+          "info": "When enabled, these override the default colors and typography."
+        },
+        "custom_bg_color": {
+          "label": "Custom Background"
+        },
+        "custom_text_color": {
+          "label": "Custom Text Color"
+        },
+        "custom_accent_color": {
+          "label": "Custom Accent Color"
+        },
+        "custom_border_color": {
+          "label": "Custom Border Color"
+        },
+        "custom_heading_font": {
+          "label": "Custom Heading Font"
+        },
+        "custom_body_font": {
+          "label": "Custom Body Font"
+        }
+      },
+      "blocks": {
+        "description": {
+          "name": "Description Tab",
+          "settings": {
+            "tab_title": {
+              "label": "Tab Title"
+            },
+            "custom_description": {
+              "label": "Custom Description Text",
+              "info": "Agar blank chhodenge toh product ki default description aayegi."
+            }
+          }
+        },
+        "reviews": {
+          "name": "Reviews Tab",
+          "settings": {
+            "tab_title": {
+              "label": "Tab Title"
+            },
+            "review_content": {
+              "label": "Review Content",
+              "info": "Yaha aap review ya review app ka HTML daal sakte hain."
+            },
+            "empty_state_text": {
+              "label": "Empty State Text"
+            }
+          }
+        },
+        "shipping": {
+          "name": "Shipping Tab",
+          "settings": {
+            "tab_title": {
+              "label": "Tab Title"
+            },
+            "shipping_content": {
+              "label": "Shipping Policy Content"
+            }
+          }
+        },
+        "size_chart": {
+          "name": "Size Chart Tab",
+          "settings": {
+            "tab_title": {
+              "label": "Tab Title"
+            },
+            "size_chart_image": {
+              "label": "Size Chart Image"
+            },
+            "custom_size_chart": {
+              "label": "Custom Size Chart (Table/Text)",
+              "info": "Shown when no size chart image is selected"
+            },
+            "empty_state_text": {
+              "label": "Empty State Text"
+            }
+          }
+        },
+        "custom_content_tab": {
+          "name": "Custom Content Tab",
+          "settings": {
+            "tab_title": {
+              "label": "Tab Title"
+            },
+            "custom_content": {
+              "label": "Content"
+            }
+          }
+        }
+      }
+    },
+    "product": {
+      "name": "Main Product",
+      "headers": {
+        "section_spacing": "Section Spacing",
+        "colors_fashion_theme": "Colors (Fashion Theme)"
+      },
+      "settings": {
+        "padding_top": {
+          "label": "Padding Top"
+        },
+        "padding_bottom": {
+          "label": "Padding Bottom"
+        },
+        "background_color": {
+          "label": "Main Background"
+        },
+        "soft_background": {
+          "label": "Soft Background"
+        },
+        "text_color": {
+          "label": "Text Color"
+        },
+        "accent_color": {
+          "label": "Accent Color (Highlights)"
+        },
+        "button_bg_color": {
+          "label": "Button Background"
+        },
+        "button_text_color": {
+          "label": "Button Text Color"
+        },
+        "border_color": {
+          "label": "Border Color"
+        },
+        "card_border_width": {
+          "label": "Card Border Width"
+        }
+      },
+      "blocks": {
+        "customer_review": {
+          "name": "Customer Review Card",
+          "settings": {
+            "customer_image": {
+              "label": "Customer Image"
+            },
+            "customer_name": {
+              "label": "Customer Name"
+            },
+            "review_title": {
+              "label": "Review Title"
+            },
+            "review_text": {
+              "label": "Review Text"
+            }
+          }
+        },
+        "title": {
+          "name": "Product Title",
+          "settings": {
+            "subtitle": {
+              "label": "Subtitle Text"
+            }
+          }
+        },
+        "rating": {
+          "name": "Rating",
+          "settings": {
+            "review_count": {
+              "label": "Review Count Text"
+            }
+          }
+        },
+        "description": {
+          "name": "Description"
+        },
+        "key_benefits": {
+          "name": "Key Benefits List",
+          "settings": {
+            "benefits_list": {
+              "label": "Benefits (comma separated)"
+            }
+          }
+        },
+        "variant_picker": {
+          "name": "Variant picker"
+        },
+        "quantity_selector": {
+          "name": "Quantity Selector"
+        },
+        "stock_alert": {
+          "name": "Stock Alert",
+          "settings": {
+            "stock_text": {
+              "label": "Stock Alert Text"
+            }
+          }
+        },
+        "selling_plan": {
+          "name": "Subscription",
+          "settings": {
+            "subscribe_title": {
+              "label": "Header Text"
+            }
+          }
+        },
+        "buy_button": {
+          "name": "Buy Button",
+          "settings": {
+            "button_text": {
+              "label": "Button Text"
+            },
+            "show_price": {
+              "label": "Show Price in Button"
+            }
+          }
+        },
+        "guarantee_text": {
+          "name": "Guarantee Text",
+          "settings": {
+            "guarantee_text": {
+              "label": "Guarantee Text"
+            }
+          }
+        },
+        "size_chart": {
+          "name": "Size Chart",
+          "settings": {
+            "title": {
+              "label": "Button Label"
+            },
+            "size_chart_image": {
+              "label": "Size Chart Image (Optional)"
+            }
+          }
+        },
+        "faq_accordion": {
+          "name": "FAQ Accordion",
+          "settings": {
+            "title": {
+              "label": "Title"
+            },
+            "content": {
+              "label": "Content"
+            }
+          }
+        },
+        "shipping_info": {
+          "name": "Shipping Info",
+          "settings": {
+            "shipping_text": {
+              "label": "Text"
+            }
+          }
+        },
+        "payment_icons": {
+          "name": "Payment Icons"
+        },
+        "social_share": {
+          "name": "Social Share"
+        }
+      }
+    },
+    "related_products": {
+      "name": "Related Products",
+      "headers": {
+        "section_content": "Section Content",
+        "layout_settings": "Layout Settings",
+        "product_image_style": "Product Image Style",
+        "button_and_header": "Button & Header",
+        "spacing": "Spacing",
+        "default_colors": "Default Colors",
+        "custom_design_override": "Custom Design (Override)"
+      },
+      "settings": {
+        "heading": {
+          "label": "Heading"
+        },
+        "subheading": {
+          "label": "Subheading"
+        },
+        "collection": {
+          "label": "Select Specific Collection",
+          "info": "Agar khali chhodenge toh product ki default collection se related products aayenge."
+        },
+        "products_limit": {
+          "label": "Maximum products to show"
+        },
+        "container_width": {
+          "label": "Container Width",
+          "options": {
+            "page": "Page Width (Boxed)",
+            "full": "Full Width (Stretched)"
+          }
+        },
+        "layout_type": {
+          "label": "Layout Type",
+          "options": {
+            "grid": "Grid",
+            "slider": "Slider (Carousel)"
+          }
+        },
+        "products_per_row": {
+          "label": "Products Per Row (Grid only)",
+          "options": {
+            "3": "3 Products",
+            "4": "4 Products"
+          }
+        },
+        "image_fit": {
+          "label": "Image Fit",
+          "options": {
+            "cover": "Cover (Crop to fill)",
+            "contain": "Contain (Show full image)"
+          }
+        },
+        "show_view_all": {
+          "label": "Show 'View All' Button"
+        },
+        "view_all_text": {
+          "label": "View All Button Text"
+        },
+        "padding_top": {
+          "label": "Padding Top"
+        },
+        "padding_bottom": {
+          "label": "Padding Bottom"
+        },
+        "background_color": {
+          "label": "Background Color"
+        },
+        "text_color": {
+          "label": "Text Color"
+        },
+        "accent_color": {
+          "label": "Accent Color (Red/Dots)"
+        },
+        "enable_custom_design": {
+          "label": "Enable Custom Design",
+          "info": "When enabled, these override the default colors and typography."
+        },
+        "custom_bg_color": {
+          "label": "Custom Background"
+        },
+        "custom_text_color": {
+          "label": "Custom Text Color"
+        },
+        "custom_accent_color": {
+          "label": "Custom Accent Color"
+        },
+        "custom_heading_font": {
+          "label": "Custom Heading Font"
+        },
+        "custom_body_font": {
+          "label": "Custom Body Font"
+        }
+      }
+    },
+    "seasonal_sale_banner": {
+      "name": "Seasonal Sale Banner",
+      "headers": {
+        "section_content": "Section Content",
+        "countdown_settings": "Countdown Settings",
+        "default_colors": "Default Colors",
+        "custom_design_override": "Custom Design (Override)",
+        "custom_button_settings": "Custom Button Settings"
+      },
+      "settings": {
+        "background_image": {
+          "label": "Background Image"
+        },
+        "main_heading": {
+          "label": "Main Heading"
+        },
+        "description_text": {
+          "label": "Description Text"
+        },
+        "button_text": {
+          "label": "Button Text"
+        },
+        "button_link": {
+          "label": "Button Link"
+        },
+        "countdown_end_date": {
+          "label": "End Date",
+          "info": "Format: YYYY-MM-DDTHH:MM:SS (e.g., 2025-12-31T23:59:59)"
+        },
+        "days_label": {
+          "label": "Days Label"
+        },
+        "hours_label": {
+          "label": "Hours Label"
+        },
+        "minutes_label": {
+          "label": "Minutes Label"
+        },
+        "seconds_label": {
+          "label": "Seconds Label"
+        },
+        "section_background_color": {
+          "label": "Section Background"
+        },
+        "primary_text_color": {
+          "label": "Primary Text Color"
+        },
+        "primary_accent_color": {
+          "label": "Primary Accent Color"
+        },
+        "glass_card_background": {
+          "label": "Glass Card Background"
+        },
+        "enable_custom_design": {
+          "label": "Enable Custom Design",
+          "info": "When enabled, these override the default colors and typography."
+        },
+        "custom_bg_color": {
+          "label": "Custom Background"
+        },
+        "custom_text_color": {
+          "label": "Custom Text Color"
+        },
+        "custom_accent_color": {
+          "label": "Custom Accent Color"
+        },
+        "custom_card_color": {
+          "label": "Custom Glass Card Color"
+        },
+        "custom_heading_font": {
+          "label": "Custom Heading Font"
+        },
+        "custom_body_font": {
+          "label": "Custom Body Font"
+        },
+        "custom_btn_bg_color": {
+          "label": "Button Background"
+        },
+        "custom_btn_text_color": {
+          "label": "Button Text Color"
+        },
+        "custom_btn_font_size": {
+          "label": "Button Font Size"
+        },
+        "custom_btn_radius": {
+          "label": "Button Border Radius"
+        }
+      }
     }
   },
   "options": {
@@ -208,6 +2060,11 @@
       "screen": "Full screen",
       "small": "Small"
     },
+    "thumbnail_position": {
+      "left": "Left",
+      "right": "Right",
+      "below": "Below"
+    },
     "swatch_shape": {
       "circle": "Circle",
       "square": "Square",
@@ -227,8 +2084,7 @@
     "variant_picker": {
       "dropdown": "Dropdown",
       "pills": "Pills",
-      "color": "Color swatch",
-      "image": "Image swatch"
+      "swatch": "Swatches"
     }
   }
 }

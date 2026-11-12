@@ -1,0 +1,18 @@
+{
+  "sections": {
+    "contact_form": {
+      "type": "contact-form",
+      "settings": {
+        "heading": "Contact Us",
+        "description": "Have a question or need assistance? Our team is here to help.",
+        "button_text": "Send Message",
+        "email": "hello@yourstore.com",
+        "phone": "+1 234 567 890",
+        "address": "123 Fashion Street, New York, NY 10001"
+      }
+    }
+  },
+  "order": [
+    "contact_form"
+  ]
+}

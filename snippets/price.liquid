@@ -1,0 +1,15 @@
+{% doc %}
+  Renders a money amount, with the currency code when the
+  "Show currency codes" theme setting is on (for example $10.00 USD).
+
+  @param {number} amount - Amount in the store's smallest currency unit, such as cents
+
+  @example
+  {% render 'price', amount: product.price %}
+{% enddoc %}
+
+{%- if settings.show_currency_code -%}
+  {{- amount | money_with_currency -}}
+{%- else -%}
+  {{- amount | money -}}
+{%- endif -%}

@@ -10,6 +10,8 @@
 <cart-items
   class="cart-popup__content"
   data-section="cart-popup"
+  data-cart-total-value="{% render 'price', amount: cart.total_price %}"
+  data-cart-count-value="{{ cart.item_count }}"
   {% if cart.empty? %}
     data-empty
   {% endif %}
@@ -28,7 +30,7 @@
 
     <p class="cart-popup__subtotal" data-cart-region="subtotal">
       <span>{{ 'cart.popup.subtotal' | t }}</span>
-      <span class="cart-popup__amount">{{ cart.items_subtotal_price | money }}</span>
+      <span class="cart-popup__amount">{% render 'price', amount: cart.items_subtotal_price %}</span>
     </p>
 
     <form action="{{ routes.cart_url }}" method="post" class="cart-popup__actions">

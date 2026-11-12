@@ -412,174 +412,174 @@
 
 {% schema %}
 {
-  "name": "Seasonal Sale Banner",
+  "name": "t:sections.seasonal_sale_banner.name",
   "tag": "section",
   "class": "section-seasonal-sale-banner",
   "settings": [
     {
       "type": "header",
-      "content": "Section Content"
+      "content": "t:sections.seasonal_sale_banner.headers.section_content"
     },
     {
       "type": "image_picker",
       "id": "background_image",
-      "label": "Background Image"
+      "label": "t:sections.seasonal_sale_banner.settings.background_image.label"
     },
     {
       "type": "text",
       "id": "main_heading",
-      "label": "Main Heading",
+      "label": "t:sections.seasonal_sale_banner.settings.main_heading.label",
       "default": "UP TO 30% OFF"
     },
     {
       "type": "richtext",
       "id": "description_text",
-      "label": "Description Text",
+      "label": "t:sections.seasonal_sale_banner.settings.description_text.label",
       "default": "<p>Calling all bag lovers! Our mega sale is here and it's time to make a serious style statement.</p>"
     },
     {
       "type": "text",
       "id": "button_text",
-      "label": "Button Text",
+      "label": "t:sections.seasonal_sale_banner.settings.button_text.label",
       "default": "Explore Collection"
     },
     {
       "type": "url",
       "id": "button_link",
-      "label": "Button Link"
+      "label": "t:sections.seasonal_sale_banner.settings.button_link.label"
     },
     {
       "type": "header",
-      "content": "Countdown Settings"
+      "content": "t:sections.seasonal_sale_banner.headers.countdown_settings"
     },
     {
       "type": "text",
       "id": "countdown_end_date",
-      "label": "End Date",
-      "info": "Format: YYYY-MM-DDTHH:MM:SS (e.g., 2025-12-31T23:59:59)",
+      "label": "t:sections.seasonal_sale_banner.settings.countdown_end_date.label",
+      "info": "t:sections.seasonal_sale_banner.settings.countdown_end_date.info",
       "default": "2025-12-31T23:59:59"
     },
     {
       "type": "text",
       "id": "days_label",
-      "label": "Days Label",
+      "label": "t:sections.seasonal_sale_banner.settings.days_label.label",
       "default": "Days"
     },
     {
       "type": "text",
       "id": "hours_label",
-      "label": "Hours Label",
+      "label": "t:sections.seasonal_sale_banner.settings.hours_label.label",
       "default": "Hours"
     },
     {
       "type": "text",
       "id": "minutes_label",
-      "label": "Minutes Label",
+      "label": "t:sections.seasonal_sale_banner.settings.minutes_label.label",
       "default": "Mins"
     },
     {
       "type": "text",
       "id": "seconds_label",
-      "label": "Seconds Label",
+      "label": "t:sections.seasonal_sale_banner.settings.seconds_label.label",
       "default": "Sec"
     },
     {
       "type": "header",
-      "content": "Default Colors"
+      "content": "t:sections.seasonal_sale_banner.headers.default_colors"
     },
     {
       "type": "color",
       "id": "section_background_color",
-      "label": "Section Background",
+      "label": "t:sections.seasonal_sale_banner.settings.section_background_color.label",
       "default": "#FAF6F0"
     },
     {
       "type": "color",
       "id": "primary_text_color",
-      "label": "Primary Text Color",
+      "label": "t:sections.seasonal_sale_banner.settings.primary_text_color.label",
       "default": "#2B1E16"
     },
     {
       "type": "color",
       "id": "primary_accent_color",
-      "label": "Primary Accent Color",
+      "label": "t:sections.seasonal_sale_banner.settings.primary_accent_color.label",
       "default": "#9C4A1A"
     },
     {
       "type": "color",
       "id": "glass_card_background",
-      "label": "Glass Card Background",
+      "label": "t:sections.seasonal_sale_banner.settings.glass_card_background.label",
       "default": "#FAF6F0"
     },
     {
       "type": "header",
-      "content": "Custom Design (Override)"
+      "content": "t:sections.seasonal_sale_banner.headers.custom_design_override"
     },
     {
       "type": "checkbox",
       "id": "enable_custom_design",
-      "label": "Enable Custom Design",
-      "info": "When enabled, these override the default colors and typography.",
+      "label": "t:sections.seasonal_sale_banner.settings.enable_custom_design.label",
+      "info": "t:sections.seasonal_sale_banner.settings.enable_custom_design.info",
       "default": false
     },
     {
       "type": "color",
       "id": "custom_bg_color",
-      "label": "Custom Background",
+      "label": "t:sections.seasonal_sale_banner.settings.custom_bg_color.label",
       "default": "#FFFFFF",
       "visible_if": "{{ section.settings.enable_custom_design }}"
     },
     {
       "type": "color",
       "id": "custom_text_color",
-      "label": "Custom Text Color",
+      "label": "t:sections.seasonal_sale_banner.settings.custom_text_color.label",
       "default": "#111111",
       "visible_if": "{{ section.settings.enable_custom_design }}"
     },
     {
       "type": "color",
       "id": "custom_accent_color",
-      "label": "Custom Accent Color",
+      "label": "t:sections.seasonal_sale_banner.settings.custom_accent_color.label",
       "default": "#000000",
       "visible_if": "{{ section.settings.enable_custom_design }}"
     },
     {
       "type": "color",
       "id": "custom_card_color",
-      "label": "Custom Glass Card Color",
+      "label": "t:sections.seasonal_sale_banner.settings.custom_card_color.label",
       "default": "#FFFFFF",
       "visible_if": "{{ section.settings.enable_custom_design }}"
     },
     {
       "type": "font_picker",
       "id": "custom_heading_font",
-      "label": "Custom Heading Font",
+      "label": "t:sections.seasonal_sale_banner.settings.custom_heading_font.label",
       "default": "assistant_n4",
       "visible_if": "{{ section.settings.enable_custom_design }}"
     },
     {
       "type": "font_picker",
       "id": "custom_body_font",
-      "label": "Custom Body Font",
+      "label": "t:sections.seasonal_sale_banner.settings.custom_body_font.label",
       "default": "assistant_n4",
       "visible_if": "{{ section.settings.enable_custom_design }}"
     },
     {
       "type": "header",
-      "content": "Custom Button Settings",
+      "content": "t:sections.seasonal_sale_banner.headers.custom_button_settings",
       "visible_if": "{{ section.settings.enable_custom_design }}"
     },
     {
       "type": "color",
       "id": "custom_btn_bg_color",
-      "label": "Button Background",
+      "label": "t:sections.seasonal_sale_banner.settings.custom_btn_bg_color.label",
       "default": "#111111",
       "visible_if": "{{ section.settings.enable_custom_design }}"
     },
     {
       "type": "color",
       "id": "custom_btn_text_color",
-      "label": "Button Text Color",
+      "label": "t:sections.seasonal_sale_banner.settings.custom_btn_text_color.label",
       "default": "#FFFFFF",
       "visible_if": "{{ section.settings.enable_custom_design }}"
     },
@@ -590,7 +590,7 @@
       "max": 24,
       "step": 1,
       "unit": "px",
-      "label": "Button Font Size",
+      "label": "t:sections.seasonal_sale_banner.settings.custom_btn_font_size.label",
       "default": 16,
       "visible_if": "{{ section.settings.enable_custom_design }}"
     },
@@ -601,15 +601,15 @@
       "max": 40,
       "step": 1,
       "unit": "px",
-      "label": "Button Border Radius",
+      "label": "t:sections.seasonal_sale_banner.settings.custom_btn_radius.label",
       "default": 8,
       "visible_if": "{{ section.settings.enable_custom_design }}"
     }
   ],
   "presets": [
     {
-      "name": "Seasonal Sale Banner",
-      "category": "Promotional"
+      "name": "t:sections.seasonal_sale_banner.name",
+      "category": "t:general.categories.promotional"
     }
   ]
 }

@@ -103,7 +103,7 @@
           class="cinematic-lookbook-{{ section.id }}__thumb{% if forloop.first %} is-active{% endif %}"
           type="button"
           data-lookbook-thumb="{{ forloop.index0 }}"
-          aria-label="View {{ block.settings.title | escape }}"
+          aria-label="{{ 'general.slider.view' | t: title: block.settings.title }}"
         >
           {%- assign thumb_img = block.settings.thumbnail_image | default: block.settings.hero_image -%}
           {%- if thumb_img != blank -%}
@@ -510,7 +510,7 @@
 
 {% schema %}
 {
-  "name": "Lookbook Slider",
+  "name": "t:sections.lookbook.name",
   "tag": "section",
   "class": "section-cinematic-lookbook",
   "max_blocks": 6,
@@ -518,84 +518,90 @@
     {
       "type": "text",
       "id": "accessible_label",
-      "label": "Section Label",
+      "label": "t:sections.lookbook.settings.accessible_label.label",
       "default": "Cinematic Lookbook Slider"
     },
     {
       "type": "select",
       "id": "container_width",
-      "label": "Container Width",
+      "label": "t:sections.lookbook.settings.container_width.label",
       "options": [
-        { "value": "page", "label": "Page Width (Boxed)" },
-        { "value": "full", "label": "Full Width (Stretched)" }
+        {
+          "value": "page",
+          "label": "t:sections.lookbook.settings.container_width.options.page"
+        },
+        {
+          "value": "full",
+          "label": "t:sections.lookbook.settings.container_width.options.full"
+        }
       ],
       "default": "page"
     },
     {
       "type": "header",
-      "content": "Default Colors"
+      "content": "t:sections.lookbook.headers.default_colors"
     },
     {
       "type": "color",
       "id": "background_color",
-      "label": "Background Color",
+      "label": "t:sections.lookbook.settings.background_color.label",
       "default": "#FAF6F0"
     },
     {
       "type": "color",
       "id": "text_color",
-      "label": "Text Color",
+      "label": "t:sections.lookbook.settings.text_color.label",
       "default": "#2B1E16"
     },
     {
       "type": "color",
       "id": "accent_color",
-      "label": "Accent Color (Buttons & Highlights)",
+      "label": "t:sections.lookbook.settings.accent_color.label",
       "default": "#9C4A1A"
     },
     {
       "type": "header",
-      "content": "Custom Design (Override)"
+      "content": "t:sections.lookbook.headers.custom_design_override"
     },
     {
       "type": "checkbox",
       "id": "enable_custom_design",
-      "label": "Enable Custom Design",
-      "info": "When enabled, these override the default colors and typography.",
+      "label": "t:sections.lookbook.settings.enable_custom_design.label",
+      "info": "t:sections.lookbook.settings.enable_custom_design.info",
       "default": false
     },
     {
       "type": "color",
       "id": "custom_bg_color",
-      "label": "Custom Background",
+      "label": "t:sections.lookbook.settings.custom_bg_color.label",
       "default": "#FFFFFF",
       "visible_if": "{{ section.settings.enable_custom_design }}"
     },
     {
       "type": "color",
       "id": "custom_text_color",
-      "label": "Custom Text Color",
+      "label": "t:sections.lookbook.settings.custom_text_color.label",
       "default": "#111111",
       "visible_if": "{{ section.settings.enable_custom_design }}"
     },
     {
       "type": "color",
       "id": "custom_accent_color",
-      "label": "Custom Accent Color",
+      "label": "t:sections.lookbook.settings.custom_accent_color.label",
       "default": "#000000",
       "visible_if": "{{ section.settings.enable_custom_design }}"
     },
     {
       "type": "font_picker",
       "id": "custom_heading_font",
-      "label": "Custom Heading Font",
+      "label": "t:sections.lookbook.settings.custom_heading_font.label",
       "default": "assistant_n4",
       "visible_if": "{{ section.settings.enable_custom_design }}"
     },
     {
       "type": "font_picker",
       "id": "custom_body_font",
-      "label": "Custom Body Font",
+      "label": "t:sections.lookbook.settings.custom_body_font.label",
       "default": "assistant_n4",
       "visible_if": "{{ section.settings.enable_custom_design }}"
     }
@@ -603,57 +609,63 @@
   "blocks": [
     {
       "type": "lookbook_slide",
-      "name": "Lookbook Slide",
+      "name": "t:sections.lookbook.blocks.lookbook_slide.name",
       "settings": [
         {
           "type": "image_picker",
           "id": "hero_image",
-          "label": "Main Hero Image"
+          "label": "t:sections.lookbook.blocks.lookbook_slide.settings.hero_image.label"
         },
         {
           "type": "image_picker",
           "id": "thumbnail_image",
-          "label": "Thumbnail Image (Optional)"
+          "label": "t:sections.lookbook.blocks.lookbook_slide.settings.thumbnail_image.label"
         },
         {
           "type": "text",
           "id": "eyebrow",
-          "label": "Small Top Label",
+          "label": "t:sections.lookbook.blocks.lookbook_slide.settings.eyebrow.label",
           "default": "Collection"
         },
         {
           "type": "text",
           "id": "title",
-          "label": "Heading",
+          "label": "t:sections.lookbook.blocks.lookbook_slide.settings.title.label",
           "default": "Autumn Elegance"
         },
         {
           "type": "richtext",
           "id": "description",
-          "label": "Description",
+          "label": "t:sections.lookbook.blocks.lookbook_slide.settings.description.label",
           "default": "<p>Discover the latest trends in our exclusive autumn collection.</p>"
         },
         {
           "type": "text",
           "id": "button_label",
-          "label": "Button Label",
+          "label": "t:sections.lookbook.blocks.lookbook_slide.settings.button_label.label",
           "default": "Shop Now"
         },
         {
           "type": "url",
           "id": "button_link",
-          "label": "Button Link"
+          "label": "t:sections.lookbook.blocks.lookbook_slide.settings.button_link.label"
         }
       ]
     }
   ],
   "presets": [
     {
-      "name": "Lookbook Slider",
+      "name": "t:sections.lookbook.name",
       "blocks": [
-        { "type": "lookbook_slide" },
-        { "type": "lookbook_slide" },
-        { "type": "lookbook_slide" }
+        {
+          "type": "lookbook_slide"
+        },
+        {
+          "type": "lookbook_slide"
+        },
+        {
+          "type": "lookbook_slide"
+        }
       ]
     }
   ]

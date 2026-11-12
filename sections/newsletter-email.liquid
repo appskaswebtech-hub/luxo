@@ -98,18 +98,18 @@
             <input 
               type="email" 
               name="contact[email]" 
-              placeholder="{{ section.settings.placeholder_text | default: 'ENTER YOUR EMAIL...' }}" 
+              placeholder="{%- assign email_fallback = 'general.newsletter.email_placeholder' | t -%}{{ section.settings.placeholder_text | default: email_fallback }}" 
               class="newsletter-email-{{ section.id }}__input" 
               required
-              aria-label="Email address"
+              aria-label="{{ 'general.newsletter.email_label' | t }}"
             >
             <button type="submit" class="newsletter-email-{{ section.id }}__button">
-              {{ section.settings.button_text | default: 'NOTIFY ME' }}
+              {%- assign notify_fallback = 'general.newsletter.notify' | t -%}{{ section.settings.button_text | default: notify_fallback }}
             </button>
           </div>
           
           {%- if form.posted_successfully? -%}
-            <p class="newsletter-email-{{ section.id }}__success">Thanks for subscribing!</p>
+            <p class="newsletter-email-{{ section.id }}__success">{{ 'general.newsletter.success' | t }}</p>
           {%- endif -%}
           {%- if form.errors -%}
             <p class="newsletter-email-{{ section.id }}__error">{{ form.errors.translated_fields.email | capitalize }} {{ form.errors.messages.email }}</p>
@@ -373,144 +373,144 @@
 
 {% schema %}
 {
-  "name": "Email Signup Hero",
+  "name": "t:sections.newsletter_email.name",
   "tag": "section",
   "class": "section-email-signup-hero",
   "settings": [
     {
       "type": "header",
-      "content": "Content"
+      "content": "t:sections.newsletter_email.headers.content"
     },
     {
       "type": "text",
       "id": "top_text",
-      "label": "Top Cursive Text",
+      "label": "t:sections.newsletter_email.settings.top_text.label",
       "default": "Joy Rush"
     },
     {
       "type": "text",
       "id": "heading_line_1",
-      "label": "Heading Line 1",
+      "label": "t:sections.newsletter_email.settings.heading_line_1.label",
       "default": "MORE JOY"
     },
     {
       "type": "text",
       "id": "heading_line_2",
-      "label": "Heading Line 2",
+      "label": "t:sections.newsletter_email.settings.heading_line_2.label",
       "default": "MORE OFTEN"
     },
     {
       "type": "image_picker",
       "id": "image",
-      "label": "Floating Image"
+      "label": "t:sections.newsletter_email.settings.image.label"
     },
     {
       "type": "header",
-      "content": "Form Settings"
+      "content": "t:sections.newsletter_email.headers.form_settings"
     },
     {
       "type": "text",
       "id": "placeholder_text",
-      "label": "Input Placeholder",
+      "label": "t:sections.newsletter_email.settings.placeholder_text.label",
       "default": "ENTER YOUR EMAIL..."
     },
     {
       "type": "text",
       "id": "button_text",
-      "label": "Button Text",
+      "label": "t:sections.newsletter_email.settings.button_text.label",
       "default": "NOTIFY ME"
     },
     {
       "type": "header",
-      "content": "Default Colors"
+      "content": "t:sections.newsletter_email.headers.default_colors"
     },
     {
       "type": "color",
       "id": "background_color",
-      "label": "Background Color",
+      "label": "t:sections.newsletter_email.settings.background_color.label",
       "default": "#FAF6F0"
     },
     {
       "type": "color",
       "id": "text_color",
-      "label": "Text Color (Headings)",
+      "label": "t:sections.newsletter_email.settings.text_color.label",
       "default": "#2B1E16"
     },
     {
       "type": "color",
       "id": "accent_color",
-      "label": "Button Hover Color",
+      "label": "t:sections.newsletter_email.settings.accent_color.label",
       "default": "#9C4A1A"
     },
     {
       "type": "color",
       "id": "form_bg_color",
-      "label": "Form Background",
+      "label": "t:sections.newsletter_email.settings.form_bg_color.label",
       "default": "#FFFFFF"
     },
     {
       "type": "color",
       "id": "form_text_color",
-      "label": "Form Text Color",
+      "label": "t:sections.newsletter_email.settings.form_text_color.label",
       "default": "#2B1E16"
     },
     {
       "type": "header",
-      "content": "Custom Design (Override)"
+      "content": "t:sections.newsletter_email.headers.custom_design_override"
     },
     {
       "type": "checkbox",
       "id": "enable_custom_design",
-      "label": "Enable Custom Design",
-      "info": "When enabled, these override the default colors and typography.",
+      "label": "t:sections.newsletter_email.settings.enable_custom_design.label",
+      "info": "t:sections.newsletter_email.settings.enable_custom_design.info",
       "default": false
     },
     {
       "type": "color",
       "id": "custom_bg_color",
-      "label": "Custom Background",
+      "label": "t:sections.newsletter_email.settings.custom_bg_color.label",
       "default": "#FFFFFF",
       "visible_if": "{{ section.settings.enable_custom_design }}"
     },
     {
       "type": "color",
       "id": "custom_text_color",
-      "label": "Custom Text Color",
+      "label": "t:sections.newsletter_email.settings.custom_text_color.label",
       "default": "#111111",
       "visible_if": "{{ section.settings.enable_custom_design }}"
     },
     {
       "type": "color",
       "id": "custom_accent_color",
-      "label": "Custom Accent Color",
+      "label": "t:sections.newsletter_email.settings.custom_accent_color.label",
       "default": "#000000",
       "visible_if": "{{ section.settings.enable_custom_design }}"
     },
     {
       "type": "color",
       "id": "custom_form_bg_color",
-      "label": "Custom Form Background",
+      "label": "t:sections.newsletter_email.settings.custom_form_bg_color.label",
       "default": "#F9F9F9",
       "visible_if": "{{ section.settings.enable_custom_design }}"
     },
     {
       "type": "color",
       "id": "custom_form_text_color",
-      "label": "Custom Form Text Color",
+      "label": "t:sections.newsletter_email.settings.custom_form_text_color.label",
       "default": "#333333",
       "visible_if": "{{ section.settings.enable_custom_design }}"
     },
     {
       "type": "font_picker",
       "id": "custom_heading_font",
-      "label": "Custom Heading Font",
+      "label": "t:sections.newsletter_email.settings.custom_heading_font.label",
       "default": "assistant_n4",
       "visible_if": "{{ section.settings.enable_custom_design }}"
     },
     {
       "type": "font_picker",
       "id": "custom_body_font",
-      "label": "Custom Body Font",
+      "label": "t:sections.newsletter_email.settings.custom_body_font.label",
       "default": "assistant_n4",
       "visible_if": "{{ section.settings.enable_custom_design }}"
     },
@@ -521,7 +521,7 @@
       "max": 80,
       "step": 2,
       "unit": "px",
-      "label": "Custom Top Text Size",
+      "label": "t:sections.newsletter_email.settings.custom_top_text_size.label",
       "default": 40,
       "visible_if": "{{ section.settings.enable_custom_design }}"
     },
@@ -532,7 +532,7 @@
       "max": 250,
       "step": 5,
       "unit": "px",
-      "label": "Custom Heading Size",
+      "label": "t:sections.newsletter_email.settings.custom_heading_size.label",
       "default": 150,
       "visible_if": "{{ section.settings.enable_custom_design }}"
     },
@@ -543,7 +543,7 @@
       "max": 24,
       "step": 1,
       "unit": "px",
-      "label": "Custom Input Size",
+      "label": "t:sections.newsletter_email.settings.custom_input_size.label",
       "default": 14,
       "visible_if": "{{ section.settings.enable_custom_design }}"
     },
@@ -554,15 +554,15 @@
       "max": 24,
       "step": 1,
       "unit": "px",
-      "label": "Custom Button Size",
+      "label": "t:sections.newsletter_email.settings.custom_button_size.label",
       "default": 14,
       "visible_if": "{{ section.settings.enable_custom_design }}"
     }
   ],
   "presets": [
     {
-      "name": "Email Signup Hero",
-      "category": "Promotional"
+      "name": "t:sections.newsletter_email.name",
+      "category": "t:general.categories.promotional"
     }
   ]
 }

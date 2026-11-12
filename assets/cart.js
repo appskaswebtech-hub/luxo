@@ -1,3 +1,85 @@
+/* Header cart count and total */
+function syncCartIcons(sections = {}) {
+  const parser = new DOMParser();
+
+  for (const html of Object.values(sections)) {
+    if (!html) continue;
+
+    const source = parser.parseFromString(html, 'text/html').querySelector('cart-items[data-cart-count-value]');
+    if (!source) continue;
+
+    const count = Number(source.dataset.cartCountValue);
+    document.querySelectorAll('[data-cart-count]').forEach((element) => {
+      element.textContent = count;
+      element.hidden = count === 0;
+    });
+    document.querySelectorAll('[data-cart-total]').forEach((element) => {
+      element.textContent = source.dataset.cartTotalValue;
+    });
+    return;
+  }
+}
+
+/* Re-renders a cart section, using sections from a cart response when given */
+async function refreshCartSection(container, sectionId, sections) {
+  try {
+    if (!sections?.[sectionId]) {
+      const root = window.Shopify?.routes?.root ?? '/';
+      const response = await fetch(`${root}?sections=${sectionId}`);
+      sections = await response.json();
+    }
+
+    container.querySelector('cart-items')?.render(sections);
+    syncCartIcons(sections);
+  } catch (error) {
+    console.error(`Cart refresh failed for ${sectionId}:`, error);
+  }
+}
+
+/* Add to cart: stays on the page and opens the drawer or popup when one is enabled */
+document.addEventListener('submit', async (event) => {
+  const form = event.target;
+  if (!(form instanceof HTMLFormElement)) return;
+  if (!new URL(form.action, window.location.href).pathname.endsWith('/cart/add')) return;
+
+  const cart = document.querySelector('cart-drawer, cart-popup');
+  if (!cart) return;
+
+  event.preventDefault();
+  if (form.hasAttribute('aria-busy')) return;
+
+  const sectionIds = new Set([cart.localName]);
+  document.querySelectorAll('cart-items[data-section]').forEach((element) => sectionIds.add(element.dataset.section));
+
+  const body = new FormData(form);
+  body.append('sections', [...sectionIds].join(','));
+  body.append('sections_url', window.location.pathname);
+
+  form.setAttribute('aria-busy', 'true');
+
+  try {
+    const root = window.Shopify?.routes?.root ?? '/';
+    const response = await fetch(`${root}cart/add.js`, {
+      method: 'POST',
+      headers: { Accept: 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+      body,
+    });
+    const data = await response.json();
+
+    if (!response.ok || data.status) {
+      console.error('Add to cart failed:', data.description || data.message || response.statusText);
+      return;
+    }
+
+    document.dispatchEvent(new CustomEvent('cart:added', { detail: { item: data } }));
+    document.dispatchEvent(new CustomEvent('cart:open', { detail: { sections: data.sections } }));
+  } catch (error) {
+    console.error('Add to cart failed:', error);
+  } finally {
+    form.removeAttribute('aria-busy');
+  }
+});
+
 /* Quantity input */
 if (!customElements.get('quantity-input')) {
   customElements.define(
@@ -106,6 +188,7 @@ if (!customElements.get('cart-items')) {
             count.textContent = data.item_count;
             count.hidden = data.item_count === 0;
           });
+          syncCartIcons(data.sections);
           document.dispatchEvent(new CustomEvent('cart:updated', { detail: { cart: data } }));
         } catch (error) {
           console.error('Cart update failed:', error);
@@ -247,16 +330,8 @@ if (!customElements.get('cart-popup')) {
         if (this.isOpen && !this.contains(event.target)) this.close();
       };
 
-      onCartOpen = async () => {
-        try {
-          const root = window.Shopify?.routes?.root ?? '/';
-          const response = await fetch(`${root}?sections=cart-popup`);
-          const sections = await response.json();
-          this.querySelector('cart-items')?.render(sections);
-        } catch (error) {
-          console.error('Cart popup refresh failed:', error);
-        }
-
+      onCartOpen = async (event) => {
+        await refreshCartSection(this, 'cart-popup', event.detail?.sections);
         this.open();
       };
     }
@@ -275,6 +350,8 @@ if (!customElements.get('cart-drawer')) {
         this.toggle.addEventListener('click', this.onToggleClick);
         this.dialog.addEventListener('click', this.onDialogClick);
         this.dialog.addEventListener('close', this.onClose);
+        this.dialog.addEventListener('cancel', this.onCancel);
+        this.dialog.addEventListener('animationend', this.onAnimationEnd);
         document.addEventListener('cart:open', this.onCartOpen);
       }
 
@@ -283,15 +360,36 @@ if (!customElements.get('cart-drawer')) {
       }
 
       open() {
+        this.dialog.classList.remove('is-closing');
         if (this.dialog.open) return;
 
         this.dialog.showModal();
         this.toggle.setAttribute('aria-expanded', 'true');
       }
 
+      /* Plays the slide-out animation before closing, unless reduced motion is on */
       close() {
-        this.dialog.close();
+        if (!this.dialog.open || this.dialog.classList.contains('is-closing')) return;
+
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          this.dialog.close();
+          return;
+        }
+
+        this.dialog.classList.add('is-closing');
       }
+
+      onAnimationEnd = (event) => {
+        if (event.target !== this.dialog || !event.animationName.startsWith('cart-drawer-out')) return;
+
+        this.dialog.classList.remove('is-closing');
+        this.dialog.close();
+      };
+
+      onCancel = (event) => {
+        event.preventDefault();
+        this.close();
+      };
 
       onToggleClick = (event) => {
         event.preventDefault();
@@ -308,16 +406,8 @@ if (!customElements.get('cart-drawer')) {
         this.toggle.setAttribute('aria-expanded', 'false');
       };
 
-      onCartOpen = async () => {
-        try {
-          const root = window.Shopify?.routes?.root ?? '/';
-          const response = await fetch(`${root}?sections=cart-drawer`);
-          const sections = await response.json();
-          this.querySelector('cart-items')?.render(sections);
-        } catch (error) {
-          console.error('Cart drawer refresh failed:', error);
-        }
-
+      onCartOpen = async (event) => {
+        await refreshCartSection(this, 'cart-drawer', event.detail?.sections);
         this.open();
       };
     }

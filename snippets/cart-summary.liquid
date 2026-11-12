@@ -17,7 +17,7 @@
         {%- for discount in cart.cart_level_discount_applications -%}
           <li>
             <span>{{ discount.title | escape }}</span>
-            <span>-{{ discount.total_allocated_amount | money }}</span>
+            <span>-{% render 'price', amount: discount.total_allocated_amount %}</span>
           </li>
         {%- endfor -%}
       </ul>

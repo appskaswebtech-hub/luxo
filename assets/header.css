@@ -36,8 +36,13 @@
   font-size: var(--header-font-size);
 }
 
-.header-wrapper--sticky { position: sticky; top: 0; }
+.section-header:has(.header-wrapper--sticky) {
+  position: sticky;
+  top: 0;
+  z-index: 999;
+}
 .header-wrapper--hide-scroll.is-hidden { transform: translateY(-100%); }
+.section-header:has(.header-wrapper.is-hidden) { pointer-events: none; }
 
 .header-wrapper a { text-decoration: none; color: inherit; }
 .header-wrapper button { font-family: inherit; cursor: pointer; }

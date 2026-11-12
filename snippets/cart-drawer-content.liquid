@@ -8,8 +8,10 @@
 {% enddoc %}
 
 <cart-items
-  class="cart-drawer__content"
+  class="cart-drawer__content{% unless settings.cart_drawer_sticky_summary %} cart-drawer__content--flow{% endunless %}"
   data-section="cart-drawer"
+  data-cart-total-value="{% render 'price', amount: cart.total_price %}"
+  data-cart-count-value="{{ cart.item_count }}"
   {% if cart.empty? %}
     data-empty
   {% endif %}

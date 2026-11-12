@@ -1,0 +1,206 @@
+{% doc %}
+  Renders the product variant picker in the style chosen in theme settings:
+  dropdown, pills or swatches. With swatches, options listed in
+  "variant_color_options" show color swatches, options listed in
+  "variant_image_options" show image swatches, and all other options use pills.
+  Keeps the product form's variant id, the buy button and the URL in sync.
+
+  Dispatches:
+  - `variant:change` (bubbles) with `detail.variant` after a new variant is selected
+
+  @param {product} product - The product
+  @param {string} form_id - Id of the product form the picker updates
+  @param {string} section_id - Id of the section, used for unique element ids
+  @param {string} [type] - `dropdown`, `pills` or `swatch`; defaults to the theme setting
+
+  @example
+  {% render 'variant-picker', product: product, form_id: 'ProductForm-template', section_id: section.id %}
+{% enddoc %}
+
+{%- liquid
+  assign picker_type = type | default: settings.variant_picker_type
+  assign color_names = settings.variant_color_options | downcase | split: ','
+  assign image_names = settings.variant_image_options | downcase | split: ','
+  assign custom_colors = settings.variant_custom_colors | newline_to_br | split: '<br />'
+-%}
+
+{{ 'variant-picker.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'variant-picker.js' | asset_url }}" defer></script>
+
+<variant-picker
+  class="variant-picker"
+  data-form="{{ form_id }}"
+  data-url="{{ product.url }}"
+  {% if settings.show_currency_code %}
+    data-money-format="{{ shop.money_with_currency_format | strip_html | escape }}"
+  {% else %}
+    data-money-format="{{ shop.money_format | strip_html | escape }}"
+  {% endif %}
+>
+  {%- for option in product.options_with_values -%}
+    {%- liquid
+      assign option_index = forloop.index0
+      assign option_key = option.name | downcase | strip
+      assign group_id = 'Option-' | append: section_id | append: '-' | append: option_index
+
+      assign uses_swatch = false
+      assign swatch_kind = ''
+      if picker_type == 'swatch'
+        for name in color_names
+          assign clean_name = name | strip
+          if clean_name == option_key
+            assign swatch_kind = 'color'
+          endif
+        endfor
+        for name in image_names
+          assign clean_name = name | strip
+          if clean_name == option_key
+            assign swatch_kind = 'image'
+          endif
+        endfor
+        if swatch_kind != ''
+          assign uses_swatch = true
+        endif
+      endif
+    -%}
+
+    {%- if picker_type == 'dropdown' -%}
+      <div class="variant-picker__group" data-option>
+        <label class="variant-picker__label" for="{{ group_id }}">{{ option.name | escape }}</label>
+        <div class="variant-picker__select-wrap">
+          <select id="{{ group_id }}" class="variant-picker__select" name="{{ group_id }}">
+            {%- for value in option.values -%}
+              <option value="{{ value | escape }}"{% if option.selected_value == value %} selected{% endif %}>
+                {{- value | escape -}}
+              </option>
+            {%- endfor -%}
+          </select>
+          <svg class="variant-picker__caret" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+      </div>
+    {%- else -%}
+      <fieldset class="variant-picker__group" data-option>
+        <legend class="variant-picker__label">
+          {{- option.name | escape -}}
+          : <span class="variant-picker__selected" data-selected-value>{{ option.selected_value | escape }}</span>
+        </legend>
+
+        <div class="variant-picker__values">
+          {%- for value in option.values -%}
+            {%- liquid
+              assign input_id = group_id | append: '-' | append: forloop.index0
+              assign value_label = value | escape
+
+              assign swatch_image = nil
+              assign swatch_color = nil
+              assign color_name = nil
+              assign custom_color = nil
+              if uses_swatch
+                if swatch_kind == 'image'
+                  assign option_property = 'option' | append: option.position
+                  assign swatch_image = product.variants | where: option_property, value.name | map: 'featured_image' | compact | first
+                  if swatch_image == nil
+                    assign swatch_image = value.swatch.image
+                  endif
+                else
+                  assign swatch_image = value.swatch.image
+                  assign swatch_color = value.swatch.color
+                  if swatch_image == nil and swatch_color == nil
+                    assign value_key = value.name | downcase | strip
+                    for line in custom_colors
+                      assign pair = line | split: ':'
+                      assign pair_name = pair.first | strip | downcase
+                      if pair_name == value_key and pair.size > 1
+                        assign custom_color = pair.last | strip
+                      endif
+                    endfor
+                    if custom_color == blank
+                      assign color_name = value.name | downcase | remove: ' '
+                    endif
+                  endif
+                endif
+              endif
+
+              assign show_swatch = false
+              if swatch_image or swatch_color
+                assign show_swatch = true
+              endif
+              if color_name or custom_color
+                assign show_swatch = true
+              endif
+
+              assign use_placeholder = false
+              if uses_swatch and swatch_kind == 'image'
+                assign show_swatch = true
+                if swatch_image == nil
+                  assign use_placeholder = true
+                endif
+              endif
+            -%}
+            <input
+              type="radio"
+              class="variant-picker__input"
+              id="{{ input_id }}"
+              name="{{ group_id }}"
+              value="{{ value_label }}"
+              {% if option.selected_value == value %}
+                checked
+              {% endif %}
+            >
+            {%- if show_swatch -%}
+              <label
+                for="{{ input_id }}"
+                class="variant-picker__swatch-option{% unless value.available %} is-unavailable{% endunless %}"
+                title="{{ value_label }}"
+              >
+                <span
+                  class="variant-picker__swatch"
+                  {% if swatch_color and swatch_image == nil %}
+                    style="--swatch-color: {{ swatch_color }};"
+                  {% elsif custom_color %}
+                    style="--swatch-color: {{ custom_color | escape }};"
+                  {% elsif color_name %}
+                    style="--swatch-color: {{ color_name | escape }};"
+                    data-color-name="{{ color_name | escape }}"
+                  {% endif %}
+                >
+                  {%- if swatch_image -%}
+                    {{
+                      swatch_image
+                      | image_url: width: 120, height: 120, crop: 'center'
+                      | image_tag: loading: 'lazy', width: 60, height: 60, alt: '', class: 'variant-picker__swatch-image'
+                    }}
+                  {%- endif -%}
+                  {%- if use_placeholder -%}
+                    {{ 'product-1' | placeholder_svg_tag: 'variant-picker__swatch-image variant-picker__swatch-placeholder' }}
+                  {%- endif -%}
+                  {%- if color_name -%}
+                    <span class="variant-picker__swatch-text" aria-hidden="true">{{ value_label }}</span>
+                  {%- endif -%}
+                </span>
+                {%- if settings.variant_swatch_labels -%}
+                  <span class="variant-picker__swatch-name" aria-hidden="true">{{ value_label }}</span>
+                {%- endif -%}
+                <span class="visually-hidden">{{ value_label }}</span>
+                <span class="visually-hidden" data-unavailable-text{% if value.available %} hidden{% endif %}>
+                  - {{ 'products.variant.unavailable' | t }}
+                </span>
+              </label>
+            {%- else -%}
+              <label for="{{ input_id }}" class="variant-picker__pill{% unless value.available %} is-unavailable{% endunless %}">
+                {{- value_label -}}
+                <span class="visually-hidden" data-unavailable-text{% if value.available %} hidden{% endif %}>
+                  - {{ 'products.variant.unavailable' | t }}
+                </span>
+              </label>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+      </fieldset>
+    {%- endif -%}
+  {%- endfor -%}
+
+  <script type="application/json" data-variants>
+    {{ product.variants | json }}
+  </script>
+</variant-picker>

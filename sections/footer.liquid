@@ -93,17 +93,17 @@
                   <input 
                     type="email" 
                     name="contact[email]" 
-                    placeholder="Enter your email" 
+                    placeholder="{{ 'general.newsletter.email_placeholder' | t }}" 
                     class="footer-{{ section.id }}__input" 
                     required
-                    aria-label="Email address"
+                    aria-label="{{ 'general.newsletter.email_label' | t }}"
                   >
-                  <button type="submit" class="footer-{{ section.id }}__submit-btn" aria-label="Subscribe">
+                  <button type="submit" class="footer-{{ section.id }}__submit-btn" aria-label="{{ 'general.newsletter.subscribe' | t }}">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                   </button>
                 </div>
                 {%- if form.posted_successfully? -%}
-                  <p class="footer-{{ section.id }}__success-msg">Thanks for subscribing!</p>
+                  <p class="footer-{{ section.id }}__success-msg">{{ 'general.newsletter.success' | t }}</p>
                 {%- endif -%}
                 {%- if form.errors -%}
                   <p class="footer-{{ section.id }}__error-msg">{{ form.errors.translated_fields.email | capitalize }} {{ form.errors.messages.email }}</p>
@@ -135,22 +135,22 @@
             </div>
           {%- elsif block.type == 'social_links' -%}
             <div class="footer-{{ section.id }}__social-group" {{ block.shopify_attributes }}>
-              <h4 class="footer-{{ section.id }}__heading">{{ block.settings.social_title | default: 'Socials' }}</h4>
+              <h4 class="footer-{{ section.id }}__heading">{%- assign socials_fallback = 'general.social.socials' | t -%}{{ block.settings.social_title | default: socials_fallback }}</h4>
               <div class="footer-{{ section.id }}__socials-list">
                 {%- if block.settings.social_twitter != blank -%}
-                  <a href="{{ block.settings.social_twitter }}" target="_blank" rel="noopener">Twitter</a>
+                  <a href="{{ block.settings.social_twitter }}" target="_blank" rel="noopener">{{ 'general.social.twitter' | t }}</a>
                 {%- endif -%}
                 {%- if block.settings.social_facebook != blank -%}
-                  <a href="{{ block.settings.social_facebook }}" target="_blank" rel="noopener">Facebook</a>
+                  <a href="{{ block.settings.social_facebook }}" target="_blank" rel="noopener">{{ 'general.social.facebook' | t }}</a>
                 {%- endif -%}
                 {%- if block.settings.social_instagram != blank -%}
-                  <a href="{{ block.settings.social_instagram }}" target="_blank" rel="noopener">Instagram</a>
+                  <a href="{{ block.settings.social_instagram }}" target="_blank" rel="noopener">{{ 'general.social.instagram' | t }}</a>
                 {%- endif -%}
                 {%- if block.settings.social_pinterest != blank -%}
-                  <a href="{{ block.settings.social_pinterest }}" target="_blank" rel="noopener">Pinterest</a>
+                  <a href="{{ block.settings.social_pinterest }}" target="_blank" rel="noopener">{{ 'general.social.pinterest' | t }}</a>
                 {%- endif -%}
                 {%- if block.settings.social_youtube != blank -%}
-                  <a href="{{ block.settings.social_youtube }}" target="_blank" rel="noopener">YouTube</a>
+                  <a href="{{ block.settings.social_youtube }}" target="_blank" rel="noopener">{{ 'general.social.youtube' | t }}</a>
                 {%- endif -%}
               </div>
             </div>
@@ -162,39 +162,18 @@
     <div class="footer-{{ section.id }}__bottom-bar">
       
       <div class="footer-{{ section.id }}__localization">
+        {%- assign footer_class = 'footer-' | append: section.id -%}
         {%- if section.settings.show_country_selector and localization.available_countries.size > 1 -%}
-          {%- form 'localization', id: 'FooterCountryForm' -%}
-            <div class="footer-{{ section.id }}__select-wrapper">
-              <select name="country_code" class="footer-{{ section.id }}__select" aria-label="Country/region">
-                {%- for country in localization.available_countries -%}
-                  <option value="{{ country.iso_code }}" {% if country.iso_code == localization.country.iso_code %}selected{% endif %}>
-                    {{ country.name }} ({{ country.currency.iso_code }})
-                  </option>
-                {%- endfor -%}
-              </select>
-              <svg class="footer-{{ section.id }}__chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-            </div>
-          {%- endform -%}
+          {% render 'localization-selector', type: 'country', form_id: 'FooterCountryForm', class_prefix: footer_class %}
         {%- endif -%}
 
         {%- if section.settings.show_language_selector and localization.available_languages.size > 1 -%}
-          {%- form 'localization', id: 'FooterLanguageForm' -%}
-            <div class="footer-{{ section.id }}__select-wrapper">
-              <select name="locale_code" class="footer-{{ section.id }}__select" aria-label="Language">
-                {%- for language in localization.available_languages -%}
-                  <option value="{{ language.iso_code }}" {% if language.iso_code == localization.language.iso_code %}selected{% endif %}>
-                    {{ language.endonym_name }}
-                  </option>
-                {%- endfor -%}
-              </select>
-              <svg class="footer-{{ section.id }}__chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-            </div>
-          {%- endform -%}
+          {% render 'localization-selector', type: 'language', form_id: 'FooterLanguageForm', class_prefix: footer_class %}
         {%- endif -%}
       </div>
 
       <div class="footer-{{ section.id }}__copyright">
-        &copy; {{ 'now' | date: "%Y" }} {{ shop.name }}. All rights reserved.
+        {%- assign current_year = 'now' | date: '%Y' -%}{{ 'general.copyright' | t: year: current_year, shop: shop.name }}
       </div>
 
       <div class="footer-{{ section.id }}__payments">
@@ -595,74 +574,74 @@
 
 {% schema %}
 {
-  "name": "Footer",
+  "name": "t:sections.footer.name",
   "tag": "footer",
   "class": "section-footer",
   "settings": [
     {
       "type": "header",
-      "content": "Localization"
+      "content": "t:sections.footer.headers.localization"
     },
     {
       "type": "checkbox",
       "id": "show_country_selector",
-      "label": "Show Country Selector",
+      "label": "t:sections.footer.settings.show_country_selector.label",
       "default": true
     },
     {
       "type": "checkbox",
       "id": "show_language_selector",
-      "label": "Show Language Selector",
+      "label": "t:sections.footer.settings.show_language_selector.label",
       "default": true
     },
     {
       "type": "header",
-      "content": "Default Colors"
+      "content": "t:sections.footer.headers.default_colors"
     },
     {
       "type": "color",
       "id": "scallop_color",
-      "label": "Top Scallop Border Color",
+      "label": "t:sections.footer.settings.scallop_color.label",
       "default": "#2B1E16"
     },
     {
       "type": "color",
       "id": "background_color",
-      "label": "Footer Background",
+      "label": "t:sections.footer.settings.background_color.label",
       "default": "#FAF6F0"
     },
     {
       "type": "color",
       "id": "text_color",
-      "label": "Global Text Color",
+      "label": "t:sections.footer.settings.text_color.label",
       "default": "#2B1E16"
     },
     {
       "type": "color",
       "id": "accent_color",
-      "label": "Accent Color (Button)",
+      "label": "t:sections.footer.settings.accent_color.label",
       "default": "#9C4A1A"
     },
     {
       "type": "color",
       "id": "card_background",
-      "label": "Card/Box Background",
+      "label": "t:sections.footer.settings.card_background.label",
       "default": "#FCF9F6"
     },
     {
       "type": "header",
-      "content": "Menu Links Style"
+      "content": "t:sections.footer.headers.menu_links_style"
     },
     {
       "type": "color",
       "id": "link_bg_color",
-      "label": "Link Background",
+      "label": "t:sections.footer.settings.link_bg_color.label",
       "default": "#73391d"
     },
     {
       "type": "color",
       "id": "link_text_color",
-      "label": "Link Text Color",
+      "label": "t:sections.footer.settings.link_text_color.label",
       "default": "#ffffff"
     },
     {
@@ -672,29 +651,29 @@
       "max": 24,
       "step": 1,
       "unit": "px",
-      "label": "Link Font Size",
+      "label": "t:sections.footer.settings.link_font_size.label",
       "default": 14
     },
     {
       "type": "color",
       "id": "link_shadow_color",
-      "label": "Link Box Shadow",
+      "label": "t:sections.footer.settings.link_shadow_color.label",
       "default": "#74310b"
     },
     {
       "type": "header",
-      "content": "Social Links Style"
+      "content": "t:sections.footer.headers.social_links_style"
     },
     {
       "type": "color",
       "id": "social_bg_color",
-      "label": "Social Background",
+      "label": "t:sections.footer.settings.social_bg_color.label",
       "default": "#73391d"
     },
     {
       "type": "color",
       "id": "social_text_color",
-      "label": "Social Text Color",
+      "label": "t:sections.footer.settings.social_text_color.label",
       "default": "#ffffff"
     },
     {
@@ -704,39 +683,39 @@
       "max": 24,
       "step": 1,
       "unit": "px",
-      "label": "Social Font Size",
+      "label": "t:sections.footer.settings.social_font_size.label",
       "default": 14
     },
     {
       "type": "header",
-      "content": "Newsletter Input Style"
+      "content": "t:sections.footer.headers.newsletter_input_style"
     },
     {
       "type": "color",
       "id": "input_bg_color",
-      "label": "Input Background",
+      "label": "t:sections.footer.settings.input_bg_color.label",
       "default": "#743a1f"
     },
     {
       "type": "color",
       "id": "input_text_color",
-      "label": "Input Text Color",
+      "label": "t:sections.footer.settings.input_text_color.label",
       "default": "#ffffff"
     },
     {
       "type": "header",
-      "content": "Bottom Bar Style"
+      "content": "t:sections.footer.headers.bottom_bar_style"
     },
     {
       "type": "color",
       "id": "bottom_bg_color",
-      "label": "Bottom Bar Background",
+      "label": "t:sections.footer.settings.bottom_bg_color.label",
       "default": "#73391d"
     },
     {
       "type": "color",
       "id": "bottom_text_color",
-      "label": "Bottom Bar Text Color",
+      "label": "t:sections.footer.settings.bottom_text_color.label",
       "default": "#ffffff"
     },
     {
@@ -746,101 +725,101 @@
       "max": 24,
       "step": 1,
       "unit": "px",
-      "label": "Bottom Bar Font Size",
+      "label": "t:sections.footer.settings.bottom_font_size.label",
       "default": 12
     },
     {
       "type": "header",
-      "content": "Custom Design (Override)"
+      "content": "t:sections.footer.headers.custom_design_override"
     },
     {
       "type": "checkbox",
       "id": "enable_custom_design",
-      "label": "Enable Custom Design",
-      "info": "When enabled, these override the default colors and typography.",
+      "label": "t:sections.footer.settings.enable_custom_design.label",
+      "info": "t:sections.footer.settings.enable_custom_design.info",
       "default": false
     },
     {
       "type": "color",
       "id": "custom_bg_color",
-      "label": "Custom Background",
+      "label": "t:sections.footer.settings.custom_bg_color.label",
       "default": "#FFFFFF",
       "visible_if": "{{ section.settings.enable_custom_design }}"
     },
     {
       "type": "color",
       "id": "custom_text_color",
-      "label": "Custom Text Color",
+      "label": "t:sections.footer.settings.custom_text_color.label",
       "default": "#111111",
       "visible_if": "{{ section.settings.enable_custom_design }}"
     },
     {
       "type": "color",
       "id": "custom_accent_color",
-      "label": "Custom Accent Color",
+      "label": "t:sections.footer.settings.custom_accent_color.label",
       "default": "#000000",
       "visible_if": "{{ section.settings.enable_custom_design }}"
     },
     {
       "type": "color",
       "id": "custom_card_bg",
-      "label": "Custom Card Background",
+      "label": "t:sections.footer.settings.custom_card_bg.label",
       "default": "#F9F9F9",
       "visible_if": "{{ section.settings.enable_custom_design }}"
     },
     {
       "type": "color",
       "id": "custom_scallop_color",
-      "label": "Custom Scallop Color",
+      "label": "t:sections.footer.settings.custom_scallop_color.label",
       "default": "#000000",
       "visible_if": "{{ section.settings.enable_custom_design }}"
     },
     {
       "type": "color",
       "id": "custom_link_bg",
-      "label": "Custom Link Background",
+      "label": "t:sections.footer.settings.custom_link_bg.label",
       "default": "#333333",
       "visible_if": "{{ section.settings.enable_custom_design }}"
     },
     {
       "type": "color",
       "id": "custom_link_text",
-      "label": "Custom Link Text",
+      "label": "t:sections.footer.settings.custom_link_text.label",
       "default": "#FFFFFF",
       "visible_if": "{{ section.settings.enable_custom_design }}"
     },
     {
       "type": "color",
       "id": "custom_link_shadow",
-      "label": "Custom Link Shadow",
+      "label": "t:sections.footer.settings.custom_link_shadow.label",
       "default": "#000000",
       "visible_if": "{{ section.settings.enable_custom_design }}"
     },
     {
       "type": "color",
       "id": "custom_bottom_bg",
-      "label": "Custom Bottom Bar Background",
+      "label": "t:sections.footer.settings.custom_bottom_bg.label",
       "default": "#333333",
       "visible_if": "{{ section.settings.enable_custom_design }}"
     },
     {
       "type": "color",
       "id": "custom_bottom_text",
-      "label": "Custom Bottom Bar Text",
+      "label": "t:sections.footer.settings.custom_bottom_text.label",
       "default": "#FFFFFF",
       "visible_if": "{{ section.settings.enable_custom_design }}"
     },
     {
       "type": "font_picker",
       "id": "custom_heading_font",
-      "label": "Custom Heading Font",
+      "label": "t:sections.footer.settings.custom_heading_font.label",
       "default": "assistant_n4",
       "visible_if": "{{ section.settings.enable_custom_design }}"
     },
     {
       "type": "font_picker",
       "id": "custom_body_font",
-      "label": "Custom Body Font",
+      "label": "t:sections.footer.settings.custom_body_font.label",
       "default": "assistant_n4",
       "visible_if": "{{ section.settings.enable_custom_design }}"
     }
@@ -848,114 +827,130 @@
   "blocks": [
     {
       "type": "brand_info",
-      "name": "Brand Info (Left)",
+      "name": "t:sections.footer.blocks.brand_info.name",
       "limit": 1,
       "settings": [
         {
           "type": "image_picker",
           "id": "brand_logo",
-          "label": "Brand Logo"
+          "label": "t:sections.footer.blocks.brand_info.settings.brand_logo.label"
         },
         {
           "type": "textarea",
           "id": "mission_text",
-          "label": "Brand Mission Text",
+          "label": "t:sections.footer.blocks.brand_info.settings.mission_text.label",
           "default": "Quality materials, good designs, craftsmanship and sustainability."
         }
       ]
     },
     {
       "type": "newsletter",
-      "name": "Newsletter (Left)",
+      "name": "t:sections.footer.blocks.newsletter.name",
       "limit": 1,
       "settings": [
         {
           "type": "text",
           "id": "newsletter_title",
-          "label": "Newsletter Title",
+          "label": "t:sections.footer.blocks.newsletter.settings.newsletter_title.label",
           "default": "Newsletter"
         },
         {
           "type": "text",
           "id": "newsletter_text",
-          "label": "Newsletter Subtext",
+          "label": "t:sections.footer.blocks.newsletter.settings.newsletter_text.label",
           "default": "Subscribe to receive updates, access to exclusive deals, and more."
         }
       ]
     },
     {
       "type": "menu",
-      "name": "Menu Column (Right)",
+      "name": "t:sections.footer.blocks.menu.name",
       "limit": 2,
       "settings": [
         {
           "type": "text",
           "id": "menu_title",
-          "label": "Menu Title",
+          "label": "t:sections.footer.blocks.menu.settings.menu_title.label",
           "default": "Quick Links"
         },
         {
           "type": "link_list",
           "id": "menu",
-          "label": "Select Menu"
+          "label": "t:sections.footer.blocks.menu.settings.menu.label"
         },
         {
           "type": "checkbox",
           "id": "show_policies",
-          "label": "Show Store Policies",
+          "label": "t:sections.footer.blocks.menu.settings.show_policies.label",
           "default": false
         }
       ]
     },
     {
       "type": "social_links",
-      "name": "Social Links (Right)",
+      "name": "t:sections.footer.blocks.social_links.name",
       "limit": 1,
       "settings": [
         {
           "type": "text",
           "id": "social_title",
-          "label": "Social Title",
+          "label": "t:sections.footer.blocks.social_links.settings.social_title.label",
           "default": "Socials"
         },
         {
           "type": "url",
           "id": "social_twitter",
-          "label": "Twitter URL"
+          "label": "t:sections.footer.blocks.social_links.settings.social_twitter.label"
         },
         {
           "type": "url",
           "id": "social_facebook",
-          "label": "Facebook URL"
+          "label": "t:sections.footer.blocks.social_links.settings.social_facebook.label"
         },
         {
           "type": "url",
           "id": "social_instagram",
-          "label": "Instagram URL"
+          "label": "t:sections.footer.blocks.social_links.settings.social_instagram.label"
         },
         {
           "type": "url",
           "id": "social_pinterest",
-          "label": "Pinterest URL"
+          "label": "t:sections.footer.blocks.social_links.settings.social_pinterest.label"
         },
         {
           "type": "url",
           "id": "social_youtube",
-          "label": "YouTube URL"
+          "label": "t:sections.footer.blocks.social_links.settings.social_youtube.label"
         }
       ]
     }
   ],
   "presets": [
     {
-      "name": "Footer",
-      "category": "Footer",
+      "name": "t:sections.footer.name",
+      "category": "t:general.categories.footer",
       "blocks": [
-        { "type": "brand_info" },
-        { "type": "newsletter" },
-        { "type": "menu", "settings": { "menu_title": "Quick Links" } },
-        { "type": "menu", "settings": { "menu_title": "Customer Care" } },
-        { "type": "social_links" }
+        {
+          "type": "brand_info"
+        },
+        {
+          "type": "newsletter"
+        },
+        {
+          "type": "menu",
+          "settings": {
+            "menu_title": "Quick Links"
+          }
+        },
+        {
+          "type": "menu",
+          "settings": {
+            "menu_title": "Customer Care"
+          }
+        },
+        {
+          "type": "social_links"
+        }
       ]
     }
   ]

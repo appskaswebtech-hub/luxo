@@ -74,7 +74,7 @@
                 type="button"
                 data-review-card
                 data-review-index="{{ forloop.index0 }}"
-                aria-label="Show review by {{ block.settings.customer_name | default: 'Customer' | escape }}"
+                aria-label="{{ 'reviews.show_review' | t: name: block.settings.customer_name }}"
                 aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}"
                 {{ block.shopify_attributes }}
               >
@@ -136,7 +136,7 @@
                 <p class="customer-reviews-{{ section.id }}__role">{{ block.settings.customer_role | escape }}</p>
               {% endif %}
 
-              <div class="customer-reviews-{{ section.id }}__rating" aria-label="{{ block.settings.rating }} out of 5 stars">
+              <div class="customer-reviews-{{ section.id }}__rating" aria-label="{{ 'reviews.rating' | t: rating: block.settings.rating }}">
                 {% for star in (1..5) %}
                   <span
                     class="customer-reviews-{{ section.id }}__star{% if star <= block.settings.rating %} is-filled{% endif %}"
@@ -151,7 +151,7 @@
 
         {% if section.settings.show_controls and section.blocks.size > 1 %}
           <div class="customer-reviews-{{ section.id }}__controls">
-            <button class="customer-reviews-{{ section.id }}__arrow" type="button" data-review-prev aria-label="Previous review">
+            <button class="customer-reviews-{{ section.id }}__arrow" type="button" data-review-prev aria-label="{{ 'reviews.previous' | t }}">
               <span aria-hidden="true">
                 <svg xmlns="http://www.w3.org/2000/svg" width="25" height="24" viewBox="0 0 40 24" fill="none">
                   <path d="M37 12H3M3 12L9 6M3 12L9 18"
@@ -160,19 +160,19 @@
                 </svg>
               </span>
             </button>
-            <div class="customer-reviews-{{ section.id }}__dots" aria-label="Choose a review">
+            <div class="customer-reviews-{{ section.id }}__dots" aria-label="{{ 'reviews.choose' | t }}">
               {% for block in section.blocks %}
                 <button
                   class="customer-reviews-{{ section.id }}__dot{% if forloop.first %} is-active{% endif %}"
                   type="button"
                   data-review-dot
                   data-review-index="{{ forloop.index0 }}"
-                  aria-label="Go to review {{ forloop.index }}"
+                  aria-label="{{ 'reviews.go_to' | t: index: forloop.index }}"
                   aria-pressed="{% if forloop.first %}true{% else %}false{% endif %}"
                 ></button>
               {% endfor %}
             </div>
-            <button class="customer-reviews-{{ section.id }}__arrow" type="button" data-review-next aria-label="Next review">
+            <button class="customer-reviews-{{ section.id }}__arrow" type="button" data-review-next aria-label="{{ 'reviews.next' | t }}">
               <span aria-hidden="true">
                 <svg xmlns="http://www.w3.org/2000/svg" width="25" height="24" viewBox="0 0 40 24" fill="none">
                   <path d="M3 12H37M37 12L31 6M37 12L31 18"
@@ -184,7 +184,7 @@
           </div>
         {% endif %}
       {% else %}
-        <div class="customer-reviews-{{ section.id }}__empty">Add customer review blocks in this section's settings to get started.</div>
+        <div class="customer-reviews-{{ section.id }}__empty">{{ 'reviews.empty' | t }}</div>
       {% endif %}
     </div>
   </div>
@@ -709,36 +709,36 @@
 
 {% schema %}
 {
-  "name": "Customer reviews slider",
+  "name": "t:sections.customer_reviews.name",
   "tag": "section",
   "class": "section-customer-reviews",
   "settings": [
     {
       "type": "text",
       "id": "heading",
-      "label": "Heading",
+      "label": "t:sections.customer_reviews.settings.heading.label",
       "default": "What Our Customers Say"
     },
     {
       "type": "richtext",
       "id": "description",
-      "label": "Description",
+      "label": "t:sections.customer_reviews.settings.description.label",
       "default": "<p>Discover why our customers love our beautifully crafted handbags, where premium quality meets timeless style and everyday sophistication.</p>"
     },
     {
       "type": "header",
-      "content": "Slider settings"
+      "content": "t:sections.customer_reviews.headers.slider_settings"
     },
     {
       "type": "checkbox",
       "id": "autoplay",
-      "label": "Enable automatic sliding",
+      "label": "t:sections.customer_reviews.settings.autoplay.label",
       "default": true
     },
     {
       "type": "range",
       "id": "interval",
-      "label": "Slide interval",
+      "label": "t:sections.customer_reviews.settings.interval.label",
       "min": 3,
       "max": 10,
       "step": 1,
@@ -748,7 +748,7 @@
     {
       "type": "range",
       "id": "card_width",
-      "label": "Desktop card width",
+      "label": "t:sections.customer_reviews.settings.card_width.label",
       "min": 180,
       "max": 300,
       "step": 10,
@@ -758,17 +758,17 @@
     {
       "type": "checkbox",
       "id": "show_controls",
-      "label": "Show arrows and dots",
+      "label": "t:sections.customer_reviews.settings.show_controls.label",
       "default": true
     },
     {
       "type": "header",
-      "content": "Default Typography & Sizes"
+      "content": "t:sections.customer_reviews.headers.default_typography_and_sizes"
     },
     {
       "type": "range",
       "id": "heading_size",
-      "label": "Desktop heading size",
+      "label": "t:sections.customer_reviews.settings.heading_size.label",
       "min": 24,
       "max": 60,
       "step": 1,
@@ -778,7 +778,7 @@
     {
       "type": "range",
       "id": "review_text_size",
-      "label": "Desktop review text size",
+      "label": "t:sections.customer_reviews.settings.review_text_size.label",
       "min": 12,
       "max": 28,
       "step": 1,
@@ -788,7 +788,7 @@
     {
       "type": "range",
       "id": "quote_icon_size",
-      "label": "Quote icon size",
+      "label": "t:sections.customer_reviews.settings.quote_icon_size.label",
       "min": 24,
       "max": 72,
       "step": 2,
@@ -797,35 +797,35 @@
     },
     {
       "type": "header",
-      "content": "Default Colors"
+      "content": "t:sections.customer_reviews.headers.default_colors"
     },
     {
       "type": "color",
       "id": "background_color",
-      "label": "Background color",
+      "label": "t:sections.customer_reviews.settings.background_color.label",
       "default": "#FAF6F0"
     },
     {
       "type": "color",
       "id": "text_color",
-      "label": "Text color",
+      "label": "t:sections.customer_reviews.settings.text_color.label",
       "default": "#2B1E16"
     },
     {
       "type": "color",
       "id": "muted_color",
-      "label": "Secondary text color",
+      "label": "t:sections.customer_reviews.settings.muted_color.label",
       "default": "#7A6B61"
     },
     {
       "type": "color",
       "id": "accent_color",
-      "label": "Star and active color",
+      "label": "t:sections.customer_reviews.settings.accent_color.label",
       "default": "#9C4A1A"
     },
     {
       "type": "header",
-      "content": "Spacing"
+      "content": "t:sections.customer_reviews.headers.spacing"
     },
     {
       "type": "range",
@@ -834,7 +834,7 @@
       "max": 120,
       "step": 4,
       "unit": "px",
-      "label": "Top spacing",
+      "label": "t:sections.customer_reviews.settings.padding_top.label",
       "default": 48
     },
     {
@@ -844,59 +844,59 @@
       "max": 120,
       "step": 4,
       "unit": "px",
-      "label": "Bottom spacing",
+      "label": "t:sections.customer_reviews.settings.padding_bottom.label",
       "default": 48
     },
     {
       "type": "header",
-      "content": "Custom Design (Override)"
+      "content": "t:sections.customer_reviews.headers.custom_design_override"
     },
     {
       "type": "checkbox",
       "id": "enable_custom_design",
-      "label": "Enable Custom Design",
-      "info": "When enabled, these override the default colors and typography.",
+      "label": "t:sections.customer_reviews.settings.enable_custom_design.label",
+      "info": "t:sections.customer_reviews.settings.enable_custom_design.info",
       "default": false
     },
     {
       "type": "color",
       "id": "custom_bg_color",
-      "label": "Custom Background",
+      "label": "t:sections.customer_reviews.settings.custom_bg_color.label",
       "default": "#FFFFFF",
       "visible_if": "{{ section.settings.enable_custom_design }}"
     },
     {
       "type": "color",
       "id": "custom_text_color",
-      "label": "Custom Text Color",
+      "label": "t:sections.customer_reviews.settings.custom_text_color.label",
       "default": "#111111",
       "visible_if": "{{ section.settings.enable_custom_design }}"
     },
     {
       "type": "color",
       "id": "custom_muted_color",
-      "label": "Custom Secondary Text",
+      "label": "t:sections.customer_reviews.settings.custom_muted_color.label",
       "default": "#666666",
       "visible_if": "{{ section.settings.enable_custom_design }}"
     },
     {
       "type": "color",
       "id": "custom_accent_color",
-      "label": "Custom Accent Color",
+      "label": "t:sections.customer_reviews.settings.custom_accent_color.label",
       "default": "#000000",
       "visible_if": "{{ section.settings.enable_custom_design }}"
     },
     {
       "type": "color",
       "id": "custom_card_border",
-      "label": "Custom Card Border Color",
+      "label": "t:sections.customer_reviews.settings.custom_card_border.label",
       "default": "#000000",
       "visible_if": "{{ section.settings.enable_custom_design }}"
     },
     {
       "type": "font_picker",
       "id": "custom_heading_font",
-      "label": "Custom Heading Font",
+      "label": "t:sections.customer_reviews.settings.custom_heading_font.label",
       "default": "assistant_n4",
       "visible_if": "{{ section.settings.enable_custom_design }}"
     },
@@ -907,14 +907,14 @@
       "max": 80,
       "step": 2,
       "unit": "px",
-      "label": "Custom Heading Size",
+      "label": "t:sections.customer_reviews.settings.custom_heading_size.label",
       "default": 46,
       "visible_if": "{{ section.settings.enable_custom_design }}"
     },
     {
       "type": "font_picker",
       "id": "custom_body_font",
-      "label": "Custom Body Font",
+      "label": "t:sections.customer_reviews.settings.custom_body_font.label",
       "default": "assistant_n4",
       "visible_if": "{{ section.settings.enable_custom_design }}"
     },
@@ -925,7 +925,7 @@
       "max": 30,
       "step": 1,
       "unit": "px",
-      "label": "Custom Review Text Size",
+      "label": "t:sections.customer_reviews.settings.custom_quote_size.label",
       "default": 16,
       "visible_if": "{{ section.settings.enable_custom_design }}"
     }
@@ -933,35 +933,35 @@
   "blocks": [
     {
       "type": "review",
-      "name": "Customer review",
+      "name": "t:sections.customer_reviews.blocks.review.name",
       "settings": [
         {
           "type": "image_picker",
           "id": "customer_image",
-          "label": "Customer photo"
+          "label": "t:sections.customer_reviews.blocks.review.settings.customer_image.label"
         },
         {
           "type": "text",
           "id": "customer_name",
-          "label": "Customer name",
+          "label": "t:sections.customer_reviews.blocks.review.settings.customer_name.label",
           "default": "Amy Chase"
         },
         {
           "type": "text",
           "id": "customer_role",
-          "label": "Customer title",
+          "label": "t:sections.customer_reviews.blocks.review.settings.customer_role.label",
           "default": "Founder, Modern Muse"
         },
         {
           "type": "textarea",
           "id": "review",
-          "label": "Review text",
+          "label": "t:sections.customer_reviews.blocks.review.settings.review.label",
           "default": "Absolutely in love with my new handbag! The elegant design, premium finish, and beautiful detailing make it feel truly luxurious. It is the perfect blend of style and practicality."
         },
         {
           "type": "range",
           "id": "rating",
-          "label": "Star rating",
+          "label": "t:sections.customer_reviews.blocks.review.settings.rating.label",
           "min": 1,
           "max": 5,
           "step": 1,
@@ -973,14 +973,46 @@
   "max_blocks": 12,
   "presets": [
     {
-      "name": "Customer reviews slider",
+      "name": "t:sections.customer_reviews.name",
       "blocks": [
-        { "type": "review" },
-        { "type": "review", "settings": { "customer_name": "Customer Name", "customer_role": "Verified customer" } },
-        { "type": "review", "settings": { "customer_name": "Customer Name", "customer_role": "Verified customer" } },
-        { "type": "review", "settings": { "customer_name": "Customer Name", "customer_role": "Verified customer" } },
-        { "type": "review", "settings": { "customer_name": "Customer Name", "customer_role": "Verified customer" } },
-        { "type": "review", "settings": { "customer_name": "Customer Name", "customer_role": "Verified customer" } }
+        {
+          "type": "review"
+        },
+        {
+          "type": "review",
+          "settings": {
+            "customer_name": "Customer Name",
+            "customer_role": "Verified customer"
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "customer_name": "Customer Name",
+            "customer_role": "Verified customer"
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "customer_name": "Customer Name",
+            "customer_role": "Verified customer"
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "customer_name": "Customer Name",
+            "customer_role": "Verified customer"
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "customer_name": "Customer Name",
+            "customer_role": "Verified customer"
+          }
+        }
       ]
     }
   ]

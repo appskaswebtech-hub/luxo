@@ -81,11 +81,190 @@
     "password": "Password",
     "enter": "Enter"
   },
+  "products": {
+    "badge": {
+      "sale": "Sale",
+      "sale_percent": "-{{ percent }}%",
+      "sale_amount": "Save {{ amount }}"
+    },
+    "variant": {
+      "unavailable": "Unavailable"
+    },
+    "buy": {
+      "add_to_cart": "Add to cart",
+      "sold_out": "Sold out"
+    },
+    "style_number": "Style no. {{ sku }}",
+    "description_fallback": "Premium quality product crafted with excellence and style.",
+    "view_all": "View all",
+    "empty_collection": "Please select a collection or add products to display here.",
+    "no_related": "No related products found.",
+    "verified": "Verified",
+    "reviews_count": {
+      "one": "{{ count }} review",
+      "other": "{{ count }} reviews"
+    },
+    "description": "Description",
+    "benefits": "Benefits",
+    "quantity": "Quantity",
+    "quantity_decrease": "Decrease quantity",
+    "quantity_increase": "Increase quantity",
+    "subscribe_save": "Subscribe & save",
+    "one_time": "One-time purchase",
+    "perk_shipping": "Free shipping on first order",
+    "perk_discount": "15% off future orders",
+    "perk_contract": "No contract. Cancel easily",
+    "size_chart": "Size chart",
+    "size": "Size",
+    "chest": "Chest",
+    "waist": "Waist",
+    "hip": "Hip",
+    "shipping": "Shipping",
+    "view_image": "View image {{ index }}",
+    "information": "Product information"
+  },
   "search": {
     "title": "Search",
     "placeholder": "Search articles, pages, or products",
     "submit": "Search",
     "no_results_html": "No results found for {{ terms }}",
-    "results_for_html": "{{ count }} results found for {{ terms }}"
+    "results_for_html": "{{ count }} results found for {{ terms }}",
+    "label": "Search",
+    "clear": "Clear search",
+    "pagination": "Search results pages",
+    "type": {
+      "article": "Article",
+      "page": "Page"
+    },
+    "predictive": {
+      "label": "Search suggestions",
+      "suggestions": "Suggestions",
+      "collections": "Collections",
+      "products": "Products",
+      "articles": "Articles",
+      "pages": "Pages",
+      "search_for": "Search for “{{ terms }}”",
+      "no_results": "No results found for “{{ terms }}”",
+      "price_from": "From {{ price }}",
+      "status": {
+        "one": "{{ count }} result found",
+        "other": "{{ count }} results found"
+      }
+    }
+  },
+  "general": {
+    "social": {
+      "facebook": "Facebook",
+      "x": "X (Twitter)",
+      "twitter": "Twitter",
+      "pinterest": "Pinterest",
+      "instagram": "Instagram",
+      "youtube": "YouTube",
+      "socials": "Socials",
+      "share_facebook": "Share on Facebook",
+      "share_x": "Share on X",
+      "share_pinterest": "Share on Pinterest",
+      "view_instagram": "View on Instagram"
+    },
+    "slider": {
+      "previous": "Previous",
+      "next": "Next",
+      "view": "View {{ title }}"
+    },
+    "accessibility": {
+      "close": "Close",
+      "open_menu": "Open menu",
+      "close_menu": "Close menu",
+      "primary_navigation": "Primary"
+    },
+    "newsletter": {
+      "email_placeholder": "Enter your email",
+      "email_label": "Email address",
+      "subscribe": "Subscribe",
+      "notify": "Notify me",
+      "success": "Thanks for subscribing!"
+    },
+    "localization": {
+      "country": "Country/region",
+      "language": "Language",
+      "update": "Update"
+    },
+    "header": {
+      "call_us": "Call us:",
+      "my_account": "My account",
+      "log_in": "Log in",
+      "log_out": "Log out",
+      "register": "Register",
+      "addresses": "Addresses",
+      "my_cart": "My cart",
+      "account": "Account",
+      "compare": "Compare",
+      "all_categories": "All categories",
+      "search_category": "Search category",
+      "search_placeholder": "Search products…"
+    },
+    "meta": {
+      "tagged": "tagged \"{{ tags }}\"",
+      "page": "Page {{ page }}"
+    },
+    "copyright": "© {{ year }} {{ shop }}. All rights reserved."
+  },
+  "article": {
+    "category_fallback": "Journal",
+    "by_author": "By {{ author }}",
+    "read_time": "{{ minutes }} min read",
+    "share": "Share this article",
+    "previous": "Previous",
+    "next": "Next",
+    "related": "Related articles",
+    "related_previous": "Previous related articles",
+    "related_next": "Next related articles",
+    "read": "Read article"
+  },
+  "blog_listing": {
+    "title_fallback": "Latest articles",
+    "empty": "No articles found in this blog.",
+    "sample_title": "Sample blog post title",
+    "sample_date": "January 01, 2024",
+    "sample_excerpt": "Share stories, guides and news with your customers. Choose a blog in this section to show your latest posts."
+  },
+  "collection_page": {
+    "products_count": {
+      "one": "{{ count }} product",
+      "other": "{{ count }} products"
+    },
+    "filters": "Filters",
+    "filter": "Filter",
+    "min": "Min",
+    "max": "Max",
+    "apply": "Apply filters",
+    "clear_all": "Clear all",
+    "featured": "Featured item",
+    "sale": "Sale",
+    "sort_by": "Sort by",
+    "empty": "No products found.",
+    "clear_filters": "Clear filters",
+    "type_fallback": "Collection"
+  },
+  "contact": {
+    "email": "Email",
+    "phone": "Phone",
+    "address": "Address",
+    "name": "Name",
+    "name_placeholder": "Your name",
+    "email_placeholder": "Your email",
+    "phone_optional": "Phone (optional)",
+    "phone_placeholder": "Your phone",
+    "message": "Message",
+    "message_placeholder": "How can we help you?"
+  },
+  "reviews": {
+    "show_review": "Show review by {{ name }}",
+    "rating": "{{ rating }} out of 5 stars",
+    "previous": "Previous review",
+    "next": "Next review",
+    "choose": "Choose a review",
+    "go_to": "Go to review {{ index }}",
+    "empty": "Add customer review blocks in this section's settings to get started."
   }
 }

@@ -13,10 +13,37 @@
   "sections": {
     "footer": {
       "type": "footer",
-      "settings": {
-        "menu": "",
-        "show_payment_icons": true
-      }
+      "blocks": {
+        "newsletter": {
+          "type": "newsletter"
+        },
+        "menu_1": {
+          "type": "menu",
+          "settings": {
+            "menu_title": "Quick Links",
+            "menu": "customer-account"
+          }
+        },
+        "menu_2": {
+          "type": "menu",
+          "settings": {
+            "menu_title": "Quick Links",
+            "menu": "customer-account"
+          }
+        },
+        "social_links": {
+          "type": "social_links",
+          "settings": {
+            "social_title": "Socials",
+            "social_twitter": "#",
+            "social_facebook": "#",
+            "social_instagram": "#",
+            "social_pinterest": "#"
+          }
+        }
+      },
+      "block_order": ["newsletter", "menu_1", "menu_2", "social_links"],
+      "settings": {}
     }
   },
   "order": [

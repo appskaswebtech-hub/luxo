@@ -2,9 +2,10 @@
   assign products_per_page = section.settings.products_per_page
   assign columns_desktop = section.settings.columns_desktop
   assign columns_mobile = section.settings.columns_mobile
-  assign image_ratio = section.settings.image_ratio
-  assign show_second_image = section.settings.show_second_image
-  assign show_vendor = section.settings.show_vendor
+  assign image_ratio = settings.card_image_ratio
+  assign show_second_image = settings.card_hover_image
+  assign show_vendor = settings.card_show_vendor
+  assign badge_position = 'collection-grid-' | append: section.id | append: '__badge--' | append: settings.card_badge_position
   assign quick_add = section.settings.quick_add
   assign show_filters = section.settings.show_filters
   assign filter_layout = section.settings.filter_layout
@@ -56,7 +57,7 @@
           {%- if collection.description != blank -%}
             <p class="collection-grid-{{ section.id }}__banner-desc">{{ collection.description | strip_html | truncate: 150 }}</p>
           {%- endif -%}
-          <span class="collection-grid-{{ section.id }}__banner-count">{{ collection.products_count }} Products</span>
+          <span class="collection-grid-{{ section.id }}__banner-count">{{ 'collection_page.products_count' | t: count: collection.products_count }}</span>
         </div>
       </div>
     {%- endif -%}
@@ -68,7 +69,7 @@
           
           <div class="collection-grid-{{ section.id }}__filter-sidebar" id="FilterSidebar-{{ section.id }}">
             <div class="collection-grid-{{ section.id }}__filter-header">
-              <h2 class="collection-grid-{{ section.id }}__filter-heading">Filters</h2>
+              <h2 class="collection-grid-{{ section.id }}__filter-heading">{{ 'collection_page.filters' | t }}</h2>
               <button type="button" class="collection-grid-{{ section.id }}__filter-close" id="FilterClose-{{ section.id }}">✕</button>
             </div>
             
@@ -95,9 +96,9 @@
                         {%- endfor -%}
                       {%- when 'price_range' -%}
                         <div class="collection-grid-{{ section.id }}__price-range">
-                          <input type="number" name="{{ filter.min_value.param_name }}" placeholder="Min" value="{{ filter.min_value.value }}" min="0">
+                          <input type="number" name="{{ filter.min_value.param_name }}" placeholder="{{ 'collection_page.min' | t }}" value="{{ filter.min_value.value }}" min="0">
                           <span>-</span>
-                          <input type="number" name="{{ filter.max_value.param_name }}" placeholder="Max" value="{{ filter.max_value.value }}" min="0">
+                          <input type="number" name="{{ filter.max_value.param_name }}" placeholder="{{ 'collection_page.max' | t }}" value="{{ filter.max_value.value }}" min="0">
                         </div>
                     {%- endcase -%}
                   </div>
@@ -106,14 +107,14 @@
             </form>
 
             <div class="collection-grid-{{ section.id }}__filter-actions">
-              <button type="button" class="collection-grid-{{ section.id }}__filter-apply" id="FilterApply-{{ section.id }}">Apply Filters</button>
-              <a href="{{ collection.url }}" class="collection-grid-{{ section.id }}__filter-reset">Clear All</a>
+              <button type="button" class="collection-grid-{{ section.id }}__filter-apply" id="FilterApply-{{ section.id }}">{{ 'collection_page.apply' | t }}</button>
+              <a href="{{ collection.url }}" class="collection-grid-{{ section.id }}__filter-reset">{{ 'collection_page.clear_all' | t }}</a>
             </div>
           </div>
 
           {%- if filter_layout == 'vertical' and featured_product != blank -%}
             <div class="collection-grid-{{ section.id }}__sidebar-featured">
-              <h3 class="collection-grid-{{ section.id }}__featured-heading">Featured Item</h3>
+              <h3 class="collection-grid-{{ section.id }}__featured-heading">{{ 'collection_page.featured' | t }}</h3>
               <a href="{{ featured_product.url }}" class="collection-grid-{{ section.id }}__featured-card">
                 <div class="collection-grid-{{ section.id }}__featured-image-wrapper">
                   {%- if featured_product.featured_image != blank -%}
@@ -121,14 +122,14 @@
                   {%- else -%}
                     {{ 'product-1' | placeholder_svg_tag: placeholder_class }}
                   {%- endif -%}
-                  <span class="collection-grid-{{ section.id }}__featured-badge">Sale</span>
+                  <span class="collection-grid-{{ section.id }}__featured-badge">{{ 'collection_page.sale' | t }}</span>
                 </div>
                 <div class="collection-grid-{{ section.id }}__featured-content">
                   <h4 class="collection-grid-{{ section.id }}__featured-title">{{ featured_product.title | escape }}</h4>
                   <div class="collection-grid-{{ section.id }}__featured-price">
-                    <span class="collection-grid-{{ section.id }}__price-current">{{ featured_product.price | money }}</span>
+                    <span class="collection-grid-{{ section.id }}__price-current">{% render 'price', amount: featured_product.price %}</span>
                     {%- if featured_product.compare_at_price > featured_product.price -%}
-                      <span class="collection-grid-{{ section.id }}__price-compare">{{ featured_product.compare_at_price | money }}</span>
+                      <span class="collection-grid-{{ section.id }}__price-compare">{% render 'price', amount: featured_product.compare_at_price %}</span>
                     {%- endif -%}
                   </div>
                 </div>
@@ -146,18 +147,18 @@
             {%- if show_filters and filter_layout == 'horizontal' -%}
               <button type="button" class="collection-grid-{{ section.id }}__filter-toggle" id="FilterToggle-{{ section.id }}">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
-                Filter
+                {{ 'collection_page.filter' | t }}
               </button>
             {%- elsif show_filters and filter_layout == 'vertical' -%}
               <button type="button" class="collection-grid-{{ section.id }}__filter-toggle collection-grid-{{ section.id }}__filter-toggle--mobile" id="FilterToggleMobile-{{ section.id }}">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
-                Filter
+                {{ 'collection_page.filter' | t }}
               </button>
             {%- endif -%}
 
             {%- if show_sorting -%}
               <div class="collection-grid-{{ section.id }}__sort-wrapper">
-                <label for="SortBy-{{ section.id }}" class="collection-grid-{{ section.id }}__sort-label">Sort by</label>
+                <label for="SortBy-{{ section.id }}" class="collection-grid-{{ section.id }}__sort-label">{{ 'collection_page.sort_by' | t }}</label>
                 <select name="sort_by" id="SortBy-{{ section.id }}" class="collection-grid-{{ section.id }}__sort-select">
                   {%- assign sort_by = collection.sort_by | default: collection.default_sort_by -%}
                   {%- for option in collection.sort_options -%}
@@ -176,8 +177,8 @@
                 <div class="collection-grid-{{ section.id }}__card">
                   
                   <div class="collection-grid-{{ section.id }}__card-top-bar">
-                    <span class="collection-grid-{{ section.id }}__card-store">{{ shop.name | default: 'STOREMAIN' }}</span>
-                    <span class="collection-grid-{{ section.id }}__card-collection">{{ collection.title | default: 'COLLECTION' }}</span>
+                    <span class="collection-grid-{{ section.id }}__card-store">{{ shop.name }}</span>
+                    <span class="collection-grid-{{ section.id }}__card-collection">{{ collection.title }}</span>
                   </div>
 
                   <div class="collection-grid-{{ section.id }}__card-image-wrapper">
@@ -209,10 +210,28 @@
                     <span class="collection-grid-{{ section.id }}__corner collection-grid-{{ section.id }}__corner--br"></span>
 
                     {%- if product.available == false -%}
-                      <span class="collection-grid-{{ section.id }}__badge collection-grid-{{ section.id }}__badge--soldout">Sold Out</span>
+                      {%- if settings.card_sold_out_badge -%}
+                        <span class="collection-grid-{{ section.id }}__badge collection-grid-{{ section.id }}__badge--soldout {{ badge_position }}">{{ 'products.buy.sold_out' | t }}</span>
+                      {%- endif -%}
                     {%- elsif product.compare_at_price > product.price -%}
-                      {%- assign discount = product.compare_at_price | minus: product.price | times: 100 | divided_by: product.compare_at_price -%}
-                      <span class="collection-grid-{{ section.id }}__badge collection-grid-{{ section.id }}__badge--sale">-{{ discount }}%</span>
+                      {%- if settings.card_sale_badge -%}
+                        {%- liquid
+                          case settings.card_sale_badge_format
+                            when 'percent'
+                              assign discount = product.compare_at_price | minus: product.price | times: 100 | divided_by: product.compare_at_price
+                              assign sale_label = 'products.badge.sale_percent' | t: percent: discount
+                            when 'amount'
+                              assign saved_amount = product.compare_at_price | minus: product.price
+                              capture saved
+                                render 'price', amount: saved_amount
+                              endcapture
+                              assign sale_label = 'products.badge.sale_amount' | t: amount: saved
+                            else
+                              assign sale_label = 'products.badge.sale' | t
+                          endcase
+                        -%}
+                        <span class="collection-grid-{{ section.id }}__badge collection-grid-{{ section.id }}__badge--sale {{ badge_position }}">{{ sale_label }}</span>
+                      {%- endif -%}
                     {%- endif -%}
                   </div>
 
@@ -229,7 +248,7 @@
                       {%- if product.description != blank -%}
                         {{ product.description | strip_html | truncate: 60 }}
                       {%- else -%}
-                        Premium quality product crafted with excellence and style.
+                        {{ 'products.description_fallback' | t }}
                       {%- endif -%}
                     </p>
 
@@ -257,16 +276,16 @@
                   </div>
 
                   <div class="collection-grid-{{ section.id }}__card-bottom">
-                    <span class="collection-grid-{{ section.id }}__price">{{ product.price | money }}</span>
+                    <span class="collection-grid-{{ section.id }}__price">{% render 'price', amount: product.price %}</span>
                     
                     {%- if quick_add != 'none' -%}
                       {%- form 'product', product, class: form_class -%}
                         <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
                         <button type="submit" name="add" class="collection-grid-{{ section.id }}__card-button" {% if product.available == false %}disabled{% endif %}>
                           {%- if product.available -%}
-                            ADD TO CART
+                            {{ 'products.buy.add_to_cart' | t }}
                           {%- else -%}
-                            SOLD OUT
+                            {{ 'products.buy.sold_out' | t }}
                           {%- endif -%}
                           <svg width="12" height="5" viewBox="0 0 13 5" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9.45052 4.21172C9.63052 3.82772 9.80452 3.49172 9.97252 3.20372C10.1525 2.91572 10.3265 2.67572 10.4945 2.48372H0.000515878V1.72772H10.4945C10.3265 1.52372 10.1525 1.27772 9.97252 0.989718C9.80452 0.701718 9.63052 0.371718 9.45052 -0.000281632H10.0805C10.8365 0.875719 11.6285 1.52372 12.4565 1.94372V2.26772C11.6285 2.67572 10.8365 3.32372 10.0805 4.21172H9.45052Z" fill="currentColor"></path></svg>
                         </button>
@@ -284,8 +303,8 @@
             {%- endif -%}
           {%- else -%}
             <div class="collection-grid-{{ section.id }}__empty">
-              <p>No products found.</p>
-              <a href="{{ collection.url }}" class="collection-grid-{{ section.id }}__empty-btn">Clear Filters</a>
+              <p>{{ 'collection_page.empty' | t }}</p>
+              <a href="{{ collection.url }}" class="collection-grid-{{ section.id }}__empty-btn">{{ 'collection_page.clear_filters' | t }}</a>
             </div>
           {%- endif -%}
         {%- endpaginate -%}
@@ -844,6 +863,16 @@
     color: var(--grid-bg);
   }
 
+  .collection-grid-{{ section.id }}__badge--top_right {
+    left: auto;
+    right: 20px;
+  }
+
+  .collection-grid-{{ section.id }}__badge--bottom_left {
+    top: auto;
+    bottom: 20px;
+  }
+
   .collection-grid-{{ section.id }}__card-content {
     padding: 15px;
     display: flex;
@@ -1133,34 +1162,40 @@
 
 {% schema %}
 {
-  "name": "Collection Grid",
+  "name": "t:sections.collection.name",
   "tag": "section",
   "class": "section-collection-grid",
   "settings": [
     {
       "type": "header",
-      "content": "Layout"
+      "content": "t:sections.collection.headers.layout"
     },
     {
       "type": "select",
       "id": "container_width",
-      "label": "Container width",
+      "label": "t:sections.collection.settings.container_width.label",
       "options": [
-        { "value": "page", "label": "Page width" },
-        { "value": "full", "label": "Full width" }
+        {
+          "value": "page",
+          "label": "t:sections.collection.settings.container_width.options.page"
+        },
+        {
+          "value": "full",
+          "label": "t:sections.collection.settings.container_width.options.full"
+        }
       ],
       "default": "page"
     },
     {
       "type": "checkbox",
       "id": "show_banner",
-      "label": "Show Collection Banner",
+      "label": "t:sections.collection.settings.show_banner.label",
       "default": true
     },
     {
       "type": "range",
       "id": "products_per_page",
-      "label": "Products per page",
+      "label": "t:sections.collection.settings.products_per_page.label",
       "min": 6,
       "max": 48,
       "step": 6,
@@ -1169,7 +1204,7 @@
     {
       "type": "range",
       "id": "columns_desktop",
-      "label": "Columns (Desktop)",
+      "label": "t:sections.collection.settings.columns_desktop.label",
       "min": 2,
       "max": 5,
       "step": 1,
@@ -1178,93 +1213,88 @@
     {
       "type": "select",
       "id": "columns_mobile",
-      "label": "Columns (Mobile)",
+      "label": "t:sections.collection.settings.columns_mobile.label",
       "options": [
-        { "value": "1", "label": "1 Column" },
-        { "value": "2", "label": "2 Columns" }
+        {
+          "value": "1",
+          "label": "t:sections.collection.settings.columns_mobile.options.1"
+        },
+        {
+          "value": "2",
+          "label": "t:sections.collection.settings.columns_mobile.options.2"
+        }
       ],
       "default": "2"
     },
     {
       "type": "header",
-      "content": "Product Card"
-    },
-    {
-      "type": "select",
-      "id": "image_ratio",
-      "label": "Image ratio",
-      "options": [
-        { "value": "square", "label": "Square (1:1)" },
-        { "value": "portrait", "label": "Portrait (4:5)" },
-        { "value": "landscape", "label": "Landscape (16:9)" }
-      ],
-      "default": "square"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_second_image",
-      "label": "Show second image on hover",
-      "default": true
-    },
-    {
-      "type": "checkbox",
-      "id": "show_vendor",
-      "label": "Show vendor",
-      "default": false
+      "content": "t:sections.collection.headers.product_card"
     },
     {
       "type": "select",
       "id": "quick_add",
-      "label": "Quick add",
+      "label": "t:sections.collection.settings.quick_add.label",
       "options": [
-        { "value": "none", "label": "None" },
-        { "value": "standard", "label": "Standard" }
+        {
+          "value": "none",
+          "label": "t:sections.collection.settings.quick_add.options.none"
+        },
+        {
+          "value": "standard",
+          "label": "t:sections.collection.settings.quick_add.options.standard"
+        }
       ],
       "default": "standard"
     },
     {
       "type": "header",
-      "content": "Filtering and sorting"
+      "content": "t:sections.collection.headers.filtering_and_sorting"
     },
     {
       "type": "checkbox",
       "id": "show_filters",
-      "label": "Show filters",
+      "label": "t:sections.collection.settings.show_filters.label",
       "default": true
     },
     {
       "type": "select",
       "id": "filter_layout",
-      "label": "Filter layout",
+      "label": "t:sections.collection.settings.filter_layout.label",
       "options": [
-        { "value": "horizontal", "label": "Horizontal" },
-        { "value": "vertical", "label": "Vertical (Left Sidebar)" }
+        {
+          "value": "horizontal",
+          "label": "t:sections.collection.settings.filter_layout.options.horizontal"
+        },
+        {
+          "value": "vertical",
+          "label": "t:sections.collection.settings.filter_layout.options.vertical"
+        }
       ],
       "default": "horizontal"
     },
     {
       "type": "checkbox",
       "id": "show_sorting",
-      "label": "Show sorting",
+      "label": "t:sections.collection.settings.show_sorting.label",
       "default": true
     },
     {
       "type": "header",
-      "content": "Featured Sidebar Product"
+      "content": "t:sections.collection.headers.featured_sidebar_product"
     },
     {
       "type": "product",
       "id": "featured_product",
-      "label": "Select Featured Product (Sale Product)"
+      "label": "t:sections.collection.settings.featured_product.label"
     },
     {
       "type": "header",
-      "content": "Padding"
+      "content": "t:sections.collection.headers.padding"
     },
     {
       "type": "range",
       "id": "padding_top",
-      "label": "Padding top",
+      "label": "t:sections.collection.settings.padding_top.label",
       "min": 0,
       "max": 100,
       "step": 4,
@@ -1274,7 +1304,7 @@
     {
       "type": "range",
       "id": "padding_bottom",
-      "label": "Padding bottom",
+      "label": "t:sections.collection.settings.padding_bottom.label",
       "min": 0,
       "max": 100,
       "step": 4,
@@ -1283,30 +1313,30 @@
     },
     {
       "type": "header",
-      "content": "Colors"
+      "content": "t:sections.collection.headers.colors"
     },
     {
       "type": "color",
       "id": "background_color",
-      "label": "Background",
+      "label": "t:sections.collection.settings.background_color.label",
       "default": "#FAF6F0"
     },
     {
       "type": "color",
       "id": "text_color",
-      "label": "Text",
+      "label": "t:sections.collection.settings.text_color.label",
       "default": "#2B1E16"
     },
     {
       "type": "color",
       "id": "accent_color",
-      "label": "Accent",
+      "label": "t:sections.collection.settings.accent_color.label",
       "default": "#9C4A1A"
     },
     {
       "type": "color",
       "id": "border_color",
-      "label": "Border",
+      "label": "t:sections.collection.settings.border_color.label",
       "default": "rgba(43, 30, 22, 0.15)"
     }
   ]

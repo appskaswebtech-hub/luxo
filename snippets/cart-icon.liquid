@@ -1,8 +1,9 @@
 {% doc %}
-  Renders the header cart link with the item count badge.
-  The count updates through `[data-cart-count]` after every cart change.
+  Renders the header cart button with the item count badge and cart total.
+  The count and total update through `[data-cart-count]` and `[data-cart-total]`
+  after every cart change.
 
-  @param {string} [controls] - Id of the popup or drawer this link opens
+  @param {string} [controls] - Id of the popup or drawer this button opens
 
   @example
   {% render 'cart-icon', controls: 'CartDrawer' %}
@@ -10,15 +11,18 @@
 
 <a
   href="{{ routes.cart_url }}"
-  class="cart-icon"
+  class="cart-icon header-cart-btn"
   {% if controls %}
     aria-controls="{{ controls }}"
     aria-expanded="false"
   {% endif %}
 >
-  {{ 'icon-cart.svg' | inline_asset_content }}
-  <span class="visually-hidden">{{ 'cart.icon_label' | t }}</span>
-  <span class="cart-icon__count" data-cart-count{% if cart.item_count == 0 %} hidden{% endif %}>
-    {{- cart.item_count -}}
+  <span class="header-cart-btn__icon">
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false"><path d="M3 3h2l2.4 12.5a2 2 0 0 0 2 1.5h8.5a2 2 0 0 0 2-1.6L22 7H6"/><circle cx="10" cy="21" r="1"/><circle cx="19" cy="21" r="1"/></svg>
+    <span class="header-cart-badge" data-cart-count{% if cart.item_count == 0 %} hidden{% endif %}>
+      {{- cart.item_count -}}
+    </span>
   </span>
+  <span class="visually-hidden">{{ 'cart.icon_label' | t }}</span>
+  <span class="header-cart-price" data-cart-total>{% render 'price', amount: cart.total_price %}</span>
 </a>

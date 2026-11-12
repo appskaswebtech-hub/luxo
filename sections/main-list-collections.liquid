@@ -341,24 +341,24 @@
 
 {% schema %}
 {
-  "name": "Category Collection",
+  "name": "t:sections.main_list_collections.name",
   "tag": "section",
   "class": "section-category-collection",
   "settings": [
     {
       "type": "header",
-      "content": "Section Settings"
+      "content": "t:sections.main_list_collections.headers.section_settings"
     },
     {
       "type": "text",
       "id": "heading_text",
-      "label": "Heading Text",
+      "label": "t:sections.main_list_collections.settings.heading_text.label",
       "default": "TRENDING CARDS IDEA"
     },
     {
       "type": "text",
       "id": "button_text",
-      "label": "Button Text",
+      "label": "t:sections.main_list_collections.settings.button_text.label",
       "default": "SHOP NOW"
     },
     {
@@ -368,7 +368,7 @@
       "max": 150,
       "step": 5,
       "unit": "px",
-      "label": "Padding Top",
+      "label": "t:sections.main_list_collections.settings.section_padding_top.label",
       "default": 80
     },
     {
@@ -378,67 +378,67 @@
       "max": 150,
       "step": 5,
       "unit": "px",
-      "label": "Padding Bottom",
+      "label": "t:sections.main_list_collections.settings.section_padding_bottom.label",
       "default": 80
     },
     {
       "type": "header",
-      "content": "Default Colors"
+      "content": "t:sections.main_list_collections.headers.default_colors"
     },
     {
       "type": "color",
       "id": "default_bg_color",
-      "label": "Section Background",
+      "label": "t:sections.main_list_collections.settings.default_bg_color.label",
       "default": "#FAF6F0"
     },
     {
       "type": "color",
       "id": "default_text_color",
-      "label": "Text & Dark Elements",
+      "label": "t:sections.main_list_collections.settings.default_text_color.label",
       "default": "#2B1E16"
     },
     {
       "type": "color",
       "id": "default_accent_color",
-      "label": "Accent Color (Buttons)",
+      "label": "t:sections.main_list_collections.settings.default_accent_color.label",
       "default": "#9C4A1A"
     },
     {
       "type": "header",
-      "content": "Custom Design (Override)"
+      "content": "t:sections.main_list_collections.headers.custom_design_override"
     },
     {
       "type": "checkbox",
       "id": "enable_custom_colors",
-      "label": "Enable Custom Design",
-      "info": "When enabled, these override the default colors and fonts for this section.",
+      "label": "t:sections.main_list_collections.settings.enable_custom_colors.label",
+      "info": "t:sections.main_list_collections.settings.enable_custom_colors.info",
       "default": false
     },
     {
       "type": "color",
       "id": "custom_bg_color",
-      "label": "Custom Background",
+      "label": "t:sections.main_list_collections.settings.custom_bg_color.label",
       "default": "#FFFFFF",
       "visible_if": "{{ section.settings.enable_custom_colors }}"
     },
     {
       "type": "color",
       "id": "custom_text_color",
-      "label": "Custom Text Color",
+      "label": "t:sections.main_list_collections.settings.custom_text_color.label",
       "default": "#111111",
       "visible_if": "{{ section.settings.enable_custom_colors }}"
     },
     {
       "type": "color",
       "id": "custom_accent_color",
-      "label": "Custom Accent Color",
+      "label": "t:sections.main_list_collections.settings.custom_accent_color.label",
       "default": "#000000",
       "visible_if": "{{ section.settings.enable_custom_colors }}"
     },
     {
       "type": "font_picker",
       "id": "custom_heading_font",
-      "label": "Custom Heading Font",
+      "label": "t:sections.main_list_collections.settings.custom_heading_font.label",
       "default": "assistant_n4",
       "visible_if": "{{ section.settings.enable_custom_colors }}"
     },
@@ -449,14 +449,14 @@
       "max": 120,
       "step": 2,
       "unit": "px",
-      "label": "Custom Heading Size",
+      "label": "t:sections.main_list_collections.settings.custom_heading_size.label",
       "default": 48,
       "visible_if": "{{ section.settings.enable_custom_colors }}"
     },
     {
       "type": "font_picker",
       "id": "custom_body_font",
-      "label": "Custom Body Font",
+      "label": "t:sections.main_list_collections.settings.custom_body_font.label",
       "default": "assistant_n4",
       "visible_if": "{{ section.settings.enable_custom_colors }}"
     },
@@ -467,7 +467,7 @@
       "max": 24,
       "step": 1,
       "unit": "px",
-      "label": "Custom Body Size",
+      "label": "t:sections.main_list_collections.settings.custom_body_size.label",
       "default": 16,
       "visible_if": "{{ section.settings.enable_custom_colors }}"
     }
@@ -475,35 +475,35 @@
   "blocks": [
     {
       "type": "category",
-      "name": "Category Card",
+      "name": "t:sections.main_list_collections.blocks.category.name",
       "settings": [
         {
           "type": "collection",
           "id": "collection",
-          "label": "Select Collection"
+          "label": "t:sections.main_list_collections.blocks.category.settings.collection.label"
         },
         {
           "type": "image_picker",
           "id": "custom_image",
-          "label": "Custom Image",
-          "info": "Overrides Collection image if selected"
+          "label": "t:sections.main_list_collections.blocks.category.settings.custom_image.label",
+          "info": "t:sections.main_list_collections.blocks.category.settings.custom_image.info"
         },
         {
           "type": "text",
           "id": "custom_title",
-          "label": "Custom Tag Title",
-          "info": "Overrides Collection title (e.g., CASUAL, LEISURE)"
+          "label": "t:sections.main_list_collections.blocks.category.settings.custom_title.label",
+          "info": "t:sections.main_list_collections.blocks.category.settings.custom_title.info"
         },
         {
           "type": "textarea",
           "id": "custom_description",
-          "label": "Custom Description",
-          "info": "Overrides Collection description"
+          "label": "t:sections.main_list_collections.blocks.category.settings.custom_description.label",
+          "info": "t:sections.main_list_collections.blocks.category.settings.custom_description.info"
         },
         {
           "type": "checkbox",
           "id": "layout_center",
-          "label": "Move description below image?",
+          "label": "t:sections.main_list_collections.blocks.category.settings.layout_center.label",
           "default": false
         }
       ]
@@ -511,11 +511,20 @@
   ],
   "presets": [
     {
-      "name": "Category Collection",
+      "name": "t:sections.main_list_collections.name",
       "blocks": [
-        { "type": "category" },
-        { "type": "category", "settings": { "layout_center": true } },
-        { "type": "category" }
+        {
+          "type": "category"
+        },
+        {
+          "type": "category",
+          "settings": {
+            "layout_center": true
+          }
+        },
+        {
+          "type": "category"
+        }
       ]
     }
   ]

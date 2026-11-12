@@ -1,5 +1,6 @@
 {%- liquid
   assign current_variant = product.selected_or_first_available_variant
+  assign form_id = 'ProductForm-' | append: section.id
 
   capture main_img_class
     echo 'main-product-' | append: section.id | append: '__main-image'
@@ -27,7 +28,7 @@
       
       <div class="main-product-{{ section.id }}__left-column">
         <div class="main-product-{{ section.id }}__card-frame main-product-{{ section.id }}__gallery-card">
-          <div class="main-product-{{ section.id }}__gallery-wrapper main-product-{{ section.id }}__thumbs-right">
+          <div class="main-product-{{ section.id }}__gallery-wrapper main-product-{{ section.id }}__thumbs-{{ section.settings.thumbnail_position | default: 'right' }}">
             
             <div class="main-product-{{ section.id }}__main-image-wrapper">
               {%- if product.tags.size > 0 -%}
@@ -60,9 +61,9 @@
                     class="main-product-{{ section.id }}__thumbnail{% if forloop.first %} is-active{% endif %}" 
                     data-target="{{ image | image_url: width: 1000 }}"
                     type="button"
-                    aria-label="View image {{ forloop.index }}"
+                    aria-label="{{ 'products.view_image' | t: index: forloop.index }}"
                   >
-                    <img src="{{ image | image_url: width: 200 }}" alt="thumbnail" loading="lazy">
+                    <img src="{{ image | image_url: width: 200 }}" alt="" loading="lazy">
                   </button>
                 {%- endfor -%}
               </div>
@@ -76,14 +77,14 @@
             <div class="main-product-{{ section.id }}__card-frame main-product-{{ section.id }}__review-card" {{ block.shopify_attributes }}>
               <div class="main-product-{{ section.id }}__review-header">
                 {%- if block.settings.customer_image != blank -%}
-                  <img src="{{ block.settings.customer_image | image_url: width: 100 }}" class="main-product-{{ section.id }}__reviewer-img" alt="reviewer" loading="lazy">
+                  <img src="{{ block.settings.customer_image | image_url: width: 100 }}" class="main-product-{{ section.id }}__reviewer-img" alt="{{ block.settings.customer_name | escape }}" loading="lazy">
                 {%- else -%}
                   <div class="main-product-{{ section.id }}__reviewer-placeholder"></div>
                 {%- endif -%}
                 <div class="main-product-{{ section.id }}__reviewer-info">
                   <div class="main-product-{{ section.id }}__reviewer-name">
                     {{ block.settings.customer_name }}
-                    <span class="main-product-{{ section.id }}__verified-badge">✓ Verified</span>
+                    <span class="main-product-{{ section.id }}__verified-badge">✓ {{ 'products.verified' | t }}</span>
                   </div>
                   <div class="main-product-{{ section.id }}__review-stars">★★★★★</div>
                 </div>
@@ -114,18 +115,18 @@
                 {%- when 'rating' -%}
                   <div class="main-product-{{ section.id }}__rating-block" {{ block.shopify_attributes }}>
                     <div class="main-product-{{ section.id }}__stars" aria-hidden="true">★★★★★</div>
-                    <a href="#reviews" class="main-product-{{ section.id }}__review-link">{{ block.settings.review_count }} Reviews</a>
+                    <a href="#reviews" class="main-product-{{ section.id }}__review-link">{%- assign review_total = block.settings.review_count | plus: 0 -%}{{ 'products.reviews_count' | t: count: review_total }}</a>
                   </div>
 
                 {%- when 'description' -%}
                   <div class="main-product-{{ section.id }}__description-block" {{ block.shopify_attributes }}>
-                    <h3 class="main-product-{{ section.id }}__block-heading">Description</h3>
+                    <h3 class="main-product-{{ section.id }}__block-heading">{{ 'products.description' | t }}</h3>
                     {{ product.description }}
                   </div>
 
                 {%- when 'key_benefits' -%}
                   <div class="main-product-{{ section.id }}__benefits-block" {{ block.shopify_attributes }}>
-                    <h3 class="main-product-{{ section.id }}__block-heading">Benefits</h3>
+                    <h3 class="main-product-{{ section.id }}__block-heading">{{ 'products.benefits' | t }}</h3>
                     <ul class="main-product-{{ section.id }}__benefits-list">
                       {%- assign benefits = block.settings.benefits_list | split: ',' -%}
                       {%- for benefit in benefits -%}
@@ -135,51 +136,20 @@
                   </div>
 
                 {%- when 'variant_picker' -%}
-                  <div class="main-product-{{ section.id }}__variant-block" {{ block.shopify_attributes }}>
-                    <div class="main-product-{{ section.id }}__variant-grid">
-                      {%- for variant in product.variants -%}
-                        <label class="main-product-{{ section.id }}__variant-card">
-                          <input 
-                            type="radio" 
-                            name="id" 
-                            value="{{ variant.id }}" 
-                            {% if variant == current_variant %}checked{% endif %} 
-                            class="main-product-{{ section.id }}__variant-radio"
-                          >
-                          <div class="main-product-{{ section.id }}__variant-content">
-                            {%- if variant.compare_at_price > variant.price -%}
-                              <span class="main-product-{{ section.id }}__save-badge">SAVE {{ variant.compare_at_price | minus: variant.price | money_without_currency | round }}%</span>
-                            {%- endif -%}
-                            
-                            <div class="main-product-{{ section.id }}__variant-info">
-                              <span class="main-product-{{ section.id }}__variant-title">{{ variant.title }}</span>
-                              
-                              {%- for option in product.options_with_values -%}
-                                {%- if option.name == 'Color' or option.name == 'Colour' -%}
-                                  {%- assign color_value = variant.options[forloop.index0] -%}
-                                  {%- assign color_handle = color_value | downcase | handle -%}
-                                  <span class="main-product-{{ section.id }}__variant-color-box" style="background-color: {{ color_handle }};" title="{{ color_value }}"></span>
-                                {%- endif -%}
-                              {%- endfor -%}
-                            </div>
-
-                            <span class="main-product-{{ section.id }}__variant-price">{{ variant.price | money }}</span>
-                            {%- if variant.compare_at_price > variant.price -%}
-                              <span class="main-product-{{ section.id }}__variant-compare">{{ variant.compare_at_price | money }}</span>
-                            {%- endif -%}
-                          </div>
-                        </label>
-                      {%- endfor -%}
-                    </div>
+                  {%- if product.has_only_default_variant -%}
+                    {%- continue -%}
+                  {%- endif -%}
+                  <div class="main-product-{{ section.id }}__variant-block" style="margin: var(--variant-block-margin);" {{ block.shopify_attributes }}>
+                    {% render 'variant-picker', product: product, form_id: form_id, section_id: section.id %}
                   </div>
 
                 {%- when 'quantity_selector' -%}
                   <div class="main-product-{{ section.id }}__quantity-block" {{ block.shopify_attributes }}>
-                    <label for="Quantity-{{ section.id }}" class="main-product-{{ section.id }}__qty-label">Quantity</label>
+                    <label for="Quantity-{{ section.id }}" class="main-product-{{ section.id }}__qty-label">{{ 'products.quantity' | t }}</label>
                     <div class="main-product-{{ section.id }}__qty-wrapper">
-                      <button type="button" class="main-product-{{ section.id }}__qty-btn" data-qty="minus" aria-label="Decrease quantity">-</button>
+                      <button type="button" class="main-product-{{ section.id }}__qty-btn" data-qty="minus" aria-label="{{ 'products.quantity_decrease' | t }}">-</button>
                       <input type="number" id="Quantity-{{ section.id }}" name="quantity" value="1" min="1" class="main-product-{{ section.id }}__qty-input">
-                      <button type="button" class="main-product-{{ section.id }}__qty-btn" data-qty="plus" aria-label="Increase quantity">+</button>
+                      <button type="button" class="main-product-{{ section.id }}__qty-btn" data-qty="plus" aria-label="{{ 'products.quantity_increase' | t }}">+</button>
                     </div>
                   </div>
 
@@ -196,20 +166,20 @@
                     <label class="main-product-{{ section.id }}__purchase-option">
                       <input type="radio" name="purchase_type" value="subscribe" checked>
                       <div class="main-product-{{ section.id }}__option-content">
-                        <span class="main-product-{{ section.id }}__option-title">Subscribe & save</span>
-                        <span class="main-product-{{ section.id }}__option-price">{{ product.price | money }}</span>
+                        <span class="main-product-{{ section.id }}__option-title">{{ 'products.subscribe_save' | t }}</span>
+                        <span class="main-product-{{ section.id }}__option-price">{% render 'price', amount: product.price %}</span>
                       </div>
                     </label>
                     <div class="main-product-{{ section.id }}__subscribe-benefits">
-                      <span>✓ FREE shipping on first order</span>
-                      <span>✓ 15% OFF future orders</span>
-                      <span>✓ NO contract. Cancel easily</span>
+                      <span>✓ {{ 'products.perk_shipping' | t }}</span>
+                      <span>✓ {{ 'products.perk_discount' | t }}</span>
+                      <span>✓ {{ 'products.perk_contract' | t }}</span>
                     </div>
                     <label class="main-product-{{ section.id }}__purchase-option main-product-{{ section.id }}__one-time-option">
                       <input type="radio" name="purchase_type" value="one-time">
                       <div class="main-product-{{ section.id }}__option-content">
-                        <span class="main-product-{{ section.id }}__option-title">One-time purchase</span>
-                        <span class="main-product-{{ section.id }}__option-price">{{ product.price | money }}</span>
+                        <span class="main-product-{{ section.id }}__option-title">{{ 'products.one_time' | t }}</span>
+                        <span class="main-product-{{ section.id }}__option-price">{% render 'price', amount: product.price %}</span>
                       </div>
                     </label>
                   </div>
@@ -221,18 +191,18 @@
                       name="add" 
                       class="main-product-{{ section.id }}__add-to-cart-btn" 
                       {% if product.available == false %}disabled{% endif %}
-                      aria-label="Add to cart"
+                      aria-label="{{ 'products.buy.add_to_cart' | t }}"
                     >
                       {% if product.available %}
                         {% if block.settings.show_price %}
-                          <span class="main-product-{{ section.id }}__btn-price-section">{{ product.price | money }}</span>
+                          <span class="main-product-{{ section.id }}__btn-price-section" data-variant-price="{{ form_id }}">{% render 'price', amount: current_variant.price %}</span>
                         {% endif %}
                         <span class="main-product-{{ section.id }}__btn-text-section">
                           {{ block.settings.button_text }}
                           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                         </span>
                       {% else %}
-                        Sold Out
+                        {{ 'products.buy.sold_out' | t }}
                       {% endif %}
                     </button>
                   </div>
@@ -247,28 +217,28 @@
                   <div class="main-product-{{ section.id }}__sizechart-block" {{ block.shopify_attributes }}>
                     <button type="button" class="main-product-{{ section.id }}__sizechart-btn" data-open-sizechart="SizechartModal-{{ section.id }}">
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
-                      {{ block.settings.title | default: "Size Chart" }}
+                      {%- assign size_chart_fallback = 'products.size_chart' | t -%}{{ block.settings.title | default: size_chart_fallback }}
                     </button>
 
                     <div class="main-product-{{ section.id }}__modal-overlay" id="SizechartModal-{{ section.id }}">
                       <div class="main-product-{{ section.id }}__modal-content">
                         <div class="main-product-{{ section.id }}__modal-header">
-                          <h3>{{ block.settings.title | default: "Size Chart" }}</h3>
-                          <button type="button" class="main-product-{{ section.id }}__modal-close" data-close-modal="SizechartModal-{{ section.id }}" aria-label="Close">✕</button>
+                          <h3>{{ block.settings.title | default: size_chart_fallback }}</h3>
+                          <button type="button" class="main-product-{{ section.id }}__modal-close" data-close-modal="SizechartModal-{{ section.id }}" aria-label="{{ 'general.accessibility.close' | t }}">✕</button>
                         </div>
                         <div class="main-product-{{ section.id }}__modal-body">
                           {%- if block.settings.size_chart_image != blank -%}
-                            <img src="{{ block.settings.size_chart_image | image_url: width: 800 }}" alt="Size Chart" class="main-product-{{ section.id }}__sizechart-img" loading="lazy">
+                            <img src="{{ block.settings.size_chart_image | image_url: width: 800 }}" alt="{{ 'products.size_chart' | t }}" class="main-product-{{ section.id }}__sizechart-img" loading="lazy">
                           {%- elsif product.metafields.custom.size_chart.value != blank -%}
                             <div class="main-product-{{ section.id }}__metafield-content">{{ product.metafields.custom.size_chart.value }}</div>
                           {%- else -%}
                             <table class="main-product-{{ section.id }}__size-table">
                               <thead>
                                 <tr>
-                                  <th>Size</th>
-                                  <th>Chest</th>
-                                  <th>Waist</th>
-                                  <th>Hip</th>
+                                  <th>{{ 'products.size' | t }}</th>
+                                  <th>{{ 'products.chest' | t }}</th>
+                                  <th>{{ 'products.waist' | t }}</th>
+                                  <th>{{ 'products.hip' | t }}</th>
                                 </tr>
                               </thead>
                               <tbody>
@@ -296,7 +266,7 @@
 
                 {%- when 'shipping_info' -%}
                   <div class="main-product-{{ section.id }}__shipping-block" {{ block.shopify_attributes }}>
-                    <h3 class="main-product-{{ section.id }}__block-heading">Shipping</h3>
+                    <h3 class="main-product-{{ section.id }}__block-heading">{{ 'products.shipping' | t }}</h3>
                     <p>{{ block.settings.shipping_text }}</p>
                   </div>
 
@@ -310,9 +280,9 @@
                 {%- when 'social_share' -%}
                   <div class="main-product-{{ section.id }}__social-block" {{ block.shopify_attributes }}>
                     <span class="main-product-{{ section.id }}__social-label">Share:</span>
-                    <a href="https://www.facebook.com/sharer/sharer.php?u={{ shop.url }}{{ product.url }}" target="_blank" rel="noopener" class="main-product-{{ section.id }}__social-link" aria-label="Share on Facebook">FB</a>
-                    <a href="https://twitter.com/intent/tweet?url={{ shop.url }}{{ product.url }}" target="_blank" rel="noopener" class="main-product-{{ section.id }}__social-link" aria-label="Share on X">X</a>
-                    <a href="https://pinterest.com/pin/create/button/?url={{ shop.url }}{{ product.url }}" target="_blank" rel="noopener" class="main-product-{{ section.id }}__social-link" aria-label="Share on Pinterest">PIN</a>
+                    <a href="https://www.facebook.com/sharer/sharer.php?u={{ shop.url }}{{ product.url }}" target="_blank" rel="noopener" class="main-product-{{ section.id }}__social-link" aria-label="{{ 'general.social.share_facebook' | t }}">FB</a>
+                    <a href="https://twitter.com/intent/tweet?url={{ shop.url }}{{ product.url }}" target="_blank" rel="noopener" class="main-product-{{ section.id }}__social-link" aria-label="{{ 'general.social.share_x' | t }}">X</a>
+                    <a href="https://pinterest.com/pin/create/button/?url={{ shop.url }}{{ product.url }}" target="_blank" rel="noopener" class="main-product-{{ section.id }}__social-link" aria-label="{{ 'general.social.share_pinterest' | t }}">PIN</a>
                   </div>
 
               {%- endcase -%}
@@ -324,15 +294,64 @@
     </div>
   </div>
 
+  {%- liquid
+    assign sticky_image = current_variant.featured_image | default: product.featured_image
+    assign sticky_compare = false
+    if current_variant.compare_at_price > current_variant.price
+      assign sticky_compare = true
+    endif
+  -%}
   <div class="main-product-{{ section.id }}__sticky-atc" id="StickyATC-{{ section.id }}">
     <div class="main-product-{{ section.id }}__sticky-inner">
-      <div class="main-product-{{ section.id }}__sticky-info">
-        <span class="main-product-{{ section.id }}__sticky-title">{{ product.title | truncate: 40 }}</span>
-        <span class="main-product-{{ section.id }}__sticky-price">{{ product.price | money }}</span>
+      <div class="main-product-{{ section.id }}__sticky-product">
+        {%- if sticky_image -%}
+          <img
+            class="main-product-{{ section.id }}__sticky-image"
+            src="{{ sticky_image | image_url: width: 112, height: 112, crop: 'center' }}"
+            alt=""
+            width="56"
+            height="56"
+            loading="lazy"
+            data-variant-image="{{ form_id }}"
+          >
+        {%- endif -%}
+        <div class="main-product-{{ section.id }}__sticky-info">
+          <span class="main-product-{{ section.id }}__sticky-title">{{ product.title | escape }}</span>
+          {%- unless product.has_only_default_variant -%}
+            <span class="main-product-{{ section.id }}__sticky-variant" data-variant-title="{{ form_id }}">{{ current_variant.title | escape }}</span>
+          {%- endunless -%}
+        </div>
       </div>
-      <button type="button" class="main-product-{{ section.id }}__sticky-btn" onclick="document.getElementById('ProductForm-{{ section.id }}').submit();" aria-label="Add to cart">
-        Add to Cart
-      </button>
+
+      <div class="main-product-{{ section.id }}__sticky-actions">
+        <div class="main-product-{{ section.id }}__sticky-prices">
+          <span class="main-product-{{ section.id }}__sticky-price" data-variant-price="{{ form_id }}">{% render 'price', amount: current_variant.price %}</span>
+          <s class="main-product-{{ section.id }}__sticky-compare" data-variant-compare="{{ form_id }}"{% unless sticky_compare %} hidden{% endunless %}>
+            {%- if sticky_compare -%}{% render 'price', amount: current_variant.compare_at_price %}{%- endif -%}
+          </s>
+        </div>
+        <button
+          type="submit"
+          form="{{ form_id }}"
+          name="add"
+          class="main-product-{{ section.id }}__sticky-btn"
+          {% unless current_variant.available %}
+            disabled
+          {% endunless %}
+        >
+          <span
+            data-variant-button-label
+            data-label-add="{{ 'products.buy.add_to_cart' | t }}"
+            data-label-sold-out="{{ 'products.buy.sold_out' | t }}"
+          >
+            {%- if current_variant.available -%}
+              {{ 'products.buy.add_to_cart' | t }}
+            {%- else -%}
+              {{ 'products.buy.sold_out' | t }}
+            {%- endif -%}
+          </span>
+        </button>
+      </div>
     </div>
   </div>
 
@@ -401,6 +420,25 @@
 
   .main-product-{{ section.id }}__gallery-wrapper.main-product-{{ section.id }}__thumbs-right {
     flex-direction: row;
+  }
+
+  .main-product-{{ section.id }}__gallery-wrapper.main-product-{{ section.id }}__thumbs-left {
+    flex-direction: row-reverse;
+  }
+
+  .main-product-{{ section.id }}__gallery-wrapper.main-product-{{ section.id }}__thumbs-below {
+    flex-direction: column;
+  }
+
+  .main-product-{{ section.id }}__thumbs-below .main-product-{{ section.id }}__thumbnails-container {
+    flex-direction: row;
+    width: 100%;
+    overflow-x: auto;
+    scrollbar-width: thin;
+  }
+
+  .main-product-{{ section.id }}__thumbs-below .main-product-{{ section.id }}__thumbnail {
+    width: 80px;
   }
 
   .main-product-{{ section.id }}__main-image-wrapper {
@@ -635,64 +673,6 @@
     color: var(--mp-accent);
     font-size: 16px;
   }
-
-  .main-product-{{ section.id }}__variant-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-  }
-
-  .main-product-{{ section.id }}__variant-card { cursor: pointer; position: relative; }
-  .main-product-{{ section.id }}__variant-radio { display: none; }
-
-  .main-product-{{ section.id }}__variant-content {
-    border: 1px solid var(--mp-border);
-    padding: 12px;
-    text-align: center;
-    background: transparent;
-    transition: all 0.3s ease;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  .main-product-{{ section.id }}__variant-radio:checked + .main-product-{{ section.id }}__variant-content {
-    border-color: var(--mp-text);
-    background: var(--mp-soft-bg);
-  }
-
-  .main-product-{{ section.id }}__save-badge {
-    position: absolute;
-    top: -8px;
-    right: -8px;
-    background: var(--mp-accent);
-    color: #fff;
-    font-size: 10px;
-    font-weight: 700;
-    padding: 3px 6px;
-  }
-
-  .main-product-{{ section.id }}__variant-info {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    flex-wrap: wrap;
-    flex-direction: column;
-  }
-
-  .main-product-{{ section.id }}__variant-title { font-weight: 700; font-size: 13px; }
-  .main-product-{{ section.id }}__variant-color-box {
-    width: 60px;
-    height: 40px;
-    border-radius: 0px;
-    border: 1px solid var(--mp-border);
-    display: inline-block;
-    flex-shrink: 0;
-  }
-  .main-product-{{ section.id }}__variant-price { font-weight: 700; font-size: 14px; }
-  .main-product-{{ section.id }}__variant-compare { font-size: 12px; text-decoration: line-through; opacity: 0.5; }
 
   .main-product-{{ section.id }}__quantity-block {
     display: flex;
@@ -1034,18 +1014,21 @@
 
   .main-product-{{ section.id }}__sticky-atc {
     position: fixed;
-    bottom: -100px;
+    bottom: 0;
     left: 0;
     width: 100%;
     background: #fff;
     border-top: 1px solid var(--mp-border);
     z-index: 999;
-    transition: bottom 0.3s ease;
+    transform: translateY(100%);
+    visibility: hidden;
+    transition: transform 0.3s ease, visibility 0.3s;
     box-shadow: 0 -5px 20px rgba(0,0,0,0.05);
   }
 
   .main-product-{{ section.id }}__sticky-atc.is-active {
-    bottom: 0;
+    transform: none;
+    visibility: visible;
   }
 
   .main-product-{{ section.id }}__sticky-inner {
@@ -1055,22 +1038,75 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 20px;
+  }
+
+  .main-product-{{ section.id }}__sticky-product {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+  }
+
+  .main-product-{{ section.id }}__sticky-image {
+    flex-shrink: 0;
+    width: 56px;
+    height: 56px;
+    object-fit: cover;
+    border: 1px solid var(--mp-border);
+    background: var(--mp-soft-bg);
   }
 
   .main-product-{{ section.id }}__sticky-info {
     display: flex;
     flex-direction: column;
+    gap: 2px;
+    min-width: 0;
   }
 
   .main-product-{{ section.id }}__sticky-title {
+    overflow: hidden;
     font-weight: 700;
     font-size: 14px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .main-product-{{ section.id }}__sticky-variant {
+    overflow: hidden;
+    font-size: 12px;
+    opacity: 0.7;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .main-product-{{ section.id }}__sticky-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-shrink: 0;
+  }
+
+  .main-product-{{ section.id }}__sticky-prices {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
   }
 
   .main-product-{{ section.id }}__sticky-price {
     font-weight: 700;
     color: var(--mp-accent);
     font-size: 14px;
+  }
+
+  .main-product-{{ section.id }}__sticky-compare {
+    font-size: 12px;
+    opacity: 0.55;
+  }
+
+  .main-product-{{ section.id }}__sticky-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 
   .main-product-{{ section.id }}__sticky-btn {
@@ -1108,10 +1144,6 @@
       width: 60px !important;
       height: 60px !important;
     }
-    
-    .main-product-{{ section.id }}__variant-grid { 
-      grid-template-columns: 1fr; 
-    }
   }
 
   @media screen and (max-width: 640px) {
@@ -1148,13 +1180,24 @@
     }
 
     .main-product-{{ section.id }}__sticky-inner {
-      flex-direction: column;
+      flex-wrap: wrap;
       gap: 10px;
-      text-align: center;
     }
-    
-    .main-product-{{ section.id }}__sticky-btn {
+
+    .main-product-{{ section.id }}__sticky-product {
+      flex: 1;
+    }
+
+    .main-product-{{ section.id }}__sticky-actions {
       width: 100%;
+    }
+
+    .main-product-{{ section.id }}__sticky-prices {
+      align-items: flex-start;
+    }
+
+    .main-product-{{ section.id }}__sticky-btn {
+      flex: 1;
     }
   }
 
@@ -1183,20 +1226,6 @@
             thumbnails.forEach(t => t.classList.remove('is-active'));
             this.classList.add('is-active');
             if(currentIndexSpan) currentIndexSpan.textContent = index + 1;
-          }
-        });
-      });
-    }
-
-    const form = document.getElementById('ProductForm-{{ section.id }}');
-    const variantRadios = document.querySelectorAll('.main-product-{{ section.id }}__variant-radio');
-    const mainVariantInput = form.querySelector('input[name="id"]');
-
-    if (variantRadios.length > 0 && mainVariantInput) {
-      variantRadios.forEach(radio => {
-        radio.addEventListener('change', function() {
-          if(this.checked) {
-            mainVariantInput.value = this.value;
           }
         });
       });
@@ -1262,106 +1291,318 @@
 
 {% schema %}
 {
-  "name": "Main Product",
+  "name": "t:sections.product.name",
   "tag": "section",
   "class": "section-main-product",
   "settings": [
     {
       "type": "header",
-      "content": "Section Spacing"
+      "content": "t:general.product_media"
+    },
+    {
+      "type": "select",
+      "id": "thumbnail_position",
+      "label": "t:labels.thumbnail_position",
+      "info": "t:info.thumbnail_position",
+      "options": [
+        {
+          "value": "left",
+          "label": "t:options.thumbnail_position.left"
+        },
+        {
+          "value": "right",
+          "label": "t:options.thumbnail_position.right"
+        },
+        {
+          "value": "below",
+          "label": "t:options.thumbnail_position.below"
+        }
+      ],
+      "default": "right"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.product.headers.section_spacing"
     },
     {
       "type": "range",
       "id": "padding_top",
-      "label": "Padding Top",
-      "min": 0, "max": 100, "step": 4, "unit": "px", "default": 40
+      "label": "t:sections.product.settings.padding_top.label",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 40
     },
     {
       "type": "range",
       "id": "padding_bottom",
-      "label": "Padding Bottom",
-      "min": 0, "max": 100, "step": 4, "unit": "px", "default": 60
+      "label": "t:sections.product.settings.padding_bottom.label",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 60
     },
     {
       "type": "header",
-      "content": "Colors (Fashion Theme)"
+      "content": "t:sections.product.headers.colors_fashion_theme"
     },
     {
       "type": "color",
       "id": "background_color",
-      "label": "Main Background",
+      "label": "t:sections.product.settings.background_color.label",
       "default": "#FAF6F0"
     },
     {
       "type": "color",
       "id": "soft_background",
-      "label": "Soft Background",
+      "label": "t:sections.product.settings.soft_background.label",
       "default": "#F3EFEA"
     },
     {
       "type": "color",
       "id": "text_color",
-      "label": "Text Color",
+      "label": "t:sections.product.settings.text_color.label",
       "default": "#2B1E16"
     },
     {
       "type": "color",
       "id": "accent_color",
-      "label": "Accent Color (Highlights)",
+      "label": "t:sections.product.settings.accent_color.label",
       "default": "#9C4A1A"
     },
     {
       "type": "color",
       "id": "button_bg_color",
-      "label": "Button Background",
+      "label": "t:sections.product.settings.button_bg_color.label",
       "default": "#1a1a1a"
     },
     {
       "type": "color",
       "id": "button_text_color",
-      "label": "Button Text Color",
+      "label": "t:sections.product.settings.button_text_color.label",
       "default": "#ffffff"
     },
     {
       "type": "color",
       "id": "border_color",
-      "label": "Border Color",
+      "label": "t:sections.product.settings.border_color.label",
       "default": "#E8E2DA"
     },
     {
       "type": "range",
       "id": "card_border_width",
-      "label": "Card Border Width",
-      "min": 1, "max": 4, "step": 1, "unit": "px", "default": 2
+      "label": "t:sections.product.settings.card_border_width.label",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "default": 2
     }
   ],
   "blocks": [
-    { 
-      "type": "customer_review", 
-      "name": "Customer Review Card", 
-      "limit": 1, 
+    {
+      "type": "customer_review",
+      "name": "t:sections.product.blocks.customer_review.name",
+      "limit": 1,
       "settings": [
-        { "type": "image_picker", "id": "customer_image", "label": "Customer Image" },
-        { "type": "text", "id": "customer_name", "label": "Customer Name", "default": "Sophie L." },
-        { "type": "text", "id": "review_title", "label": "Review Title", "default": "Love this overnight glow!" },
-        { "type": "textarea", "id": "review_text", "label": "Review Text", "default": "Woke up with plump, hydrated skin." }
-      ] 
+        {
+          "type": "image_picker",
+          "id": "customer_image",
+          "label": "t:sections.product.blocks.customer_review.settings.customer_image.label"
+        },
+        {
+          "type": "text",
+          "id": "customer_name",
+          "label": "t:sections.product.blocks.customer_review.settings.customer_name.label",
+          "default": "Sophie L."
+        },
+        {
+          "type": "text",
+          "id": "review_title",
+          "label": "t:sections.product.blocks.customer_review.settings.review_title.label",
+          "default": "Love this overnight glow!"
+        },
+        {
+          "type": "textarea",
+          "id": "review_text",
+          "label": "t:sections.product.blocks.customer_review.settings.review_text.label",
+          "default": "Woke up with plump, hydrated skin."
+        }
+      ]
     },
-    { "type": "title", "name": "Product Title", "limit": 1, "settings": [{ "type": "text", "id": "subtitle", "label": "Subtitle Text", "default": "AFORMO" }] },
-    { "type": "rating", "name": "Rating", "limit": 1, "settings": [{ "type": "text", "id": "review_count", "label": "Review Count Text", "default": "728" }] },
-    { "type": "description", "name": "Description", "limit": 1 },
-    { "type": "key_benefits", "name": "Key Benefits List", "limit": 1, "settings": [{ "type": "textarea", "id": "benefits_list", "label": "Benefits (comma separated)", "default": "Hydrates & Locks in Moisture Overnight, BOOSTS ELASTICITY" }] },
-    { "type": "variant_picker", "name": "Variant Bundles (Grid)", "limit": 1 },
-    { "type": "quantity_selector", "name": "Quantity Selector", "limit": 1 },
-    { "type": "stock_alert", "name": "Stock Alert", "limit": 1, "settings": [{ "type": "text", "id": "stock_text", "label": "Stock Alert Text", "default": "HURRY, ONLY 37 ITEMS LEFT!" }] },
-    { "type": "selling_plan", "name": "Subscription", "limit": 1, "settings": [{ "type": "text", "id": "subscribe_title", "label": "Header Text", "default": "SAVE 25% ON FIRST ORDER" }] },
-    { "type": "buy_button", "name": "Buy Button", "limit": 1, "settings": [{ "type": "text", "id": "button_text", "label": "Button Text", "default": "ADD TO CART" }, { "type": "checkbox", "id": "show_price", "label": "Show Price in Button", "default": true }] },
-    { "type": "guarantee_text", "name": "Guarantee Text", "limit": 1, "settings": [{ "type": "text", "id": "guarantee_text", "label": "Guarantee Text", "default": "TRY IT - FREE FOR 30 DAYS. 100% REFUND." }] },
-    { "type": "size_chart", "name": "Size Chart", "limit": 1, "settings": [{ "type": "text", "id": "title", "label": "Button Label", "default": "Size Chart" }, { "type": "image_picker", "id": "size_chart_image", "label": "Size Chart Image (Optional)" }] },
-    { "type": "faq_accordion", "name": "FAQ Accordion", "settings": [{ "type": "text", "id": "title", "label": "Title", "default": "Shipping & Returns" }, { "type": "richtext", "id": "content", "label": "Content", "default": "<p>Details here...</p>" }] },
-    { "type": "shipping_info", "name": "Shipping Info", "limit": 1, "settings": [{ "type": "text", "id": "shipping_text", "label": "Text", "default": "We offer worldwide free shipping for every order." }] },
-    { "type": "payment_icons", "name": "Payment Icons", "limit": 1 },
-    { "type": "social_share", "name": "Social Share", "limit": 1 }
+    {
+      "type": "title",
+      "name": "t:sections.product.blocks.title.name",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "t:sections.product.blocks.title.settings.subtitle.label",
+          "default": "AFORMO"
+        }
+      ]
+    },
+    {
+      "type": "rating",
+      "name": "t:sections.product.blocks.rating.name",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "review_count",
+          "label": "t:sections.product.blocks.rating.settings.review_count.label",
+          "default": "728"
+        }
+      ]
+    },
+    {
+      "type": "description",
+      "name": "t:sections.product.blocks.description.name",
+      "limit": 1
+    },
+    {
+      "type": "key_benefits",
+      "name": "t:sections.product.blocks.key_benefits.name",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "textarea",
+          "id": "benefits_list",
+          "label": "t:sections.product.blocks.key_benefits.settings.benefits_list.label",
+          "default": "Hydrates & Locks in Moisture Overnight, BOOSTS ELASTICITY"
+        }
+      ]
+    },
+    {
+      "type": "variant_picker",
+      "name": "t:sections.product.blocks.variant_picker.name",
+      "limit": 1
+    },
+    {
+      "type": "quantity_selector",
+      "name": "t:sections.product.blocks.quantity_selector.name",
+      "limit": 1
+    },
+    {
+      "type": "stock_alert",
+      "name": "t:sections.product.blocks.stock_alert.name",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "stock_text",
+          "label": "t:sections.product.blocks.stock_alert.settings.stock_text.label",
+          "default": "HURRY, ONLY 37 ITEMS LEFT!"
+        }
+      ]
+    },
+    {
+      "type": "selling_plan",
+      "name": "t:sections.product.blocks.selling_plan.name",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "subscribe_title",
+          "label": "t:sections.product.blocks.selling_plan.settings.subscribe_title.label",
+          "default": "SAVE 25% ON FIRST ORDER"
+        }
+      ]
+    },
+    {
+      "type": "buy_button",
+      "name": "t:sections.product.blocks.buy_button.name",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "button_text",
+          "label": "t:sections.product.blocks.buy_button.settings.button_text.label",
+          "default": "ADD TO CART"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_price",
+          "label": "t:sections.product.blocks.buy_button.settings.show_price.label",
+          "default": true
+        }
+      ]
+    },
+    {
+      "type": "guarantee_text",
+      "name": "t:sections.product.blocks.guarantee_text.name",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "guarantee_text",
+          "label": "t:sections.product.blocks.guarantee_text.settings.guarantee_text.label",
+          "default": "TRY IT - FREE FOR 30 DAYS. 100% REFUND."
+        }
+      ]
+    },
+    {
+      "type": "size_chart",
+      "name": "t:sections.product.blocks.size_chart.name",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "t:sections.product.blocks.size_chart.settings.title.label",
+          "default": "Size Chart"
+        },
+        {
+          "type": "image_picker",
+          "id": "size_chart_image",
+          "label": "t:sections.product.blocks.size_chart.settings.size_chart_image.label"
+        }
+      ]
+    },
+    {
+      "type": "faq_accordion",
+      "name": "t:sections.product.blocks.faq_accordion.name",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "t:sections.product.blocks.faq_accordion.settings.title.label",
+          "default": "Shipping & Returns"
+        },
+        {
+          "type": "richtext",
+          "id": "content",
+          "label": "t:sections.product.blocks.faq_accordion.settings.content.label",
+          "default": "<p>Details here...</p>"
+        }
+      ]
+    },
+    {
+      "type": "shipping_info",
+      "name": "t:sections.product.blocks.shipping_info.name",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "shipping_text",
+          "label": "t:sections.product.blocks.shipping_info.settings.shipping_text.label",
+          "default": "We offer worldwide free shipping for every order."
+        }
+      ]
+    },
+    {
+      "type": "payment_icons",
+      "name": "t:sections.product.blocks.payment_icons.name",
+      "limit": 1
+    },
+    {
+      "type": "social_share",
+      "name": "t:sections.product.blocks.social_share.name",
+      "limit": 1
+    }
   ]
 }
 {% endschema %}

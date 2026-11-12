@@ -4,7 +4,7 @@
   @param {object} item - The cart line item
   @param {number} index - Position of the item in the cart, starting at 1
   @param {string} section_id - Id of the section rendering the cart
-  @param {string} [layout] - `page` (default), `drawer` (stacked controls, smaller image) or `compact` (quantity × price, no controls)
+  @param {string} [layout] - `page` (default), `drawer` (stacked controls, smaller image) or `compact` (quantity × price, remove button only)
 
   @example
   {% render 'cart-line-item', item: item, index: forloop.index, section_id: section.id %}
@@ -61,15 +61,15 @@
 
     <div class="cart-item__price">
       {%- if layout == 'compact' -%}
-        {%- assign unit_price = item.final_price | money -%}
+        {%- capture unit_price -%}{%- render 'price', amount: item.final_price -%}{%- endcapture -%}
         {{ 'cart.popup.quantity_price' | t: quantity: item.quantity, price: unit_price }}
       {%- else -%}
         {%- if item.original_price != item.final_price -%}
           <span class="visually-hidden">{{ 'cart.price.original' | t }}</span>
-          <s>{{ item.original_price | money }}</s>
+          <s>{% render 'price', amount: item.original_price %}</s>
           <span class="visually-hidden">{{ 'cart.price.sale' | t }}</span>
         {%- endif -%}
-        <span>{{ item.final_price | money }}</span>
+        <span>{% render 'price', amount: item.final_price %}</span>
       {%- endif -%}
     </div>
 
@@ -119,13 +119,22 @@
     {%- if item.line_level_discount_allocations.size > 0 -%}
       <ul class="cart-item__discounts" role="list">
         {%- for allocation in item.line_level_discount_allocations -%}
-          <li>{{ allocation.discount_application.title | escape }} (-{{ allocation.amount | money }})</li>
+          <li>{{ allocation.discount_application.title | escape }} (-{% render 'price', amount: allocation.amount %})</li>
         {%- endfor -%}
       </ul>
     {%- endif -%}
   </div>
 
-  {%- unless layout == 'compact' -%}
+  {%- if layout == 'compact' -%}
+    <a
+      href="{{ item.url_to_remove }}"
+      class="cart-item__remove"
+      data-cart-remove="{{ item.key }}"
+      aria-label="{{ 'cart.remove_item' | t: title: title }}"
+    >
+      {% render 'icon', name: 'trash' %}
+    </a>
+  {%- else -%}
     <div class="cart-item__quantity">
       {% render 'quantity-input',
         id: quantity_id,
@@ -150,10 +159,10 @@
     <div class="cart-item__total">
       {%- if item.original_line_price != item.final_line_price -%}
         <span class="visually-hidden">{{ 'cart.price.original' | t }}</span>
-        <s>{{ item.original_line_price | money }}</s>
+        <s>{% render 'price', amount: item.original_line_price %}</s>
         <span class="visually-hidden">{{ 'cart.price.sale' | t }}</span>
       {%- endif -%}
-      <span>{{ item.final_line_price | money }}</span>
+      <span>{% render 'price', amount: item.final_line_price %}</span>
     </div>
-  {%- endunless -%}
+  {%- endif -%}
 </li>
