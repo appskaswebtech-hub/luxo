@@ -97,7 +97,6 @@
     "style_number": "Style no. {{ sku }}",
     "description_fallback": "Premium quality product crafted with excellence and style.",
     "view_all": "View all",
-    "empty_collection": "Please select a collection or add products to display here.",
     "no_related": "No related products found.",
     "verified": "Verified",
     "reviews_count": {
@@ -127,7 +126,10 @@
       "one": "Only {{ count }} left in stock",
       "other": "Only {{ count }} left in stock"
     },
-    "variant_label": "Variant"
+    "variant_label": "Variant",
+    "placeholder_title": "Product title",
+    "show_more_options": "Show {{ count }} more {{ option }} options",
+    "view_more_options": "View {{ count }} more {{ option }} options for {{ product }}"
   },
   "search": {
     "title": "Search",

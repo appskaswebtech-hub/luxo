@@ -44,7 +44,8 @@
       "image": "Image",
       "promotional": "Promotional",
       "product": "Product"
-    }
+    },
+    "card_variants": "Variant options on cards"
   },
   "labels": {
     "alignment": "Alignment",
@@ -117,7 +118,12 @@
     "scheme_accent": "Accent",
     "scheme_border": "Border",
     "scheme_button": "Button",
-    "scheme_button_label": "Button label"
+    "scheme_button_label": "Button label",
+    "card_variant_limit": "Option values shown on cards",
+    "card_show_variants": "Show variant options",
+    "card_show_option_label": "Show option name",
+    "card_show_selected_value": "Show selected value",
+    "card_more_action": "When \"+\" is clicked"
   },
   "info": {
     "cart_layout": "Side by side applies to screens 990px and wider. Smaller screens always show the summary below the items",
@@ -134,7 +140,9 @@
     "custom_swatch_colors": "One color per line as name: color, for example bronze: #CD7F32. Used when a value has no Shopify swatch",
     "swatch_settings": "Swatch settings",
     "variant_picker": "Choose how product variants are displayed",
-    "scheme_gradient": "Used instead of the solid background when set"
+    "scheme_gradient": "Used instead of the solid background when set",
+    "card_variant_limit": "Extra values are hidden behind a \"+\" button. The selected value always shows",
+    "card_show_variants": "Lets customers pick a variant before adding to cart. When off, the first available variant is added"
   },
   "sections": {
     "hero": {
@@ -812,7 +820,8 @@
           "label": "Subheading"
         },
         "collection": {
-          "label": "Select collection"
+          "label": "Select collection",
+          "info": "Leave empty to show products from all products"
         },
         "products_limit": {
           "label": "Maximum products to show"
@@ -2148,6 +2157,18 @@
       "dropdown": "Dropdown",
       "pills": "Pills",
       "swatch": "Swatches"
+    },
+    "card_variant_limit": {
+      "3": "3",
+      "4": "4",
+      "5": "5",
+      "6": "6",
+      "8": "8",
+      "all": "Show all"
+    },
+    "card_more_action": {
+      "expand": "Show more values",
+      "link": "Go to the product page"
     }
   }
 }

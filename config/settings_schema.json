@@ -2,10 +2,10 @@
   {
     "name": "theme_info",
     "theme_name": "Luxtote",
-    "theme_version": "0.1.0",
-    "theme_author": "Shopify",
-    "theme_documentation_url": "https://help.shopify.com/manual/online-store/themes",
-    "theme_support_url": "https://support.shopify.com/"
+    "theme_version": "1.0.0",
+    "theme_author": "Kaswebtech Solutions",
+    "theme_documentation_url": "https://kaswebtechsolutions.com/",
+    "theme_support_url": "https://kaswebtechsolutions.com/contact-us"
   },
   {
     "name": "t:general.typography",
@@ -338,6 +338,82 @@
         "id": "card_show_vendor",
         "label": "t:labels.show_vendor",
         "default": true
+      },
+      {
+        "type": "header",
+        "content": "t:general.card_variants"
+      },
+      {
+        "type": "checkbox",
+        "id": "card_show_variants",
+        "label": "t:labels.card_show_variants",
+        "info": "t:info.card_show_variants",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "card_show_option_label",
+        "label": "t:labels.card_show_option_label",
+        "default": true,
+        "visible_if": "{{ settings.card_show_variants }}"
+      },
+      {
+        "type": "checkbox",
+        "id": "card_show_selected_value",
+        "label": "t:labels.card_show_selected_value",
+        "default": true,
+        "visible_if": "{{ settings.card_show_variants }}"
+      },
+      {
+        "type": "select",
+        "id": "card_variant_limit",
+        "label": "t:labels.card_variant_limit",
+        "info": "t:info.card_variant_limit",
+        "options": [
+          {
+            "value": "3",
+            "label": "t:options.card_variant_limit.3"
+          },
+          {
+            "value": "4",
+            "label": "t:options.card_variant_limit.4"
+          },
+          {
+            "value": "5",
+            "label": "t:options.card_variant_limit.5"
+          },
+          {
+            "value": "6",
+            "label": "t:options.card_variant_limit.6"
+          },
+          {
+            "value": "8",
+            "label": "t:options.card_variant_limit.8"
+          },
+          {
+            "value": "all",
+            "label": "t:options.card_variant_limit.all"
+          }
+        ],
+        "default": "4",
+        "visible_if": "{{ settings.card_show_variants }}"
+      },
+      {
+        "type": "select",
+        "id": "card_more_action",
+        "label": "t:labels.card_more_action",
+        "options": [
+          {
+            "value": "expand",
+            "label": "t:options.card_more_action.expand"
+          },
+          {
+            "value": "link",
+            "label": "t:options.card_more_action.link"
+          }
+        ],
+        "default": "expand",
+        "visible_if": "{{ settings.card_show_variants and settings.card_variant_limit != 'all' }}"
       },
       {
         "type": "header",

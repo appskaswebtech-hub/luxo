@@ -6,6 +6,10 @@
   assign show_second_image = settings.card_hover_image
   assign show_vendor = settings.card_show_vendor
   assign badge_position = 'collection-grid-' | append: section.id | append: '__badge--' | append: settings.card_badge_position
+  assign variant_limit = 0
+  if settings.card_variant_limit != 'all'
+    assign variant_limit = settings.card_variant_limit | plus: 0
+  endif
   assign quick_add = section.settings.quick_add
   assign show_filters = section.settings.show_filters
   assign filter_layout = section.settings.filter_layout
@@ -174,7 +178,11 @@
           {%- if collection.products.size > 0 -%}
             <div class="collection-grid-{{ section.id }}__grid">
               {%- for product in collection.products -%}
-                <div class="collection-grid-{{ section.id }}__card">
+                {%- assign card_variant = product.selected_or_first_available_variant -%}
+                <card-variants
+                  class="collection-grid-{{ section.id }}__card"
+                  data-selected="{{ card_variant.options | json | escape }}"
+                >
                   
                   <div class="collection-grid-{{ section.id }}__card-top-bar">
                     <span class="collection-grid-{{ section.id }}__card-store">{{ shop.name }}</span>
@@ -243,48 +251,141 @@
                     </p>
 
                     {%- unless product.has_only_default_variant -%}
+                      {%- if settings.card_show_variants -%}
                       <div class="collection-grid-{{ section.id }}__card-variants">
                         {%- for option in product.options_with_values -%}
-                          <div class="collection-grid-{{ section.id }}__variant-group">
-                            <span class="collection-grid-{{ section.id }}__variant-label">{{ option.name }}:</span>
+                          {%- assign option_index = forloop.index0 -%}
+                          <div class="collection-grid-{{ section.id }}__variant-group" role="group" aria-label="{{ option.name | escape }}">
+                            {%- if settings.card_show_option_label or settings.card_show_selected_value -%}
+                              <span class="collection-grid-{{ section.id }}__variant-label" aria-hidden="true">
+                                {%- if settings.card_show_option_label -%}
+                                  {{- option.name | escape -}}
+                                  {%- if settings.card_show_selected_value %}: {% endif -%}
+                                {%- endif -%}
+                                {%- if settings.card_show_selected_value -%}
+                                  <span data-selected-label="{{ option_index }}">{{ card_variant.options[option_index] | escape }}</span>
+                                {%- endif -%}
+                              </span>
+                            {%- endif -%}
                             <div class="collection-grid-{{ section.id }}__variant-values">
-                              {%- for value in option.values limit: 4 -%}
+                              {%- assign hidden_count = 0 -%}
+                              {%- for value in option.values -%}
+                                {%- liquid
+                                  assign is_selected = false
+                                  if card_variant.options[option_index] == value
+                                    assign is_selected = true
+                                  endif
+                                  assign is_hidden = false
+                                  if variant_limit > 0 and forloop.index > variant_limit
+                                    unless is_selected
+                                      assign is_hidden = true
+                                      assign hidden_count = hidden_count | plus: 1
+                                    endunless
+                                  endif
+                                  assign value_name = value | escape
+                                  assign swatch_color = value.swatch.color | default: value_name
+                                -%}
                                 {%- if option.name == 'Color' or option.name == 'Colour' -%}
-                                  <span class="collection-grid-{{ section.id }}__swatch-color" style="background-color: {{ value | handle }};" title="{{ value }}"></span>
+                                  <button
+                                    type="button"
+                                    class="collection-grid-{{ section.id }}__swatch-color"
+                                    style="background-color: {{ swatch_color }};"
+                                    title="{{ value_name }}"
+                                    aria-label="{{ value_name }}"
+                                    aria-pressed="{{ is_selected }}"
+                                    data-option-index="{{ option_index }}"
+                                    data-option-value="{{ value_name }}"
+                                    {% if is_hidden %}
+                                      hidden
+                                    {% endif %}
+                                  ></button>
                                 {%- else -%}
-                                  <span class="collection-grid-{{ section.id }}__swatch-pill">{{ value }}</span>
+                                  <button
+                                    type="button"
+                                    class="collection-grid-{{ section.id }}__swatch-pill"
+                                    aria-pressed="{{ is_selected }}"
+                                    data-option-index="{{ option_index }}"
+                                    data-option-value="{{ value_name }}"
+                                    {% if is_hidden %}
+                                      hidden
+                                    {% endif %}
+                                  >
+                                    {{- value_name -}}
+                                  </button>
                                 {%- endif -%}
                               {%- endfor -%}
-                              {%- if option.values.size > 4 -%}
-                                <span class="collection-grid-{{ section.id }}__swatch-more">+{{ option.values.size | minus: 4 }}</span>
+                              {%- if hidden_count > 0 -%}
+                                {%- if settings.card_more_action == 'link' -%}
+                                  <a
+                                    href="{{ product.url }}"
+                                    class="collection-grid-{{ section.id }}__swatch-more"
+                                    aria-label="{{ 'products.view_more_options' | t: count: hidden_count, option: option.name, product: product.title }}"
+                                  >
+                                    +{{ hidden_count }}
+                                  </a>
+                                {%- else -%}
+                                  <button
+                                    type="button"
+                                    class="collection-grid-{{ section.id }}__swatch-more"
+                                    data-show-more
+                                    aria-label="{{ 'products.show_more_options' | t: count: hidden_count, option: option.name }}"
+                                  >
+                                    +{{ hidden_count }}
+                                  </button>
+                                {%- endif -%}
                               {%- endif -%}
                             </div>
                           </div>
                         {%- endfor -%}
                       </div>
+
+                      {%- endif -%}
+
+                      <script type="application/json" data-card-variants>
+                        [
+                          {%- for variant in product.variants -%}
+                            {%- capture variant_price -%}{% render 'price', amount: variant.price %}{%- endcapture -%}
+                            {"id":{{ variant.id }},"available":{{ variant.available | json }},"options":{{ variant.options | json }},"price":{{ variant_price | strip | json }}}{% unless forloop.last %},{% endunless %}
+                          {%- endfor -%}
+                        ]
+                      </script>
                     {%- endunless -%}
                   </div>
 
                   <div class="collection-grid-{{ section.id }}__card-bottom">
-                    <span class="collection-grid-{{ section.id }}__price">{% render 'price', amount: product.price %}</span>
-                    
+                    <span class="collection-grid-{{ section.id }}__price" data-card-price>
+                      {%- if product.has_only_default_variant -%}
+                        {% render 'price', amount: product.price %}
+                      {%- else -%}
+                        {% render 'price', amount: card_variant.price %}
+                      {%- endif -%}
+                    </span>
+
                     {%- if quick_add != 'none' -%}
                       {%- form 'product', product, class: form_class -%}
-                        <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
-                        <button type="submit" name="add" class="collection-grid-{{ section.id }}__card-button" {% if product.available == false %}disabled{% endif %}>
-                          {%- if product.available -%}
-                            {{ 'products.buy.add_to_cart' | t }}
-                          {%- else -%}
-                            {{ 'products.buy.sold_out' | t }}
-                          {%- endif -%}
+                        <input type="hidden" name="id" value="{{ card_variant.id }}" data-card-variant-id>
+                        <button type="submit" name="add" class="collection-grid-{{ section.id }}__card-button"{% unless card_variant.available %} disabled{% endunless %}>
+                          <span
+                            data-card-button-label
+                            data-label-add="{{ 'products.buy.add_to_cart' | t }}"
+                            data-label-sold-out="{{ 'products.buy.sold_out' | t }}"
+                            data-label-unavailable="{{ 'products.variant.unavailable' | t }}"
+                          >
+                            {%- if card_variant.available -%}
+                              {{ 'products.buy.add_to_cart' | t }}
+                            {%- else -%}
+                              {{ 'products.buy.sold_out' | t }}
+                            {%- endif -%}
+                          </span>
                           <svg width="12" height="5" viewBox="0 0 13 5" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9.45052 4.21172C9.63052 3.82772 9.80452 3.49172 9.97252 3.20372C10.1525 2.91572 10.3265 2.67572 10.4945 2.48372H0.000515878V1.72772H10.4945C10.3265 1.52372 10.1525 1.27772 9.97252 0.989718C9.80452 0.701718 9.63052 0.371718 9.45052 -0.000281632H10.0805C10.8365 0.875719 11.6285 1.52372 12.4565 1.94372V2.26772C11.6285 2.67572 10.8365 3.32372 10.0805 4.21172H9.45052Z" fill="currentColor"></path></svg>
                         </button>
                       {%- endform -%}
                     {%- endif -%}
                   </div>
-                </div>
+                </card-variants>
               {%- endfor -%}
             </div>
+            <script src="{{ 'card-variants.js' | asset_url }}" defer></script>
 
             {%- if paginate.pages > 1 -%}
               <div class="collection-grid-{{ section.id }}__pagination">
@@ -946,24 +1047,76 @@
   }
 
   .collection-grid-{{ section.id }}__swatch-color {
-    width: 14px;
-    height: 14px;
+    position: relative;
+    width: 18px;
+    height: 18px;
+    padding: 0;
     border-radius: 50%;
     border: 1px solid var(--grid-border);
+    cursor: pointer;
+  }
+
+  .collection-grid-{{ section.id }}__swatch-color[aria-pressed='true'] {
+    outline: 2px solid var(--grid-text);
+    outline-offset: 2px;
   }
 
   .collection-grid-{{ section.id }}__swatch-pill {
+    min-height: 24px;
+    font: inherit;
     font-size: 0.65rem;
-    padding: 2px 6px;
+    padding: 2px 8px;
     border: 1px solid var(--grid-border);
     border-radius: 20px;
+    background: transparent;
+    color: inherit;
     text-transform: uppercase;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+  .collection-grid-{{ section.id }}__swatch-pill:hover,
+  .collection-grid-{{ section.id }}__swatch-pill[aria-pressed='true'] {
+    border-color: var(--grid-text);
+  }
+
+  .collection-grid-{{ section.id }}__swatch-pill[aria-pressed='true'] {
+    background: var(--grid-text);
+    color: var(--grid-bg);
+  }
+
+  .collection-grid-{{ section.id }}__swatch-pill.is-unavailable {
+    text-decoration: line-through;
+    opacity: 0.5;
+  }
+
+  .collection-grid-{{ section.id }}__swatch-color.is-unavailable {
+    opacity: 0.4;
+  }
+
+  .collection-grid-{{ section.id }}__swatch-color:focus-visible,
+  .collection-grid-{{ section.id }}__swatch-pill:focus-visible {
+    outline: 2px solid var(--grid-accent);
+    outline-offset: 2px;
   }
 
   .collection-grid-{{ section.id }}__swatch-more {
+    min-height: 24px;
+    padding: 2px 6px;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
     font-size: 0.7rem;
-    opacity: 0.6;
+    font-weight: 600;
+    opacity: 0.7;
     align-self: center;
+    cursor: pointer;
+  }
+
+  .collection-grid-{{ section.id }}__swatch-more:hover {
+    opacity: 1;
+    text-decoration: underline;
   }
 
   .collection-grid-{{ section.id }}__card-bottom {

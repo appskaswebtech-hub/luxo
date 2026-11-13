@@ -59,5 +59,59 @@
         }
       }
     }
+  },
+  "presets": {
+    "Luxtote": {
+      "social_instagram": "https://instagram.com",
+      "social_facebook": "https://facebook.com",
+      "social_pinterest": "https://pinterest.com",
+      "social_x": "https://x.com",
+      "color_schemes": {
+        "scheme-1": {
+          "settings": {
+            "background": "#FAF6F0",
+            "background_gradient": "",
+            "text": "#2B1E16",
+            "accent": "#9C4A1A",
+            "border": "#E8E2DA",
+            "button": "#2B1E16",
+            "button_label": "#FFFFFF"
+          }
+        },
+        "scheme-2": {
+          "settings": {
+            "background": "#FFFFFF",
+            "background_gradient": "",
+            "text": "#2B1E16",
+            "accent": "#9C4A1A",
+            "border": "#E8E2DA",
+            "button": "#9C4A1A",
+            "button_label": "#FFFFFF"
+          }
+        },
+        "scheme-3": {
+          "settings": {
+            "background": "#2B1E16",
+            "background_gradient": "",
+            "text": "#FAF6F0",
+            "accent": "#D4A373",
+            "border": "#4A3A30",
+            "button": "#FAF6F0",
+            "button_label": "#2B1E16"
+          }
+        },
+        "scheme-4": {
+          "settings": {
+            "background": "#9C4A1A",
+            "background_gradient": "",
+            "text": "#FFFFFF",
+            "accent": "#FAF6F0",
+            "border": "#B5653A",
+            "button": "#FFFFFF",
+            "button_label": "#9C4A1A"
+          }
+        }
+      }
+    }
   }
 }

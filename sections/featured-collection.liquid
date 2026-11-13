@@ -1,5 +1,8 @@
 {%- liquid
   assign collection = collections[section.settings.collection]
+  if collection == blank
+    assign collection = collections.all
+  endif
   assign products_per_row = section.settings.products_per_row
   assign layout_type = section.settings.layout_type
   assign container_width = section.settings.container_width
@@ -82,10 +85,41 @@
       {%- endif -%}
     </div>
 
-    {%- if collection != blank and collection.products.size > 0 -%}
+    {%- liquid
+      assign has_products = false
+      if collection != blank and collection.products.size > 0
+        assign has_products = true
+      endif
+      assign placeholder_count = section.settings.products_limit | at_most: 8
+    -%}
       <div class="featured-collection-{{ section.id }}__wrapper {% if layout_type == 'slider' %}featured-collection-{{ section.id }}__is-slider{% endif %}" data-layout="{{ layout_type }}">
         <div class="featured-collection-{{ section.id }}__track {% if layout_type == 'slider' %}featured-collection-{{ section.id }}__slider-track{% else %}featured-collection-{{ section.id }}__grid featured-collection-{{ section.id }}__columns-{{ products_per_row }}{% endif %}" id="FeaturedTrack-{{ section.id }}">
           
+          {%- unless has_products -%}
+            {%- comment -%} Sample cards shown until a collection with products is selected {%- endcomment -%}
+            {%- for i in (1..placeholder_count) -%}
+              {%- assign placeholder_index = forloop.index0 | modulo: 6 | plus: 1 -%}
+              {%- assign placeholder_name = 'product-' | append: placeholder_index -%}
+              <div class="featured-collection-{{ section.id }}__product-wrapper">
+                <div class="featured-collection-{{ section.id }}__product-card">
+                  <div class="featured-collection-{{ section.id }}__product-top">
+                    <span class="featured-collection-{{ section.id }}__product-badge">{{ shop.name | escape }}</span>
+                  </div>
+                  <div class="featured-collection-{{ section.id }}__image-wrapper featured-collection-{{ section.id }}__ratio-{{ image_ratio }}">
+                    {{ placeholder_name | placeholder_svg_tag: placeholder_class }}
+                  </div>
+                  <div class="featured-collection-{{ section.id }}__product-body">
+                    <h3 class="featured-collection-{{ section.id }}__product-title">{{ 'products.placeholder_title' | t }}<span>.</span></h3>
+                    <p class="featured-collection-{{ section.id }}__product-desc">{{ 'products.description_fallback' | t }}</p>
+                  </div>
+                  <div class="featured-collection-{{ section.id }}__product-bottom">
+                    <span class="featured-collection-{{ section.id }}__product-price">{% render 'price', amount: 2999 %}</span>
+                  </div>
+                </div>
+              </div>
+            {%- endfor -%}
+          {%- endunless -%}
+
           {%- for product in collection.products limit: section.settings.products_limit -%}
             <div class="featured-collection-{{ section.id }}__product-wrapper">
               <div class="featured-collection-{{ section.id }}__product-card">
@@ -187,10 +221,6 @@
           </button>
         {%- endif -%}
       </div>
-      
-    {%- else -%}
-      <p class="featured-collection-{{ section.id }}__empty-text">{{ 'products.empty_collection' | t }}</p>
-    {%- endif -%}
 
   </div>
 </section>
@@ -642,7 +672,8 @@
     {
       "type": "collection",
       "id": "collection",
-      "label": "t:sections.featured_collection.settings.collection.label"
+      "label": "t:sections.featured_collection.settings.collection.label",
+      "info": "t:sections.featured_collection.settings.collection.info"
     },
     {
       "type": "range",
