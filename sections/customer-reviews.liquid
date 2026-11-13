@@ -11,10 +11,10 @@
     assign heading_font = section.settings.custom_heading_font
     assign body_font = section.settings.custom_body_font
   else
-    assign reviews_text = section.settings.text_color
+    assign reviews_text = section.settings.color_scheme.settings.text
     assign reviews_muted = section.settings.muted_color
-    assign reviews_bg = section.settings.background_color
-    assign reviews_accent = section.settings.accent_color
+    assign reviews_bg = section.settings.color_scheme.settings.background
+    assign reviews_accent = section.settings.color_scheme.settings.accent
     assign reviews_border = '#73391d'
     
     assign heading_font = 'var(--font-heading-family)'
@@ -800,28 +800,16 @@
       "content": "t:sections.customer_reviews.headers.default_colors"
     },
     {
-      "type": "color",
-      "id": "background_color",
-      "label": "t:sections.customer_reviews.settings.background_color.label",
-      "default": "#FAF6F0"
-    },
-    {
-      "type": "color",
-      "id": "text_color",
-      "label": "t:sections.customer_reviews.settings.text_color.label",
-      "default": "#2B1E16"
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:labels.color_scheme",
+      "default": "scheme-1"
     },
     {
       "type": "color",
       "id": "muted_color",
       "label": "t:sections.customer_reviews.settings.muted_color.label",
       "default": "#7A6B61"
-    },
-    {
-      "type": "color",
-      "id": "accent_color",
-      "label": "t:sections.customer_reviews.settings.accent_color.label",
-      "default": "#9C4A1A"
     },
     {
       "type": "header",

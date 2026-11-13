@@ -34,15 +34,16 @@
         "social_links": {
           "type": "social_links",
           "settings": {
-            "social_title": "Socials",
-            "social_twitter": "#",
-            "social_facebook": "#",
-            "social_instagram": "#",
-            "social_pinterest": "#"
+            "social_title": "Socials"
           }
         }
       },
-      "block_order": ["newsletter", "menu_1", "menu_2", "social_links"],
+      "block_order": [
+        "newsletter",
+        "menu_1",
+        "menu_2",
+        "social_links"
+      ],
       "settings": {}
     }
   },

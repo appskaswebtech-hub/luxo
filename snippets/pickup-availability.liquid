@@ -1,0 +1,119 @@
+{% doc %}
+  Renders in-store pickup availability for a variant: the closest location,
+  how soon it is ready, and the other locations in a disclosure.
+  Shows nothing when no location offers local pickup.
+
+  @param {variant} variant - The selected variant
+
+  @example
+  {% render 'pickup-availability', variant: product.selected_or_first_available_variant %}
+{% enddoc %}
+
+{%- assign pickup_locations = variant.store_availabilities | where: 'pick_up_enabled', true -%}
+
+{%- if pickup_locations.size > 0 -%}
+  {%- assign first = pickup_locations.first -%}
+  <div class="pickup-availability__summary">
+    <svg class="pickup-availability__icon{% unless first.available %} is-unavailable{% endunless %}" viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false">
+      {%- if first.available -%}
+        <path d="M4 10.5l4 4 8-9"/>
+      {%- else -%}
+        <path d="M5 5l10 10M15 5L5 15"/>
+      {%- endif -%}
+    </svg>
+    <div>
+      <p class="pickup-availability__title">
+        {%- if first.available -%}
+          {{ 'pickup.available_at' | t: location: first.location.name }}
+        {%- else -%}
+          {{ 'pickup.unavailable_at' | t: location: first.location.name }}
+        {%- endif -%}
+      </p>
+      {%- if first.available and first.pick_up_time != blank -%}
+        <p class="pickup-availability__time">{{ 'pickup.ready_in' | t: time: first.pick_up_time }}</p>
+      {%- endif -%}
+    </div>
+  </div>
+
+  {%- if pickup_locations.size > 1 -%}
+    <details class="pickup-availability__more">
+      <summary>{{ 'pickup.check_stores' | t }}</summary>
+      <ul class="pickup-availability__list" role="list">
+        {%- for availability in pickup_locations -%}
+          <li>
+            <p class="pickup-availability__location">{{ availability.location.name | escape }}</p>
+            <p>
+              {%- if availability.available -%}
+                {{ 'pickup.available' | t }}
+                {%- if availability.pick_up_time != blank %} · {{ 'pickup.ready_in' | t: time: availability.pick_up_time }}{% endif -%}
+              {%- else -%}
+                {{ 'pickup.unavailable' | t }}
+              {%- endif -%}
+            </p>
+            <address>{{ availability.location.address | format_address }}</address>
+          </li>
+        {%- endfor -%}
+      </ul>
+    </details>
+  {%- endif -%}
+{%- endif -%}
+
+{% stylesheet %}
+  .pickup-availability {
+    display: block;
+    font-size: 0.875rem;
+  }
+
+  .pickup-availability__summary {
+    display: flex;
+    gap: 0.5rem;
+    align-items: flex-start;
+  }
+
+  .pickup-availability__icon {
+    flex-shrink: 0;
+    margin-top: 0.125rem;
+    color: #2e7d32;
+  }
+
+  .pickup-availability__icon.is-unavailable {
+    color: #b3261e;
+  }
+
+  .pickup-availability__title,
+  .pickup-availability__time,
+  .pickup-availability__list p {
+    margin: 0;
+  }
+
+  .pickup-availability__time {
+    opacity: 0.75;
+  }
+
+  .pickup-availability__more {
+    margin-top: 0.5rem;
+  }
+
+  .pickup-availability__more summary {
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  .pickup-availability__list {
+    display: grid;
+    gap: 1rem;
+    margin: 0.75rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .pickup-availability__location {
+    font-weight: 600;
+  }
+
+  .pickup-availability__list address {
+    font-style: normal;
+    opacity: 0.75;
+  }
+{% endstylesheet %}

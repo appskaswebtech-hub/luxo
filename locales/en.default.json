@@ -109,11 +109,7 @@
     "quantity": "Quantity",
     "quantity_decrease": "Decrease quantity",
     "quantity_increase": "Increase quantity",
-    "subscribe_save": "Subscribe & save",
     "one_time": "One-time purchase",
-    "perk_shipping": "Free shipping on first order",
-    "perk_discount": "15% off future orders",
-    "perk_contract": "No contract. Cancel easily",
     "size_chart": "Size chart",
     "size": "Size",
     "chest": "Chest",
@@ -121,7 +117,17 @@
     "hip": "Hip",
     "shipping": "Shipping",
     "view_image": "View image {{ index }}",
-    "information": "Product information"
+    "information": "Product information",
+    "rating": "{{ rating }} out of {{ max }} stars",
+    "low_stock": {
+      "one": "Only {{ count }} left in stock",
+      "other": "Only {{ count }} left in stock"
+    },
+    "low_stock_template": {
+      "one": "Only {{ count }} left in stock",
+      "other": "Only {{ count }} left in stock"
+    },
+    "variant_label": "Variant"
   },
   "search": {
     "title": "Search",
@@ -164,7 +170,10 @@
       "share_facebook": "Share on Facebook",
       "share_x": "Share on X",
       "share_pinterest": "Share on Pinterest",
-      "view_instagram": "View on Instagram"
+      "view_instagram": "View on Instagram",
+      "share": "Share:",
+      "tiktok": "TikTok",
+      "x_short": "X"
     },
     "slider": {
       "previous": "Previous",
@@ -175,7 +184,8 @@
       "close": "Close",
       "open_menu": "Open menu",
       "close_menu": "Close menu",
-      "primary_navigation": "Primary"
+      "primary_navigation": "Primary",
+      "skip_to_content": "Skip to content"
     },
     "newsletter": {
       "email_placeholder": "Enter your email",
@@ -266,5 +276,135 @@
     "choose": "Choose a review",
     "go_to": "Go to review {{ index }}",
     "empty": "Add customer review blocks in this section's settings to get started."
+  },
+  "pickup": {
+    "available_at": "Pickup available at {{ location }}",
+    "unavailable_at": "Pickup currently unavailable at {{ location }}",
+    "ready_in": "Usually ready in {{ time }}",
+    "check_stores": "Check availability at other stores",
+    "available": "Pickup available",
+    "unavailable": "Pickup currently unavailable"
+  },
+  "gift_card_recipient": {
+    "checkbox": "I want to send this as a gift",
+    "email": "Recipient email",
+    "name": "Recipient name (optional)",
+    "message": "Message (optional)",
+    "send_on": "Send on (optional)",
+    "characters": "{{ max }} characters max"
+  },
+  "sections": {
+    "featured_product": {
+      "placeholder_title": "Your product name",
+      "view_details": "View full details"
+    }
+  },
+  "customer": {
+    "errors": {
+      "heading": "Please adjust the following:"
+    },
+    "fields": {
+      "email": "Email",
+      "password": "Password",
+      "password_confirm": "Confirm password",
+      "first_name": "First name",
+      "last_name": "Last name",
+      "company": "Company",
+      "address1": "Address",
+      "address2": "Apartment, suite, etc.",
+      "city": "City",
+      "country": "Country/region",
+      "province": "Province",
+      "zip": "Postal/ZIP code",
+      "phone": "Phone"
+    },
+    "login": {
+      "title": "Log in",
+      "submit": "Sign in",
+      "forgot": "Forgot your password?",
+      "create": "Create account",
+      "guest_title": "Continue as a guest",
+      "guest_continue": "Continue"
+    },
+    "recover": {
+      "title": "Reset your password",
+      "description": "We'll send you an email to reset your password",
+      "submit": "Submit",
+      "cancel": "Cancel",
+      "success": "We've sent you an email with a link to update your password."
+    },
+    "register": {
+      "title": "Create account",
+      "submit": "Create",
+      "marketing": "Email me with news and offers",
+      "login": "Already have an account? Log in"
+    },
+    "account": {
+      "title": "Account",
+      "welcome": "Welcome back, {{ name }}",
+      "log_out": "Log out",
+      "orders": "Order history",
+      "details": "Account details",
+      "view_addresses": {
+        "one": "View address ({{ count }})",
+        "other": "View addresses ({{ count }})"
+      }
+    },
+    "orders": {
+      "order": "Order",
+      "date": "Date",
+      "payment": "Payment status",
+      "fulfillment": "Fulfillment status",
+      "total": "Total",
+      "view": "Order {{ name }}",
+      "none": "You haven't placed any orders yet.",
+      "pagination": "Pages"
+    },
+    "order": {
+      "back": "Return to account details",
+      "title": "Order {{ name }}",
+      "placed": "Placed on {{ date }}",
+      "cancelled": "Order cancelled on {{ date }}",
+      "cancelled_reason": "Reason: {{ reason }}",
+      "product": "Product",
+      "price": "Price",
+      "quantity": "Quantity",
+      "total": "Total",
+      "subtotal": "Subtotal",
+      "discount": "Discount",
+      "shipping": "Shipping",
+      "tax": "Tax",
+      "fulfilled": "Fulfilled {{ date }}",
+      "track": "Track shipment",
+      "billing_address": "Billing address",
+      "shipping_address": "Shipping address",
+      "payment_status": "Payment status: {{ status }}",
+      "fulfillment_status": "Fulfillment status: {{ status }}"
+    },
+    "addresses": {
+      "title": "Addresses",
+      "default": "Default",
+      "add": "Add a new address",
+      "edit": "Edit",
+      "update": "Update address",
+      "delete": "Delete",
+      "delete_confirm": "Are you sure you wish to delete this address?",
+      "set_default": "Set as default address",
+      "none": "You haven't saved any addresses yet."
+    },
+    "activate": {
+      "title": "Activate account",
+      "description": "Create a password to activate your account.",
+      "submit": "Activate account",
+      "decline": "Decline invitation"
+    },
+    "reset": {
+      "title": "Reset account password",
+      "description": "Enter a new password",
+      "submit": "Reset password"
+    }
+  },
+  "facets": {
+    "remove": "Remove filter: {{ filter }}"
   }
 }

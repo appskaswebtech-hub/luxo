@@ -1,0 +1,60 @@
+<div
+  class="color-{{ section.settings.color_scheme }} custom-liquid"
+  style="--custom-liquid-padding-top: {{ section.settings.padding_top }}px; --custom-liquid-padding-bottom: {{ section.settings.padding_bottom }}px;"
+>
+  {{ section.settings.custom_liquid }}
+</div>
+
+{% stylesheet %}
+  .custom-liquid {
+    padding-top: var(--custom-liquid-padding-top);
+    padding-bottom: var(--custom-liquid-padding-bottom);
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.custom_liquid.name",
+  "tag": "section",
+  "class": "section-custom-liquid",
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:labels.color_scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "liquid",
+      "id": "custom_liquid",
+      "label": "t:sections.custom_liquid.settings.custom_liquid.label",
+      "info": "t:sections.custom_liquid.settings.custom_liquid.info"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "t:sections.custom_liquid.settings.padding_top.label",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "t:sections.custom_liquid.settings.padding_bottom.label",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 36
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.custom_liquid.name"
+    }
+  ]
+}
+{% endschema %}

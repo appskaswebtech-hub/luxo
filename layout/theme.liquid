@@ -9,6 +9,9 @@
     {{ 'cart.css' | asset_url | stylesheet_tag }}
 
     <script src="{{ 'cart.js' | asset_url }}" defer></script>
+    {%- if settings.reveal_on_scroll -%}
+      <script src="{{ 'animations.js' | asset_url }}" defer></script>
+    {%- endif -%}
 
     {%- if settings.favicon != blank -%}
       <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
@@ -22,9 +25,13 @@
   </head>
 
   <body>
+    <a class="skip-to-content visually-hidden" href="#MainContent">{{ 'general.accessibility.skip_to_content' | t }}</a>
+
     {% sections 'header-group' %}
 
-    {{ content_for_layout }}
+    <main id="MainContent" class="main-content" tabindex="-1">
+      {{ content_for_layout }}
+    </main>
 
     {% sections 'footer-group' %}
   </body>

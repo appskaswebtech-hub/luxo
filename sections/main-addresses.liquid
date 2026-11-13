@@ -1,0 +1,86 @@
+{{ 'customer.css' | asset_url | stylesheet_tag }}
+
+<div class="customer customer--wide">
+  <p><a href="{{ routes.account_url }}">{{ 'customer.order.back' | t }}</a></p>
+  <h1 class="customer__title">{{ 'customer.addresses.title' | t }}</h1>
+
+  <div class="customer__grid">
+    <div>
+      {%- paginate customer.addresses by 10 -%}
+        {%- for address in customer.addresses -%}
+          <div class="customer__address">
+            {%- if address == customer.default_address -%}
+              <p><strong>{{ 'customer.addresses.default' | t }}</strong></p>
+            {%- endif -%}
+            <address>{{ address | format_address }}</address>
+
+            <div class="customer__address-actions">
+              <button
+                type="button"
+                class="customer__button customer__button--secondary"
+                aria-expanded="false"
+                aria-controls="EditAddress-{{ address.id }}"
+                data-address-toggle
+              >
+                {{ 'customer.addresses.edit' | t }}
+              </button>
+              {%- form 'customer_address', address -%}
+                <input type="hidden" name="_method" value="delete">
+                <button
+                  type="submit"
+                  class="customer__button customer__button--secondary"
+                  data-confirm="{{ 'customer.addresses.delete_confirm' | t }}"
+                >
+                  {{ 'customer.addresses.delete' | t }}
+                </button>
+              {%- endform -%}
+            </div>
+
+            <div id="EditAddress-{{ address.id }}" hidden>
+              {%- form 'customer_address', address -%}
+                <h2 class="customer__subtitle">{{ 'customer.addresses.edit' | t }}</h2>
+                {%- assign address_prefix = 'Address-' | append: address.id -%}
+                {% render 'customer-address-form', form: form, prefix: address_prefix, address_id: address.id %}
+                <button type="submit" class="customer__button">{{ 'customer.addresses.update' | t }}</button>
+              {%- endform -%}
+            </div>
+          </div>
+        {%- else -%}
+          <p>{{ 'customer.addresses.none' | t }}</p>
+        {%- endfor -%}
+
+        {%- if paginate.pages > 1 -%}
+          <nav aria-label="{{ 'customer.orders.pagination' | t }}">{{ paginate | default_pagination }}</nav>
+        {%- endif -%}
+      {%- endpaginate -%}
+    </div>
+
+    <div>
+      <button
+        type="button"
+        class="customer__button"
+        aria-expanded="false"
+        aria-controls="AddAddress"
+        data-address-toggle
+      >
+        {{ 'customer.addresses.add' | t }}
+      </button>
+      <div id="AddAddress" hidden>
+        {%- form 'customer_address', customer.new_address -%}
+          <h2 class="customer__subtitle">{{ 'customer.addresses.add' | t }}</h2>
+          {% render 'customer-address-form', form: form, prefix: 'AddressNew' %}
+          <button type="submit" class="customer__button">{{ 'customer.addresses.add' | t }}</button>
+        {%- endform -%}
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="{{ 'customer-addresses.js' | asset_url }}" defer></script>
+
+{% schema %}
+{
+  "name": "t:sections.customer.addresses",
+  "settings": []
+}
+{% endschema %}

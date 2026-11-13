@@ -93,15 +93,9 @@
         <div class="header-logo">
           <a href="{{ routes.root_url }}" aria-label="{{ shop.name }}">
             {%- if section.settings.logo != blank -%}
-              <img src="{{ section.settings.logo | image_url: width: 220 }}"
-                   alt="{{ shop.name }}"
-                   width="220" height="44"
-                   loading="eager" fetchpriority="high">
+              {%- capture img_alt -%}{{ shop.name }}{%- endcapture -%}{{ section.settings.logo | image_url: width: 220 | image_tag: widths: '100, 165, 220', sizes: '220px', loading: 'eager', alt: img_alt, fetchpriority: 'high' }}
             {%- elsif settings.logo_default != blank -%}
-              <img src="{{ settings.logo_default | image_url: width: 220 }}"
-                   alt="{{ shop.name }}"
-                   width="{{ settings.logo_width }}"
-                   loading="eager" fetchpriority="high">
+              {%- capture img_alt -%}{{ shop.name }}{%- endcapture -%}{{ settings.logo_default | image_url: width: 220 | image_tag: widths: '100, 165, 220', sizes: '220px', loading: 'eager', alt: img_alt, fetchpriority: 'high' }}
             {%- else -%}
               <span class="header-logo__text">{{ shop.name }}</span>
             {%- endif -%}
@@ -201,15 +195,31 @@
           <ul class="header-mega-list">
             {%- for block in section.blocks -%}
               {%- if block.type == 'menu_item' -%}
-                <li class="{% if block.settings.submenu != blank %}header-has-mega{% endif %}" {{ block.shopify_attributes }}>
+                {%- assign submenu = linklists[block.settings.submenu_menu] -%}
+                <li class="{% if submenu.links.size > 0 %}header-has-mega{% endif %}" {{ block.shopify_attributes }}>
                   <a href="{{ block.settings.link | default: '#' }}" class="header-mega-link">
-                    <span class="header-mega-link__title">{{ block.settings.title }}</span>
-                    {%- if block.settings.submenu != blank -%}
-                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M9 6l6 6-6 6"/></svg>
+                    <span class="header-mega-link__title">{{ block.settings.title | escape }}</span>
+                    {%- if submenu.links.size > 0 -%}
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
                     {%- endif -%}
                   </a>
-                  {%- if block.settings.submenu != blank -%}
-                    <div class="header-mega-panel">{{ block.settings.submenu }}</div>
+                  {%- if submenu.links.size > 0 -%}
+                    <div class="header-mega-panel">
+                      <ul class="header-mega-columns">
+                        {%- for link in submenu.links -%}
+                          <li class="header-mega-column">
+                            <a href="{{ link.url }}" class="header-mega-column__title">{{ link.title | escape }}</a>
+                            {%- if link.links.size > 0 -%}
+                              <ul class="header-mega-column__links">
+                                {%- for child in link.links -%}
+                                  <li><a href="{{ child.url }}">{{ child.title | escape }}</a></li>
+                                {%- endfor -%}
+                              </ul>
+                            {%- endif -%}
+                          </li>
+                        {%- endfor -%}
+                      </ul>
+                    </div>
                   {%- endif -%}
                 </li>
               {%- endif -%}
@@ -288,7 +298,7 @@
 
 </div>
 
-{{ 'header.js' | asset_url | script_tag }}
+<script src="{{ 'header.js' | asset_url }}" defer></script>
 
 {% schema %}
 {
@@ -537,9 +547,10 @@
           "label": "t:sections.header.blocks.menu_item.settings.link.label"
         },
         {
-          "type": "html",
-          "id": "submenu",
-          "label": "t:sections.header.blocks.menu_item.settings.submenu.label"
+          "type": "link_list",
+          "id": "submenu_menu",
+          "label": "t:sections.header.blocks.menu_item.settings.submenu_menu.label",
+          "info": "t:sections.header.blocks.menu_item.settings.submenu_menu.info"
         }
       ]
     }

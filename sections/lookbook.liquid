@@ -11,9 +11,9 @@
     assign heading_font = section.settings.custom_heading_font
     assign body_font = section.settings.custom_body_font
   else
-    assign bg_color = section.settings.background_color
-    assign text_color = section.settings.text_color
-    assign accent_color = section.settings.accent_color
+    assign bg_color = section.settings.color_scheme.settings.background
+    assign text_color = section.settings.color_scheme.settings.text
+    assign accent_color = section.settings.color_scheme.settings.accent
     assign heading_font = 'var(--font-heading-family)'
     assign body_font = 'var(--font-body-family)'
   endif
@@ -542,22 +542,10 @@
       "content": "t:sections.lookbook.headers.default_colors"
     },
     {
-      "type": "color",
-      "id": "background_color",
-      "label": "t:sections.lookbook.settings.background_color.label",
-      "default": "#FAF6F0"
-    },
-    {
-      "type": "color",
-      "id": "text_color",
-      "label": "t:sections.lookbook.settings.text_color.label",
-      "default": "#2B1E16"
-    },
-    {
-      "type": "color",
-      "id": "accent_color",
-      "label": "t:sections.lookbook.settings.accent_color.label",
-      "default": "#9C4A1A"
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:labels.color_scheme",
+      "default": "scheme-1"
     },
     {
       "type": "header",

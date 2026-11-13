@@ -16,9 +16,9 @@
     assign input_size = section.settings.custom_input_size | append: 'px'
     assign button_size = section.settings.custom_button_size | append: 'px'
   else
-    assign signup_bg = section.settings.background_color
-    assign signup_text = section.settings.text_color
-    assign signup_accent = section.settings.accent_color
+    assign signup_bg = section.settings.color_scheme.settings.background
+    assign signup_text = section.settings.color_scheme.settings.text
+    assign signup_accent = section.settings.color_scheme.settings.accent
     assign signup_form_bg = section.settings.form_bg_color
     assign signup_form_text = section.settings.form_text_color
     
@@ -69,14 +69,7 @@
       
       <div class="newsletter-email-{{ section.id }}__image-wrapper">
         {%- if section.settings.image != blank -%}
-          <img 
-            src="{{ section.settings.image | image_url: width: 400 }}" 
-            alt="{{ section.settings.image.alt | escape }}" 
-            class="newsletter-email-{{ section.id }}__image"
-            loading="lazy"
-            width="400"
-            height="400"
-          >
+          {%- capture img_alt -%}{{ section.settings.image.alt }}{%- endcapture -%}{%- capture img_class -%}newsletter-email-{{ section.id }}__image{%- endcapture -%}{{ section.settings.image | image_url: width: 400 | image_tag: widths: '100, 165, 220, 300, 400', sizes: '(min-width: 750px) 400px, 80vw', loading: 'lazy', alt: img_alt, class: img_class }}
         {%- else -%}
           {{ 'image' | placeholder_svg_tag: main_placeholder_class }}
         {%- endif -%}
@@ -425,22 +418,10 @@
       "content": "t:sections.newsletter_email.headers.default_colors"
     },
     {
-      "type": "color",
-      "id": "background_color",
-      "label": "t:sections.newsletter_email.settings.background_color.label",
-      "default": "#FAF6F0"
-    },
-    {
-      "type": "color",
-      "id": "text_color",
-      "label": "t:sections.newsletter_email.settings.text_color.label",
-      "default": "#2B1E16"
-    },
-    {
-      "type": "color",
-      "id": "accent_color",
-      "label": "t:sections.newsletter_email.settings.accent_color.label",
-      "default": "#9C4A1A"
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:labels.color_scheme",
+      "default": "scheme-1"
     },
     {
       "type": "color",

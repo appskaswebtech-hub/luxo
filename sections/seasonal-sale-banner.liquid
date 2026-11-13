@@ -1,7 +1,7 @@
 {%- liquid
-  assign section_background_color = section.settings.section_background_color
-  assign primary_text_color = section.settings.primary_text_color
-  assign primary_accent_color = section.settings.primary_accent_color
+  assign section_background_color = section.settings.color_scheme.settings.background
+  assign primary_text_color = section.settings.color_scheme.settings.text
+  assign primary_accent_color = section.settings.color_scheme.settings.accent
   assign glass_card_background = section.settings.glass_card_background
   assign countdown_end_date = section.settings.countdown_end_date
 
@@ -58,14 +58,7 @@
 >
   <div class="seasonal-sale-banner-{{ section.id }}__image-wrapper">
     {%- if section.settings.background_image != blank -%}
-      <img 
-        src="{{ section.settings.background_image | image_url: width: 1920 }}" 
-        alt="{{ section.settings.background_image.alt | escape }}" 
-        class="seasonal-sale-banner-{{ section.id }}__image"
-        loading="lazy"
-        width="1920"
-        height="1080"
-      >
+      {%- capture img_alt -%}{{ section.settings.background_image.alt }}{%- endcapture -%}{%- capture img_class -%}seasonal-sale-banner-{{ section.id }}__image{%- endcapture -%}{{ section.settings.background_image | image_url: width: 1920 | image_tag: widths: '100, 165, 220, 300, 400, 600, 800, 1000, 1200, 1500, 1800, 1920', sizes: '100vw', loading: 'lazy', alt: img_alt, class: img_class }}
     {%- else -%}
       {{ 'lifestyle-1' | placeholder_svg_tag: placeholder_class }}
     {%- endif -%}
@@ -488,22 +481,10 @@
       "content": "t:sections.seasonal_sale_banner.headers.default_colors"
     },
     {
-      "type": "color",
-      "id": "section_background_color",
-      "label": "t:sections.seasonal_sale_banner.settings.section_background_color.label",
-      "default": "#FAF6F0"
-    },
-    {
-      "type": "color",
-      "id": "primary_text_color",
-      "label": "t:sections.seasonal_sale_banner.settings.primary_text_color.label",
-      "default": "#2B1E16"
-    },
-    {
-      "type": "color",
-      "id": "primary_accent_color",
-      "label": "t:sections.seasonal_sale_banner.settings.primary_accent_color.label",
-      "default": "#9C4A1A"
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:labels.color_scheme",
+      "default": "scheme-1"
     },
     {
       "type": "color",

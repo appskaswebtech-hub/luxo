@@ -15,9 +15,9 @@
     assign heading_font = section.settings.custom_heading_font
     assign body_font = section.settings.custom_body_font
   else
-    assign footer_bg = section.settings.background_color
-    assign footer_text = section.settings.text_color
-    assign footer_accent = section.settings.accent_color
+    assign footer_bg = section.settings.color_scheme.settings.background
+    assign footer_text = section.settings.color_scheme.settings.text
+    assign footer_accent = section.settings.color_scheme.settings.accent
     assign footer_card_bg = section.settings.card_background
     assign footer_scallop = section.settings.scallop_color
     assign link_bg = section.settings.link_bg_color
@@ -66,14 +66,7 @@
           {%- if block.type == 'brand_info' -%}
             <div class="footer-{{ section.id }}__mission" {{ block.shopify_attributes }}>
               {%- if block.settings.brand_logo != blank -%}
-                <img 
-                  src="{{ block.settings.brand_logo | image_url: width: 300 }}" 
-                  alt="{{ shop.name }}"
-                  class="footer-{{ section.id }}__brand-logo"
-                  loading="lazy"
-                  width="300"
-                  height="auto"
-                >
+                {%- capture img_alt -%}{{ shop.name }}{%- endcapture -%}{%- capture img_class -%}footer-{{ section.id }}__brand-logo{%- endcapture -%}{{ block.settings.brand_logo | image_url: width: 300 | image_tag: widths: '100, 165, 220, 300', sizes: '150px', loading: 'lazy', alt: img_alt, class: img_class }}
               {%- else -%}
                 <h2 class="footer-{{ section.id }}__brand-title">{{ shop.name }}</h2>
               {%- endif -%}
@@ -137,20 +130,24 @@
             <div class="footer-{{ section.id }}__social-group" {{ block.shopify_attributes }}>
               <h4 class="footer-{{ section.id }}__heading">{%- assign socials_fallback = 'general.social.socials' | t -%}{{ block.settings.social_title | default: socials_fallback }}</h4>
               <div class="footer-{{ section.id }}__socials-list">
-                {%- if block.settings.social_twitter != blank -%}
-                  <a href="{{ block.settings.social_twitter }}" target="_blank" rel="noopener">{{ 'general.social.twitter' | t }}</a>
+                {%- comment -%} Links come from Theme settings > Social media {%- endcomment -%}
+                {%- if settings.social_instagram != blank -%}
+                  <a href="{{ settings.social_instagram }}" target="_blank" rel="noopener">{{ 'general.social.instagram' | t }}</a>
                 {%- endif -%}
-                {%- if block.settings.social_facebook != blank -%}
-                  <a href="{{ block.settings.social_facebook }}" target="_blank" rel="noopener">{{ 'general.social.facebook' | t }}</a>
+                {%- if settings.social_facebook != blank -%}
+                  <a href="{{ settings.social_facebook }}" target="_blank" rel="noopener">{{ 'general.social.facebook' | t }}</a>
                 {%- endif -%}
-                {%- if block.settings.social_instagram != blank -%}
-                  <a href="{{ block.settings.social_instagram }}" target="_blank" rel="noopener">{{ 'general.social.instagram' | t }}</a>
+                {%- if settings.social_tiktok != blank -%}
+                  <a href="{{ settings.social_tiktok }}" target="_blank" rel="noopener">{{ 'general.social.tiktok' | t }}</a>
                 {%- endif -%}
-                {%- if block.settings.social_pinterest != blank -%}
-                  <a href="{{ block.settings.social_pinterest }}" target="_blank" rel="noopener">{{ 'general.social.pinterest' | t }}</a>
+                {%- if settings.social_pinterest != blank -%}
+                  <a href="{{ settings.social_pinterest }}" target="_blank" rel="noopener">{{ 'general.social.pinterest' | t }}</a>
                 {%- endif -%}
-                {%- if block.settings.social_youtube != blank -%}
-                  <a href="{{ block.settings.social_youtube }}" target="_blank" rel="noopener">{{ 'general.social.youtube' | t }}</a>
+                {%- if settings.social_youtube != blank -%}
+                  <a href="{{ settings.social_youtube }}" target="_blank" rel="noopener">{{ 'general.social.youtube' | t }}</a>
+                {%- endif -%}
+                {%- if settings.social_x != blank -%}
+                  <a href="{{ settings.social_x }}" target="_blank" rel="noopener">{{ 'general.social.x_short' | t }}</a>
                 {%- endif -%}
               </div>
             </div>
@@ -605,22 +602,10 @@
       "default": "#2B1E16"
     },
     {
-      "type": "color",
-      "id": "background_color",
-      "label": "t:sections.footer.settings.background_color.label",
-      "default": "#FAF6F0"
-    },
-    {
-      "type": "color",
-      "id": "text_color",
-      "label": "t:sections.footer.settings.text_color.label",
-      "default": "#2B1E16"
-    },
-    {
-      "type": "color",
-      "id": "accent_color",
-      "label": "t:sections.footer.settings.accent_color.label",
-      "default": "#9C4A1A"
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:labels.color_scheme",
+      "default": "scheme-1"
     },
     {
       "type": "color",
@@ -898,29 +883,8 @@
           "default": "Socials"
         },
         {
-          "type": "url",
-          "id": "social_twitter",
-          "label": "t:sections.footer.blocks.social_links.settings.social_twitter.label"
-        },
-        {
-          "type": "url",
-          "id": "social_facebook",
-          "label": "t:sections.footer.blocks.social_links.settings.social_facebook.label"
-        },
-        {
-          "type": "url",
-          "id": "social_instagram",
-          "label": "t:sections.footer.blocks.social_links.settings.social_instagram.label"
-        },
-        {
-          "type": "url",
-          "id": "social_pinterest",
-          "label": "t:sections.footer.blocks.social_links.settings.social_pinterest.label"
-        },
-        {
-          "type": "url",
-          "id": "social_youtube",
-          "label": "t:sections.footer.blocks.social_links.settings.social_youtube.label"
+          "type": "paragraph",
+          "content": "t:sections.footer.blocks.social_links.paragraphs.links_info"
         }
       ]
     }

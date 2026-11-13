@@ -13,7 +13,11 @@
           "type": "button"
         }
       },
-      "block_order": ["heading", "description", "button"],
+      "block_order": [
+        "heading",
+        "description",
+        "button"
+      ],
       "settings": {
         "layout_style": "center_overlap"
       }
@@ -34,7 +38,11 @@
           "type": "category"
         }
       },
-      "block_order": ["category_1", "category_2", "category_3"],
+      "block_order": [
+        "category_1",
+        "category_2",
+        "category_3"
+      ],
       "settings": {}
     },
     "featured_products": {
@@ -58,7 +66,11 @@
           "type": "button"
         }
       },
-      "block_order": ["heading", "description", "button"],
+      "block_order": [
+        "heading",
+        "description",
+        "button"
+      ],
       "settings": {
         "layout_style": "edge_spaced"
       }
@@ -76,7 +88,11 @@
           "type": "lookbook_slide"
         }
       },
-      "block_order": ["slide_1", "slide_2", "slide_3"],
+      "block_order": [
+        "slide_1",
+        "slide_2",
+        "slide_3"
+      ],
       "settings": {}
     },
     "customer_reviews": {
@@ -121,7 +137,14 @@
           }
         }
       },
-      "block_order": ["review_1", "review_2", "review_3", "review_4", "review_5", "review_6"],
+      "block_order": [
+        "review_1",
+        "review_2",
+        "review_3",
+        "review_4",
+        "review_5",
+        "review_6"
+      ],
       "settings": {}
     },
     "latest_articles": {
@@ -147,7 +170,13 @@
           "type": "photo"
         }
       },
-      "block_order": ["photo_1", "photo_2", "photo_3", "photo_4", "photo_5"],
+      "block_order": [
+        "photo_1",
+        "photo_2",
+        "photo_3",
+        "photo_4",
+        "photo_5"
+      ],
       "settings": {}
     },
     "newsletter": {

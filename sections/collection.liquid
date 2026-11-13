@@ -32,10 +32,10 @@
   class="collection-grid-{{ section.id }}" 
   id="CollectionGrid-{{ section.id }}"
   style="
-    --grid-bg: {{ section.settings.background_color }};
-    --grid-text: {{ section.settings.text_color }};
-    --grid-accent: {{ section.settings.accent_color }};
-    --grid-border: {{ section.settings.border_color }};
+    --grid-bg: {{ section.settings.color_scheme.settings.background }};
+    --grid-text: {{ section.settings.color_scheme.settings.text }};
+    --grid-accent: {{ section.settings.color_scheme.settings.accent }};
+    --grid-border: {{ section.settings.color_scheme.settings.border }};
     --grid-cols-desktop: {{ columns_desktop }};
     --grid-cols-mobile: {{ columns_mobile }};
     padding-top: {{ padding_top }}px;
@@ -47,7 +47,7 @@
     {%- if show_banner -%}
       <div class="collection-grid-{{ section.id }}__banner">
         {%- if collection.image != blank -%}
-          <img src="{{ collection.image | image_url: width: 1800 }}" alt="{{ collection.title | escape }}" class="collection-grid-{{ section.id }}__banner-image" loading="eager">
+          {%- capture img_alt -%}{{ collection.title }}{%- endcapture -%}{%- capture img_class -%}collection-grid-{{ section.id }}__banner-image{%- endcapture -%}{{ collection.image | image_url: width: 1800 | image_tag: widths: '100, 165, 220, 300, 400, 600, 800, 1000, 1200, 1500, 1800', sizes: '100vw', loading: 'eager', alt: img_alt, class: img_class }}
         {%- else -%}
           {{ 'collection-1' | placeholder_svg_tag: banner_placeholder_class }}
         {%- endif -%}
@@ -118,7 +118,7 @@
               <a href="{{ featured_product.url }}" class="collection-grid-{{ section.id }}__featured-card">
                 <div class="collection-grid-{{ section.id }}__featured-image-wrapper">
                   {%- if featured_product.featured_image != blank -%}
-                    <img src="{{ featured_product.featured_image | image_url: width: 400 }}" alt="{{ featured_product.title | escape }}" class="collection-grid-{{ section.id }}__featured-image">
+                    {%- capture img_alt -%}{{ featured_product.title }}{%- endcapture -%}{%- capture img_class -%}collection-grid-{{ section.id }}__featured-image{%- endcapture -%}{{ featured_product.featured_image | image_url: width: 400 | image_tag: widths: '100, 165, 220, 300, 400', sizes: '(min-width: 990px) 20vw, 50vw', loading: 'lazy', alt: img_alt, class: img_class }}
                   {%- else -%}
                     {{ 'product-1' | placeholder_svg_tag: placeholder_class }}
                   {%- endif -%}
@@ -184,23 +184,13 @@
                   <div class="collection-grid-{{ section.id }}__card-image-wrapper">
                     <a href="{{ product.url }}" class="collection-grid-{{ section.id }}__card-image-link">
                       {%- if product.featured_image != blank -%}
-                        <img 
-                          src="{{ product.featured_image | image_url: width: 600 }}" 
-                          alt="{{ product.featured_image.alt | escape }}" 
-                          class="collection-grid-{{ section.id }}__card-image collection-grid-{{ section.id }}__card-image-ratio--{{ image_ratio }}"
-                          loading="lazy"
-                        >
+                        {%- capture img_alt -%}{{ product.featured_image.alt }}{%- endcapture -%}{%- capture img_class -%}collection-grid-{{ section.id }}__card-image collection-grid-{{ section.id }}__card-image-ratio--{{ image_ratio }}{%- endcapture -%}{{ product.featured_image | image_url: width: 600 | image_tag: widths: '100, 165, 220, 300, 400, 600', sizes: '(min-width: 990px) 25vw, 50vw', loading: 'lazy', alt: img_alt, class: img_class }}
                       {%- else -%}
                         {{ 'product-1' | placeholder_svg_tag: placeholder_class }}
                       {%- endif -%}
                       
                       {%- if show_second_image and product.images[1] != blank -%}
-                        <img 
-                          src="{{ product.images[1] | image_url: width: 600 }}" 
-                          alt="{{ product.images[1].alt | escape }}" 
-                          class="collection-grid-{{ section.id }}__card-image collection-grid-{{ section.id }}__card-image--secondary"
-                          loading="lazy"
-                        >
+                        {%- capture img_alt -%}{{ product.images[1].alt }}{%- endcapture -%}{%- capture img_class -%}collection-grid-{{ section.id }}__card-image collection-grid-{{ section.id }}__card-image--secondary{%- endcapture -%}{{ product.images[1] | image_url: width: 600 | image_tag: widths: '100, 165, 220, 300, 400, 600', sizes: '(min-width: 990px) 25vw, 50vw', loading: 'lazy', alt: img_alt, class: img_class }}
                       {%- endif -%}
                     </a>
 
@@ -313,6 +303,16 @@
 
   </div>
 </section>
+
+{%- if section.blocks.size > 0 -%}
+  <div class="app-blocks">
+    {%- for block in section.blocks -%}
+      {%- if block.type == '@app' -%}
+        {% render block %}
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+{%- endif -%}
 
 {% style %}
   .collection-grid-{{ section.id }} {
@@ -752,7 +752,11 @@
   }
 
   .collection-grid-{{ section.id }}__card:hover {
-    transform: translateY(-5px);
+    transform: translateY(var(--card-hover-lift));
+  }
+
+  .collection-grid-{{ section.id }}__card:hover .collection-grid-{{ section.id }}__card-image:not(.collection-grid-{{ section.id }}__card-image--secondary) {
+    transform: scale(var(--card-image-hover-scale));
   }
 
   .collection-grid-{{ section.id }}__card-top-bar {
@@ -1316,28 +1320,15 @@
       "content": "t:sections.collection.headers.colors"
     },
     {
-      "type": "color",
-      "id": "background_color",
-      "label": "t:sections.collection.settings.background_color.label",
-      "default": "#FAF6F0"
-    },
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:labels.color_scheme",
+      "default": "scheme-1"
+    }
+  ],
+  "blocks": [
     {
-      "type": "color",
-      "id": "text_color",
-      "label": "t:sections.collection.settings.text_color.label",
-      "default": "#2B1E16"
-    },
-    {
-      "type": "color",
-      "id": "accent_color",
-      "label": "t:sections.collection.settings.accent_color.label",
-      "default": "#9C4A1A"
-    },
-    {
-      "type": "color",
-      "id": "border_color",
-      "label": "t:sections.collection.settings.border_color.label",
-      "default": "rgba(43, 30, 22, 0.15)"
+      "type": "@app"
     }
   ]
 }

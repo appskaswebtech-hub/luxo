@@ -10,11 +10,11 @@
     assign heading_font = section.settings.custom_heading_font
     assign body_font = section.settings.custom_body_font
   else
-    assign article_bg = section.settings.background_color
-    assign article_text = section.settings.text_color
-    assign article_accent = section.settings.accent_color
+    assign article_bg = section.settings.color_scheme.settings.background
+    assign article_text = section.settings.color_scheme.settings.text
+    assign article_accent = section.settings.color_scheme.settings.accent
     assign article_card_bg = section.settings.card_background
-    assign article_border = section.settings.border_color
+    assign article_border = section.settings.color_scheme.settings.border
     assign heading_font = 'var(--font-heading-family)'
     assign body_font = 'var(--font-body-family)'
   endif
@@ -69,12 +69,7 @@
       <div class="theme-article-{{ section.id }}__image-column">
         <div class="theme-article-{{ section.id }}__image-card">
           {%- if article.image != blank -%}
-            <img 
-              src="{{ article.image | image_url: width: 1200 }}" 
-              alt="{{ article.title | escape }}" 
-              class="theme-article-{{ section.id }}__featured-image"
-              loading="eager"
-            >
+            {%- capture img_alt -%}{{ article.title }}{%- endcapture -%}{%- capture img_class -%}theme-article-{{ section.id }}__featured-image{%- endcapture -%}{{ article.image | image_url: width: 1200 | image_tag: widths: '100, 165, 220, 300, 400, 600, 800, 1000, 1200', sizes: '(min-width: 990px) 70vw, 100vw', loading: 'eager', alt: img_alt, class: img_class }}
           {%- else -%}
             {{ 'lifestyle-1' | placeholder_svg_tag: main_placeholder_class }}
           {%- endif -%}
@@ -83,15 +78,15 @@
         <div class="theme-article-{{ section.id }}__share-card">
           <h3 class="theme-article-{{ section.id }}__share-heading">{{ 'article.share' | t }}</h3>
           <div class="theme-article-{{ section.id }}__share-links">
-            <a href="https://www.facebook.com/sharer/sharer.php?u={{ shop.url }}{{ article.url }}" target="_blank" rel="noopener" class="theme-article-{{ section.id }}__share-btn" aria-label="{{ 'general.social.share_facebook' | t }}">
+            <a href="https://www.facebook.com/sharer/sharer.php?u={{ shop.url | append: article.url | url_param_escape }}" target="_blank" rel="noopener" class="theme-article-{{ section.id }}__share-btn" aria-label="{{ 'general.social.share_facebook' | t }}">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
               {{ 'general.social.facebook' | t }}
             </a>
-            <a href="https://twitter.com/intent/tweet?url={{ shop.url }}{{ article.url }}" target="_blank" rel="noopener" class="theme-article-{{ section.id }}__share-btn" aria-label="{{ 'general.social.share_x' | t }}">
+            <a href="https://twitter.com/intent/tweet?url={{ shop.url | append: article.url | url_param_escape }}" target="_blank" rel="noopener" class="theme-article-{{ section.id }}__share-btn" aria-label="{{ 'general.social.share_x' | t }}">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4l16 16M4 20L20 4"></path></svg>
               {{ 'general.social.x' | t }}
             </a>
-            <a href="https://pinterest.com/pin/create/button/?url={{ shop.url }}{{ article.url }}" target="_blank" rel="noopener" class="theme-article-{{ section.id }}__share-btn" aria-label="{{ 'general.social.share_pinterest' | t }}">
+            <a href="https://pinterest.com/pin/create/button/?url={{ shop.url | append: article.url | url_param_escape }}" target="_blank" rel="noopener" class="theme-article-{{ section.id }}__share-btn" aria-label="{{ 'general.social.share_pinterest' | t }}">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12c0 4.84 3.44 8.87 8 9.8-.15-1.05-.29-2.67.06-3.82.31-1.03 2-8.52 2-8.52s-.51-1.02-.51-2.53c0-2.37 1.37-4.14 3.08-4.14 1.45 0 2.15 1.09 2.15 2.4 0 1.46-.93 3.64-1.41 5.66-.4 1.7.85 3.08 2.52 3.08 3.03 0 5.07-3.89 5.07-8.49 0-3.5-2.36-6.12-6.64-6.12-4.84 0-7.86 3.61-7.86 7.64 0 1.39.41 2.37.41 2.37s-.52 2.16-.64 2.62c-.12.46-.37.57-.77.57-.57 0-1.41-.5-1.41-1.77 0-1.41 1.28-3.56 1.28-3.56l-.58-2.53C5.12 8.2 2.65 10.78 2.65 14.55c0 4.66 3.02 9.05 9.45 9.05 4.73 0 8.44-3.37 8.44-7.86 0-4.7-3.02-8.49-7.54-8.49-1.51 0-2.93.79-3.42 1.72z"></path></svg>
               {{ 'general.social.pinterest' | t }}
             </a>
@@ -125,7 +120,7 @@
 
     </div>
 
-    {%- assign related_articles = blog.articles | where_exp: "item", "item.id != article.id" -%}
+    {%- assign related_articles = blog.articles | reject: 'id', article.id -%}
     {%- if related_articles.size > 0 -%}
       <div class="theme-article-{{ section.id }}__related-wrapper">
         <h2 class="theme-article-{{ section.id }}__related-heading">{{ 'article.related' | t }}</h2>
@@ -136,7 +131,7 @@
               <div class="theme-article-{{ section.id }}__slide-card">
                 <a href="{{ related.url }}" class="theme-article-{{ section.id }}__slide-image-link">
                   {%- if related.image != blank -%}
-                    <img src="{{ related.image | image_url: width: 600 }}" alt="{{ related.title | escape }}" class="theme-article-{{ section.id }}__slide-image" loading="lazy">
+                    {%- capture img_alt -%}{{ related.title }}{%- endcapture -%}{%- capture img_class -%}theme-article-{{ section.id }}__slide-image{%- endcapture -%}{{ related.image | image_url: width: 600 | image_tag: widths: '100, 165, 220, 300, 400, 600', sizes: '(min-width: 990px) 33vw, (min-width: 750px) 50vw, 100vw', loading: 'lazy', alt: img_alt, class: img_class }}
                   {%- else -%}
                     {{ 'image' | placeholder_svg_tag: slide_placeholder_class }}
                   {%- endif -%}
@@ -178,6 +173,16 @@
 
   </div>
 </article>
+
+{%- if section.blocks.size > 0 -%}
+  <div class="app-blocks">
+    {%- for block in section.blocks -%}
+      {%- if block.type == '@app' -%}
+        {% render block %}
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+{%- endif -%}
 
 {% style %}
   .theme-article-{{ section.id }} {
@@ -742,34 +747,16 @@
       "content": "t:sections.article.headers.default_colors"
     },
     {
-      "type": "color",
-      "id": "background_color",
-      "label": "t:sections.article.settings.background_color.label",
-      "default": "#FAF6F0"
-    },
-    {
-      "type": "color",
-      "id": "text_color",
-      "label": "t:sections.article.settings.text_color.label",
-      "default": "#2B1E16"
-    },
-    {
-      "type": "color",
-      "id": "accent_color",
-      "label": "t:sections.article.settings.accent_color.label",
-      "default": "#9C4A1A"
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:labels.color_scheme",
+      "default": "scheme-1"
     },
     {
       "type": "color",
       "id": "card_background",
       "label": "t:sections.article.settings.card_background.label",
       "default": "#FCF9F6"
-    },
-    {
-      "type": "color",
-      "id": "border_color",
-      "label": "t:sections.article.settings.border_color.label",
-      "default": "#E8E2DA"
     },
     {
       "type": "header",
@@ -836,6 +823,11 @@
     {
       "name": "t:sections.article.name",
       "category": "t:general.categories.blog"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "@app"
     }
   ]
 }

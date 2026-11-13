@@ -19,9 +19,9 @@
     assign heading_font = section.settings.custom_heading_font
     assign body_font = section.settings.custom_body_font
   else
-    assign rp_bg = section.settings.background_color
-    assign rp_text = section.settings.text_color
-    assign rp_accent = section.settings.accent_color
+    assign rp_bg = section.settings.color_scheme.settings.background
+    assign rp_text = section.settings.color_scheme.settings.text
+    assign rp_accent = section.settings.color_scheme.settings.accent
     assign heading_font = 'var(--font-heading-family)'
     assign body_font = 'var(--font-body-family)'
   endif
@@ -116,14 +116,7 @@
 
                   <a href="{{ related_product.url }}" class="related-products-{{ section.id }}__image-wrapper related-products-{{ section.id }}__ratio-{{ image_ratio }}">
                     {%- if related_product.featured_image != blank -%}
-                      <img 
-                        src="{{ related_product.featured_image | image_url: width: 800 }}" 
-                        alt="{{ related_product.featured_image.alt | escape }}" 
-                        class="related-products-{{ section.id }}__product-image related-products-{{ section.id }}__fit-{{ image_fit }}"
-                        loading="lazy"
-                        width="800"
-                        height="800"
-                      >
+                      {%- capture img_alt -%}{{ related_product.featured_image.alt }}{%- endcapture -%}{%- capture img_class -%}related-products-{{ section.id }}__product-image related-products-{{ section.id }}__fit-{{ image_fit }}{%- endcapture -%}{{ related_product.featured_image | image_url: width: 800 | image_tag: widths: '100, 165, 220, 300, 400, 600, 800', sizes: '(min-width: 990px) 25vw, 50vw', loading: 'lazy', alt: img_alt, class: img_class }}
                     {%- else -%}
                       {{ 'product-1' | placeholder_svg_tag: placeholder_class }}
                     {%- endif -%}
@@ -319,7 +312,7 @@
   }
 
   .related-products-{{ section.id }}__product-card:hover {
-    transform: translateY(-5px);
+    transform: translateY(var(--card-hover-lift));
     box-shadow: 0 15px 30px rgba(0,0,0,0.1);
   }
 
@@ -382,7 +375,7 @@
   .related-products-{{ section.id }}__fit-contain { object-fit: contain; }
 
   .related-products-{{ section.id }}__product-card:hover .related-products-{{ section.id }}__product-image {
-    transform: scale(1.05);
+    transform: scale(var(--card-image-hover-scale));
   }
 
   .related-products-{{ section.id }}__placeholder-image {
@@ -745,22 +738,10 @@
       "content": "t:sections.related_products.headers.default_colors"
     },
     {
-      "type": "color",
-      "id": "background_color",
-      "label": "t:sections.related_products.settings.background_color.label",
-      "default": "#FAF6F0"
-    },
-    {
-      "type": "color",
-      "id": "text_color",
-      "label": "t:sections.related_products.settings.text_color.label",
-      "default": "#2B1E16"
-    },
-    {
-      "type": "color",
-      "id": "accent_color",
-      "label": "t:sections.related_products.settings.accent_color.label",
-      "default": "#9C4A1A"
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:labels.color_scheme",
+      "default": "scheme-1"
     },
     {
       "type": "header",

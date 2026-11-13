@@ -8,9 +8,9 @@
     assign heading_font = section.settings.custom_heading_font
     assign body_font = section.settings.custom_body_font
   else
-    assign bg_color = section.settings.default_bg_color
-    assign text_color = section.settings.default_text_color
-    assign accent_color = section.settings.default_accent_color
+    assign bg_color = section.settings.color_scheme.settings.background
+    assign text_color = section.settings.color_scheme.settings.text
+    assign accent_color = section.settings.color_scheme.settings.accent
     assign heading_font = 'var(--font-heading-family)'
     assign body_font = 'var(--font-body-family)'
   endif
@@ -73,14 +73,7 @@
               </a>
               
               {%- if card_image != blank -%}
-                <img 
-                  src="{{ card_image | image_url: width: 600 }}" 
-                  alt="{{ card_title | escape }}" 
-                  class="category-collection-{{ section.id }}__image"
-                  loading="lazy"
-                  width="600"
-                  height="750"
-                >
+                {%- capture img_alt -%}{{ card_title }}{%- endcapture -%}{%- capture img_class -%}category-collection-{{ section.id }}__image{%- endcapture -%}{{ card_image | image_url: width: 600 | image_tag: widths: '100, 165, 220, 300, 400, 600', sizes: '(min-width: 990px) 33vw, 50vw', loading: 'lazy', alt: img_alt, class: img_class }}
               {%- else -%}
                 {{ 'image' | placeholder_svg_tag: placeholder_class }}
               {%- endif -%}
@@ -324,22 +317,10 @@
       "content": "t:sections.collections.headers.default_colors"
     },
     {
-      "type": "color",
-      "id": "default_bg_color",
-      "label": "t:sections.collections.settings.default_bg_color.label",
-      "default": "#FAF6F0"
-    },
-    {
-      "type": "color",
-      "id": "default_text_color",
-      "label": "t:sections.collections.settings.default_text_color.label",
-      "default": "#2B1E16"
-    },
-    {
-      "type": "color",
-      "id": "default_accent_color",
-      "label": "t:sections.collections.settings.default_accent_color.label",
-      "default": "#9C4A1A"
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:labels.color_scheme",
+      "default": "scheme-1"
     },
     {
       "type": "header",

@@ -22,9 +22,9 @@
     assign body_size = section.settings.custom_body_size
     assign price_size = section.settings.custom_price_size
   else
-    assign bg_color = section.settings.default_bg_color
-    assign text_color = section.settings.default_text_color
-    assign accent_color = section.settings.default_accent_color
+    assign bg_color = section.settings.color_scheme.settings.background
+    assign text_color = section.settings.color_scheme.settings.text
+    assign accent_color = section.settings.color_scheme.settings.accent
     
     assign heading_font = 'var(--font-heading-family)'
     assign heading_size = 'var(--font-heading-size)'
@@ -130,23 +130,9 @@
 
                 <a href="{{ product.url }}" class="featured-collection-{{ section.id }}__image-wrapper featured-collection-{{ section.id }}__ratio-{{ image_ratio }}">
                   {%- if product.featured_image != blank -%}
-                    <img 
-                      src="{{ product.featured_image | image_url: width: 800 }}" 
-                      alt="{{ product.featured_image.alt | escape }}" 
-                      class="featured-collection-{{ section.id }}__product-image featured-collection-{{ section.id }}__fit-{{ image_fit }}"
-                      loading="lazy"
-                      width="800"
-                      height="800"
-                    >
+                    {%- capture img_alt -%}{{ product.featured_image.alt }}{%- endcapture -%}{%- capture img_class -%}featured-collection-{{ section.id }}__product-image featured-collection-{{ section.id }}__fit-{{ image_fit }}{%- endcapture -%}{{ product.featured_image | image_url: width: 800 | image_tag: widths: '100, 165, 220, 300, 400, 600, 800', sizes: '(min-width: 990px) 25vw, 50vw', loading: 'lazy', alt: img_alt, class: img_class }}
                     {%- if settings.card_hover_image and product.images[1] != blank -%}
-                      <img 
-                        src="{{ product.images[1] | image_url: width: 800 }}" 
-                        alt="{{ product.images[1].alt | escape }}" 
-                        class="featured-collection-{{ section.id }}__product-image-hover featured-collection-{{ section.id }}__fit-{{ image_fit }}"
-                        loading="lazy"
-                        width="800"
-                        height="800"
-                      >
+                      {%- capture img_alt -%}{{ product.images[1].alt }}{%- endcapture -%}{%- capture img_class -%}featured-collection-{{ section.id }}__product-image-hover featured-collection-{{ section.id }}__fit-{{ image_fit }}{%- endcapture -%}{{ product.images[1] | image_url: width: 800 | image_tag: widths: '100, 165, 220, 300, 400, 600, 800', sizes: '(min-width: 990px) 25vw, 50vw', loading: 'lazy', alt: img_alt, class: img_class }}
                     {%- endif -%}
                   {%- else -%}
                     {{ 'product-1' | placeholder_svg_tag: placeholder_class }}
@@ -344,7 +330,7 @@
   }
 
   .featured-collection-{{ section.id }}__product-card:hover {
-    transform: translateY(-5px);
+    transform: translateY(var(--card-hover-lift));
     box-shadow: 0 15px 30px rgba(0,0,0,0.1);
   }
 
@@ -420,7 +406,7 @@
   }
 
   .featured-collection-{{ section.id }}__product-card:hover .featured-collection-{{ section.id }}__product-image:only-child {
-    transform: scale(1.05);
+    transform: scale(var(--card-image-hover-scale));
   }
 
   .featured-collection-{{ section.id }}__fit-cover { object-fit: cover; }
@@ -784,22 +770,10 @@
       "content": "t:sections.featured_collection.headers.default_colors"
     },
     {
-      "type": "color",
-      "id": "default_bg_color",
-      "label": "t:sections.featured_collection.settings.default_bg_color.label",
-      "default": "#FAF6F0"
-    },
-    {
-      "type": "color",
-      "id": "default_text_color",
-      "label": "t:sections.featured_collection.settings.default_text_color.label",
-      "default": "#2B1E16"
-    },
-    {
-      "type": "color",
-      "id": "default_accent_color",
-      "label": "t:sections.featured_collection.settings.default_accent_color.label",
-      "default": "#9C4A1A"
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:labels.color_scheme",
+      "default": "scheme-1"
     },
     {
       "type": "header",

@@ -11,12 +11,12 @@
   class="main-product-{{ section.id }}" 
   id="MainProduct-{{ section.id }}"
   style="
-    --mp-bg: {{ section.settings.background_color }};
-    --mp-text: {{ section.settings.text_color }};
-    --mp-accent: {{ section.settings.accent_color }};
+    --mp-bg: {{ section.settings.color_scheme.settings.background }};
+    --mp-text: {{ section.settings.color_scheme.settings.text }};
+    --mp-accent: {{ section.settings.color_scheme.settings.accent }};
     --mp-btn-bg: {{ section.settings.button_bg_color }};
     --mp-btn-text: {{ section.settings.button_text_color }};
-    --mp-border: {{ section.settings.border_color }};
+    --mp-border: {{ section.settings.color_scheme.settings.border }};
     --mp-soft-bg: {{ section.settings.soft_background }};
     --mp-card-border-width: {{ section.settings.card_border_width }}px;
     padding-top: {{ section.settings.padding_top }}px;
@@ -28,48 +28,117 @@
       
       <div class="main-product-{{ section.id }}__left-column">
         <div class="main-product-{{ section.id }}__card-frame main-product-{{ section.id }}__gallery-card">
-          <div class="main-product-{{ section.id }}__gallery-wrapper main-product-{{ section.id }}__thumbs-{{ section.settings.thumbnail_position | default: 'right' }}">
-            
+          {%- liquid
+            assign media_count = product.media.size
+            assign active_media = current_variant.featured_media | default: product.featured_media
+            assign active_index = 1
+            for media in product.media
+              if media.id == active_media.id
+                assign active_index = forloop.index
+              endif
+            endfor
+          -%}
+          <media-gallery
+            class="main-product-{{ section.id }}__gallery-wrapper main-product-{{ section.id }}__thumbs-{{ section.settings.thumbnail_position | default: 'right' }}"
+            data-section="{{ section.id }}"
+          >
             <div class="main-product-{{ section.id }}__main-image-wrapper">
               {%- if product.tags.size > 0 -%}
                 <span class="main-product-{{ section.id }}__main-badge">{{ product.tags.first | upcase }}</span>
               {%- endif -%}
-              
-              {%- if product.images.size > 1 -%}
+
+              {%- if media_count > 1 -%}
                 <div class="main-product-{{ section.id }}__image-counter">
-                  <span id="CurrentImageIndex-{{ section.id }}">1</span> / {{ product.images.size }}
+                  <span data-media-index>{{ active_index }}</span> / {{ media_count }}
                 </div>
               {%- endif -%}
 
-              {%- if product.images.size > 0 -%}
-                <img 
-                  src="{{ product.images.first | image_url: width: 1000 }}" 
-                  alt="{{ product.title | escape }}" 
-                  class="{{ main_img_class }}" 
-                  id="MainImage-{{ section.id }}"
-                  loading="eager"
+              {%- for media in product.media -%}
+                {%- liquid
+                  assign is_active = false
+                  if media.id == active_media.id
+                    assign is_active = true
+                  endif
+                  assign media_alt = media.alt | default: product.title | escape
+                  assign media_loading = 'lazy'
+                  if is_active
+                    assign media_loading = 'eager'
+                  endif
+                -%}
+                <div
+                  class="main-product-{{ section.id }}__media-item main-product-{{ section.id }}__media-item--{{ media.media_type }}"
+                  data-media-id="{{ media.id }}"
+                  {% unless is_active %}
+                    hidden
+                  {% endunless %}
                 >
+                  {%- case media.media_type -%}
+                    {%- when 'image' -%}
+                      {%- if is_active -%}
+                        {{
+                          media
+                          | image_url: width: 1500
+                          | image_tag:
+                            widths: '400, 600, 800, 1000, 1200, 1500',
+                            sizes: '(min-width: 990px) 45vw, 100vw',
+                            loading: media_loading,
+                            fetchpriority: 'high',
+                            alt: media_alt,
+                            class: main_img_class
+                        }}
+                      {%- else -%}
+                        {{
+                          media
+                          | image_url: width: 1500
+                          | image_tag:
+                            widths: '400, 600, 800, 1000, 1200, 1500',
+                            sizes: '(min-width: 990px) 45vw, 100vw',
+                            loading: media_loading,
+                            alt: media_alt,
+                            class: main_img_class
+                        }}
+                      {%- endif -%}
+                    {%- when 'external_video' -%}
+                      {{ media | external_video_url: enablejsapi: true, rel: 0 | external_video_tag: loading: 'lazy', class: 'main-product-media__frame' }}
+                    {%- when 'video' -%}
+                      {{ media | video_tag: controls: true, preload: 'none', playsinline: true, image_size: '1500x', class: 'main-product-media__frame' }}
+                    {%- when 'model' -%}
+                      {{ media | model_viewer_tag: image_size: '1500x', reveal: 'interaction', toggleable: true, class: 'main-product-media__frame' }}
+                  {%- endcase -%}
+                </div>
               {%- else -%}
                 {{ 'product-1' | placeholder_svg_tag: main_img_class }}
-              {%- endif -%}
+              {%- endfor -%}
             </div>
 
-            {%- if product.images.size > 1 -%}
+            {%- if media_count > 1 -%}
               <div class="main-product-{{ section.id }}__thumbnails-container">
-                {%- for image in product.images limit: 5 -%}
-                  <button 
-                    class="main-product-{{ section.id }}__thumbnail{% if forloop.first %} is-active{% endif %}" 
-                    data-target="{{ image | image_url: width: 1000 }}"
+                {%- for media in product.media -%}
+                  <button
+                    class="main-product-{{ section.id }}__thumbnail{% if media.id == active_media.id %} is-active{% endif %}"
+                    data-media-target="{{ media.id }}"
                     type="button"
                     aria-label="{{ 'products.view_image' | t: index: forloop.index }}"
+                    {% if media.id == active_media.id %}
+                      aria-current="true"
+                    {% endif %}
                   >
-                    <img src="{{ image | image_url: width: 200 }}" alt="" loading="lazy">
+                    {{
+                      media.preview_image
+                      | image_url: width: 200
+                      | image_tag: widths: '100, 160, 200', sizes: '80px', loading: 'lazy', alt: ''
+                    }}
+                    {%- unless media.media_type == 'image' -%}
+                      <span class="main-product-media__thumb-icon" aria-hidden="true">
+                        {%- if media.media_type == 'model' -%}3D{%- else -%}▶{%- endif -%}
+                      </span>
+                    {%- endunless -%}
                   </button>
                 {%- endfor -%}
               </div>
             {%- endif -%}
-
-          </div>
+          </media-gallery>
+          <script src="{{ 'media-gallery.js' | asset_url }}" defer></script>
         </div>
 
         {%- for block in section.blocks -%}
@@ -77,16 +146,23 @@
             <div class="main-product-{{ section.id }}__card-frame main-product-{{ section.id }}__review-card" {{ block.shopify_attributes }}>
               <div class="main-product-{{ section.id }}__review-header">
                 {%- if block.settings.customer_image != blank -%}
-                  <img src="{{ block.settings.customer_image | image_url: width: 100 }}" class="main-product-{{ section.id }}__reviewer-img" alt="{{ block.settings.customer_name | escape }}" loading="lazy">
+                  {%- capture img_alt -%}{{ block.settings.customer_name }}{%- endcapture -%}{%- capture img_class -%}main-product-{{ section.id }}__reviewer-img{%- endcapture -%}{{ block.settings.customer_image | image_url: width: 100 | image_tag: widths: '100', sizes: '50px', loading: 'lazy', alt: img_alt, class: img_class }}
                 {%- else -%}
                   <div class="main-product-{{ section.id }}__reviewer-placeholder"></div>
                 {%- endif -%}
                 <div class="main-product-{{ section.id }}__reviewer-info">
                   <div class="main-product-{{ section.id }}__reviewer-name">
                     {{ block.settings.customer_name }}
-                    <span class="main-product-{{ section.id }}__verified-badge">✓ {{ 'products.verified' | t }}</span>
+                    {%- if block.settings.show_verified -%}
+                      <span class="main-product-{{ section.id }}__verified-badge">✓ {{ 'products.verified' | t }}</span>
+                    {%- endif -%}
                   </div>
-                  <div class="main-product-{{ section.id }}__review-stars">★★★★★</div>
+                  {%- assign review_rating = block.settings.rating | default: 5 -%}
+                  <div class="main-product-{{ section.id }}__review-stars" role="img" aria-label="{{ 'products.rating' | t: rating: review_rating, max: 5 }}">
+                    {%- for star in (1..5) -%}
+                      <span{% if star > review_rating %} class="is-empty"{% endif %} aria-hidden="true">★</span>
+                    {%- endfor -%}
+                  </div>
                 </div>
               </div>
               <h4 class="main-product-{{ section.id }}__review-title">{{ block.settings.review_title }}</h4>
@@ -97,8 +173,12 @@
       </div>
 
       <div class="main-product-{{ section.id }}__right-column main-product-{{ section.id }}__card-frame">
-        <form action="{{ routes.cart_add_url }}" method="post" id="ProductForm-{{ section.id }}" class="main-product-{{ section.id }}__form">
-          <input type="hidden" name="id" value="{{ current_variant.id }}">
+        {%- comment -%}
+          The product form lives in the buy button block. Quantity and purchase options in
+          other blocks join it through the form attribute, so app blocks with their own forms
+          never end up nested inside it.
+        {%- endcomment -%}
+        <div class="main-product-{{ section.id }}__form">
           
           <div class="main-product-{{ section.id }}__details-blocks-wrapper">
             {%- for block in section.blocks -%}
@@ -113,10 +193,27 @@
                   </div>
 
                 {%- when 'rating' -%}
-                  <div class="main-product-{{ section.id }}__rating-block" {{ block.shopify_attributes }}>
-                    <div class="main-product-{{ section.id }}__stars" aria-hidden="true">★★★★★</div>
-                    <a href="#reviews" class="main-product-{{ section.id }}__review-link">{%- assign review_total = block.settings.review_count | plus: 0 -%}{{ 'products.reviews_count' | t: count: review_total }}</a>
-                  </div>
+                  {%- comment -%}
+                    Uses Shopify's standard review metafields (reviews.rating, reviews.rating_count),
+                    which review apps fill in. Nothing shows until a product has reviews.
+                  {%- endcomment -%}
+                  {%- if product.metafields.reviews.rating.value != blank -%}
+                    {%- liquid
+                      assign rating = product.metafields.reviews.rating.value
+                      assign rating_value = rating.rating | round: 1
+                      assign rating_max = rating.scale_max
+                      assign filled_stars = rating.rating | round
+                      assign review_total = product.metafields.reviews.rating_count.value | default: 0
+                    -%}
+                    <div class="main-product-{{ section.id }}__rating-block" {{ block.shopify_attributes }}>
+                      <div class="main-product-{{ section.id }}__stars" role="img" aria-label="{{ 'products.rating' | t: rating: rating_value, max: rating_max }}">
+                        {%- for star in (1..rating_max) -%}
+                          <span{% if star > filled_stars %} class="is-empty"{% endif %}>★</span>
+                        {%- endfor -%}
+                      </div>
+                      <span class="main-product-{{ section.id }}__review-link">{{ 'products.reviews_count' | t: count: review_total }}</span>
+                    </div>
+                  {%- endif -%}
 
                 {%- when 'description' -%}
                   <div class="main-product-{{ section.id }}__description-block" {{ block.shopify_attributes }}>
@@ -148,63 +245,176 @@
                     <label for="Quantity-{{ section.id }}" class="main-product-{{ section.id }}__qty-label">{{ 'products.quantity' | t }}</label>
                     <div class="main-product-{{ section.id }}__qty-wrapper">
                       <button type="button" class="main-product-{{ section.id }}__qty-btn" data-qty="minus" aria-label="{{ 'products.quantity_decrease' | t }}">-</button>
-                      <input type="number" id="Quantity-{{ section.id }}" name="quantity" value="1" min="1" class="main-product-{{ section.id }}__qty-input">
+                      <input type="number" id="Quantity-{{ section.id }}" name="quantity" value="1" min="1" form="{{ form_id }}" class="main-product-{{ section.id }}__qty-input">
                       <button type="button" class="main-product-{{ section.id }}__qty-btn" data-qty="plus" aria-label="{{ 'products.quantity_increase' | t }}">+</button>
                     </div>
                   </div>
 
                 {%- when 'stock_alert' -%}
-                  <div class="main-product-{{ section.id }}__stock-block" {{ block.shopify_attributes }}>
-                    <span class="main-product-{{ section.id }}__stock-dot" aria-hidden="true"></span> {{ block.settings.stock_text }}
+                  {%- comment -%}
+                    Shows the real stock count when a tracked variant is running low.
+                    Variant counts are passed to the page so the message follows the selected variant.
+                  {%- endcomment -%}
+                  {%- liquid
+                    assign threshold = block.settings.threshold
+                    assign show_stock = false
+                    if current_variant.inventory_management == 'shopify' and current_variant.inventory_quantity > 0
+                      if current_variant.inventory_quantity <= threshold
+                        assign show_stock = true
+                      endif
+                    endif
+                  -%}
+                  <div
+                    class="main-product-{{ section.id }}__stock-block"
+                    data-stock-alert
+                    data-threshold="{{ threshold }}"
+                    data-message="{{ 'products.low_stock_template.other' | t: count: '[count]' }}"
+                    data-message-one="{{ 'products.low_stock_template.one' | t: count: '[count]' }}"
+                    {% unless show_stock %}
+                      hidden
+                    {% endunless %}
+                    {{ block.shopify_attributes }}
+                  >
+                    <span class="main-product-{{ section.id }}__stock-dot" aria-hidden="true"></span>
+                    <span data-stock-text>{{ 'products.low_stock' | t: count: current_variant.inventory_quantity }}</span>
+                    <script type="application/json" data-stock-levels>
+                      {
+                        {%- for variant in product.variants -%}
+                          {%- assign level = 0 -%}
+                          {%- if variant.inventory_management == 'shopify' -%}
+                            {%- assign level = variant.inventory_quantity -%}
+                          {%- endif -%}
+                          "{{ variant.id }}": {{ level | at_least: 0 }}{% unless forloop.last %},{% endunless %}
+                        {%- endfor -%}
+                      }
+                    </script>
                   </div>
 
                 {%- when 'selling_plan' -%}
-                  <div class="main-product-{{ section.id }}__selling-plan-block" {{ block.shopify_attributes }}>
-                    <div class="main-product-{{ section.id }}__subscribe-header">
-                      <span class="main-product-{{ section.id }}__subscribe-title">{{ block.settings.subscribe_title }}</span>
-                    </div>
-                    <label class="main-product-{{ section.id }}__purchase-option">
-                      <input type="radio" name="purchase_type" value="subscribe" checked>
-                      <div class="main-product-{{ section.id }}__option-content">
-                        <span class="main-product-{{ section.id }}__option-title">{{ 'products.subscribe_save' | t }}</span>
-                        <span class="main-product-{{ section.id }}__option-price">{% render 'price', amount: product.price %}</span>
-                      </div>
-                    </label>
-                    <div class="main-product-{{ section.id }}__subscribe-benefits">
-                      <span>✓ {{ 'products.perk_shipping' | t }}</span>
-                      <span>✓ {{ 'products.perk_discount' | t }}</span>
-                      <span>✓ {{ 'products.perk_contract' | t }}</span>
-                    </div>
-                    <label class="main-product-{{ section.id }}__purchase-option main-product-{{ section.id }}__one-time-option">
-                      <input type="radio" name="purchase_type" value="one-time">
-                      <div class="main-product-{{ section.id }}__option-content">
-                        <span class="main-product-{{ section.id }}__option-title">{{ 'products.one_time' | t }}</span>
-                        <span class="main-product-{{ section.id }}__option-price">{% render 'price', amount: product.price %}</span>
-                      </div>
-                    </label>
-                  </div>
+                  {%- comment -%}
+                    Purchase options from the product's selling plans (subscription apps).
+                    Hidden for products without selling plans.
+                  {%- endcomment -%}
+                  {%- if product.selling_plan_groups.size > 0 -%}
+                    {%- assign selected_plan = product.selected_selling_plan -%}
+                    {%- if product.requires_selling_plan and selected_plan == blank -%}
+                      {%- assign selected_plan = product.selling_plan_groups.first.selling_plans.first -%}
+                    {%- endif -%}
+                    <fieldset class="main-product-{{ section.id }}__selling-plan-block" {{ block.shopify_attributes }}>
+                      <legend class="main-product-{{ section.id }}__subscribe-header">
+                        <span class="main-product-{{ section.id }}__subscribe-title">
+                          {{- block.settings.subscribe_title | default: product.selling_plan_groups.first.name -}}
+                        </span>
+                      </legend>
+
+                      {%- unless product.requires_selling_plan -%}
+                        <label class="main-product-{{ section.id }}__purchase-option main-product-{{ section.id }}__one-time-option">
+                          <input type="radio" name="selling_plan" value="" form="{{ form_id }}"{% if selected_plan == blank %} checked{% endif %}>
+                          <div class="main-product-{{ section.id }}__option-content">
+                            <span class="main-product-{{ section.id }}__option-title">{{ 'products.one_time' | t }}</span>
+                            <span class="main-product-{{ section.id }}__option-price">{% render 'price', amount: current_variant.price %}</span>
+                          </div>
+                        </label>
+                      {%- endunless -%}
+
+                      {%- for group in product.selling_plan_groups -%}
+                        {%- for plan in group.selling_plans -%}
+                          {%- assign allocation = current_variant.selling_plan_allocations | where: 'selling_plan_id', plan.id | first -%}
+                          <label class="main-product-{{ section.id }}__purchase-option">
+                            <input type="radio" name="selling_plan" value="{{ plan.id }}" form="{{ form_id }}"{% if selected_plan.id == plan.id %} checked{% endif %}>
+                            <div class="main-product-{{ section.id }}__option-content">
+                              <span class="main-product-{{ section.id }}__option-title">{{ plan.name | escape }}</span>
+                              {%- if allocation -%}
+                                <span class="main-product-{{ section.id }}__option-price">{% render 'price', amount: allocation.price %}</span>
+                              {%- endif -%}
+                            </div>
+                          </label>
+                          {%- if plan.description != blank -%}
+                            <p class="main-product-{{ section.id }}__subscribe-benefits">{{ plan.description | escape }}</p>
+                          {%- endif -%}
+                        {%- endfor -%}
+                      {%- endfor -%}
+                    </fieldset>
+                  {%- endif -%}
 
                 {%- when 'buy_button' -%}
+                  {%- liquid
+                    assign add_label = block.settings.button_text
+                    if add_label == blank
+                      assign add_label = 'products.buy.add_to_cart' | t
+                    endif
+                  -%}
                   <div class="main-product-{{ section.id }}__buy-button-block" {{ block.shopify_attributes }}>
-                    <button 
-                      type="submit" 
-                      name="add" 
-                      class="main-product-{{ section.id }}__add-to-cart-btn" 
-                      {% if product.available == false %}disabled{% endif %}
-                      aria-label="{{ 'products.buy.add_to_cart' | t }}"
-                    >
-                      {% if product.available %}
-                        {% if block.settings.show_price %}
+                    {%- form 'product', product, id: form_id, class: 'main-product-form', novalidate: 'novalidate' -%}
+                      <input type="hidden" name="id" value="{{ current_variant.id }}">
+
+                      {%- unless product.has_only_default_variant -%}
+                        <noscript>
+                          <label for="NoJsVariant-{{ section.id }}" class="main-product-{{ section.id }}__qty-label">{{ 'products.variant_label' | t }}</label>
+                          <select name="id" id="NoJsVariant-{{ section.id }}" class="main-product-form__nojs-select">
+                            {%- for variant in product.variants -%}
+                              <option value="{{ variant.id }}"{% if variant == current_variant %} selected{% endif %}{% unless variant.available %} disabled{% endunless %}>
+                                {{ variant.title | escape }} – {% render 'price', amount: variant.price %}
+                                {%- unless variant.available %} – {{ 'products.buy.sold_out' | t }}{% endunless %}
+                              </option>
+                            {%- endfor -%}
+                          </select>
+                        </noscript>
+                      {%- endunless -%}
+
+                      {%- if product.gift_card? and block.settings.show_gift_card_recipient -%}
+                        {% render 'gift-card-recipient-form', form: form, section_id: section.id %}
+                      {%- endif -%}
+
+                      <button
+                        type="submit"
+                        name="add"
+                        class="main-product-{{ section.id }}__add-to-cart-btn"
+                        {% unless current_variant.available %}
+                          disabled
+                        {% endunless %}
+                      >
+                        {%- if block.settings.show_price -%}
                           <span class="main-product-{{ section.id }}__btn-price-section" data-variant-price="{{ form_id }}">{% render 'price', amount: current_variant.price %}</span>
-                        {% endif %}
+                        {%- endif -%}
                         <span class="main-product-{{ section.id }}__btn-text-section">
-                          {{ block.settings.button_text }}
+                          <span
+                            data-variant-button-label
+                            data-label-add="{{ add_label | escape }}"
+                            data-label-sold-out="{{ 'products.buy.sold_out' | t }}"
+                          >
+                            {%- if current_variant.available -%}
+                              {{ add_label | escape }}
+                            {%- else -%}
+                              {{ 'products.buy.sold_out' | t }}
+                            {%- endif -%}
+                          </span>
                           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                         </span>
-                      {% else %}
-                        {{ 'products.buy.sold_out' | t }}
-                      {% endif %}
-                    </button>
+                      </button>
+
+                      {%- if block.settings.show_dynamic_checkout -%}
+                        <div class="main-product-form__dynamic-checkout">{{ form | payment_button }}</div>
+                      {%- endif -%}
+                    {%- endform -%}
+                  </div>
+
+                {%- when 'pickup_availability' -%}
+                  <div class="main-product-{{ section.id }}__pickup-block" {{ block.shopify_attributes }}>
+                    <pickup-availability
+                      class="pickup-availability"
+                      data-root-url="{{ routes.root_url }}"
+                      data-product-url="{{ product.url }}"
+                      data-variant-id="{{ current_variant.id }}"
+                    >
+                      {% render 'pickup-availability', variant: current_variant %}
+                    </pickup-availability>
+                    <script src="{{ 'pickup-availability.js' | asset_url }}" defer></script>
+                  </div>
+
+                {%- when 'custom_liquid' -%}
+                  <div class="main-product-{{ section.id }}__custom-liquid" {{ block.shopify_attributes }}>
+                    {{ block.settings.custom_liquid }}
                   </div>
 
                 {%- when 'guarantee_text' -%}
@@ -228,7 +438,7 @@
                         </div>
                         <div class="main-product-{{ section.id }}__modal-body">
                           {%- if block.settings.size_chart_image != blank -%}
-                            <img src="{{ block.settings.size_chart_image | image_url: width: 800 }}" alt="{{ 'products.size_chart' | t }}" class="main-product-{{ section.id }}__sizechart-img" loading="lazy">
+                            {%- capture img_alt -%}{{ 'products.size_chart' | t }}{%- endcapture -%}{%- capture img_class -%}main-product-{{ section.id }}__sizechart-img{%- endcapture -%}{{ block.settings.size_chart_image | image_url: width: 800 | image_tag: widths: '100, 165, 220, 300, 400, 600, 800', sizes: '(min-width: 990px) 800px, 100vw', loading: 'lazy', alt: img_alt, class: img_class }}
                           {%- elsif product.metafields.custom.size_chart.value != blank -%}
                             <div class="main-product-{{ section.id }}__metafield-content">{{ product.metafields.custom.size_chart.value }}</div>
                           {%- else -%}
@@ -279,16 +489,21 @@
 
                 {%- when 'social_share' -%}
                   <div class="main-product-{{ section.id }}__social-block" {{ block.shopify_attributes }}>
-                    <span class="main-product-{{ section.id }}__social-label">Share:</span>
-                    <a href="https://www.facebook.com/sharer/sharer.php?u={{ shop.url }}{{ product.url }}" target="_blank" rel="noopener" class="main-product-{{ section.id }}__social-link" aria-label="{{ 'general.social.share_facebook' | t }}">FB</a>
-                    <a href="https://twitter.com/intent/tweet?url={{ shop.url }}{{ product.url }}" target="_blank" rel="noopener" class="main-product-{{ section.id }}__social-link" aria-label="{{ 'general.social.share_x' | t }}">X</a>
-                    <a href="https://pinterest.com/pin/create/button/?url={{ shop.url }}{{ product.url }}" target="_blank" rel="noopener" class="main-product-{{ section.id }}__social-link" aria-label="{{ 'general.social.share_pinterest' | t }}">PIN</a>
+                    <span class="main-product-{{ section.id }}__social-label">{{ 'general.social.share' | t }}</span>
+                    <a href="https://www.facebook.com/sharer/sharer.php?u={{ shop.url | append: product.url | url_param_escape }}" target="_blank" rel="noopener" class="main-product-{{ section.id }}__social-link" aria-label="{{ 'general.social.share_facebook' | t }}">FB</a>
+                    <a href="https://twitter.com/intent/tweet?url={{ shop.url | append: product.url | url_param_escape }}" target="_blank" rel="noopener" class="main-product-{{ section.id }}__social-link" aria-label="{{ 'general.social.share_x' | t }}">X</a>
+                    <a href="https://pinterest.com/pin/create/button/?url={{ shop.url | append: product.url | url_param_escape }}" target="_blank" rel="noopener" class="main-product-{{ section.id }}__social-link" aria-label="{{ 'general.social.share_pinterest' | t }}">PIN</a>
+                  </div>
+
+                {%- when '@app' -%}
+                  <div class="main-product-{{ section.id }}__app-block">
+                    {% render block %}
                   </div>
 
               {%- endcase -%}
             {%- endfor -%}
           </div>
-        </form>
+        </div>
       </div>
 
     </div>
@@ -454,6 +669,51 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+  }
+
+  .main-product-{{ section.id }}__media-item {
+    width: 100%;
+    height: 100%;
+  }
+
+  .main-product-{{ section.id }}__media-item[hidden] {
+    display: none;
+  }
+
+  .main-product-{{ section.id }}__media-item iframe,
+  .main-product-{{ section.id }}__media-item video,
+  .main-product-{{ section.id }}__media-item model-viewer {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    object-fit: contain;
+    background: #000;
+  }
+
+  .main-product-{{ section.id }}__media-item--model model-viewer {
+    background: var(--mp-soft-bg);
+  }
+
+  .main-product-{{ section.id }}__thumbnail {
+    position: relative;
+  }
+
+  .main-product-media__thumb-icon {
+    position: absolute;
+    right: 4px;
+    bottom: 4px;
+    display: grid;
+    place-items: center;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 4px;
+    border-radius: 11px;
+    background: rgb(0 0 0 / 0.65);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1;
   }
 
   .main-product-{{ section.id }}__thumbnails-container {
@@ -1209,25 +1469,27 @@
       transition: none;
     }
   }
+  .main-product-{{ section.id }}__review-stars .is-empty,
+  .main-product-{{ section.id }}__stars .is-empty {
+    opacity: 0.25;
+  }
 {% endstyle %}
 
 <script>
   document.addEventListener('DOMContentLoaded', function () {
-    const mainImage = document.getElementById('MainImage-{{ section.id }}');
-    const thumbnails = document.querySelectorAll('.main-product-{{ section.id }}__thumbnail');
-    const currentIndexSpan = document.getElementById('CurrentImageIndex-{{ section.id }}');
-    
-    if (mainImage && thumbnails.length > 0) {
-      thumbnails.forEach((thumb, index) => {
-        thumb.addEventListener('click', function () {
-          const targetSrc = this.getAttribute('data-target');
-          if (targetSrc) {
-            mainImage.src = targetSrc;
-            thumbnails.forEach(t => t.classList.remove('is-active'));
-            this.classList.add('is-active');
-            if(currentIndexSpan) currentIndexSpan.textContent = index + 1;
-          }
-        });
+    const stockAlert = document.querySelector('#MainProduct-{{ section.id }} [data-stock-alert]');
+    if (stockAlert) {
+      const levels = JSON.parse(stockAlert.querySelector('[data-stock-levels]').textContent);
+      const threshold = Number(stockAlert.dataset.threshold);
+      const stockText = stockAlert.querySelector('[data-stock-text]');
+
+      document.addEventListener('variant:change', (event) => {
+        const count = levels[event.detail.variant.id] || 0;
+        const show = count > 0 && count <= threshold;
+        stockAlert.hidden = !show;
+        if (!show) return;
+        const template = count === 1 ? stockAlert.dataset.messageOne : stockAlert.dataset.message;
+        stockText.textContent = template.replace('[count]', count);
       });
     }
 
@@ -1349,28 +1611,16 @@
       "content": "t:sections.product.headers.colors_fashion_theme"
     },
     {
-      "type": "color",
-      "id": "background_color",
-      "label": "t:sections.product.settings.background_color.label",
-      "default": "#FAF6F0"
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:labels.color_scheme",
+      "default": "scheme-1"
     },
     {
       "type": "color",
       "id": "soft_background",
       "label": "t:sections.product.settings.soft_background.label",
       "default": "#F3EFEA"
-    },
-    {
-      "type": "color",
-      "id": "text_color",
-      "label": "t:sections.product.settings.text_color.label",
-      "default": "#2B1E16"
-    },
-    {
-      "type": "color",
-      "id": "accent_color",
-      "label": "t:sections.product.settings.accent_color.label",
-      "default": "#9C4A1A"
     },
     {
       "type": "color",
@@ -1383,12 +1633,6 @@
       "id": "button_text_color",
       "label": "t:sections.product.settings.button_text_color.label",
       "default": "#ffffff"
-    },
-    {
-      "type": "color",
-      "id": "border_color",
-      "label": "t:sections.product.settings.border_color.label",
-      "default": "#E8E2DA"
     },
     {
       "type": "range",
@@ -1429,6 +1673,22 @@
           "id": "review_text",
           "label": "t:sections.product.blocks.customer_review.settings.review_text.label",
           "default": "Woke up with plump, hydrated skin."
+        },
+        {
+          "type": "range",
+          "id": "rating",
+          "label": "t:sections.product.blocks.customer_review.settings.rating.label",
+          "min": 1,
+          "max": 5,
+          "step": 1,
+          "default": 5
+        },
+        {
+          "type": "checkbox",
+          "id": "show_verified",
+          "label": "t:sections.product.blocks.customer_review.settings.show_verified.label",
+          "info": "t:sections.product.blocks.customer_review.settings.show_verified.info",
+          "default": false
         }
       ]
     },
@@ -1451,10 +1711,8 @@
       "limit": 1,
       "settings": [
         {
-          "type": "text",
-          "id": "review_count",
-          "label": "t:sections.product.blocks.rating.settings.review_count.label",
-          "default": "728"
+          "type": "paragraph",
+          "content": "t:sections.product.blocks.rating.paragraphs.info"
         }
       ]
     },
@@ -1492,10 +1750,14 @@
       "limit": 1,
       "settings": [
         {
-          "type": "text",
-          "id": "stock_text",
-          "label": "t:sections.product.blocks.stock_alert.settings.stock_text.label",
-          "default": "HURRY, ONLY 37 ITEMS LEFT!"
+          "type": "range",
+          "id": "threshold",
+          "label": "t:sections.product.blocks.stock_alert.settings.threshold.label",
+          "info": "t:sections.product.blocks.stock_alert.settings.threshold.info",
+          "min": 1,
+          "max": 50,
+          "step": 1,
+          "default": 10
         }
       ]
     },
@@ -1508,7 +1770,7 @@
           "type": "text",
           "id": "subscribe_title",
           "label": "t:sections.product.blocks.selling_plan.settings.subscribe_title.label",
-          "default": "SAVE 25% ON FIRST ORDER"
+          "info": "t:sections.product.blocks.selling_plan.settings.subscribe_title.info"
         }
       ]
     },
@@ -1527,6 +1789,20 @@
           "type": "checkbox",
           "id": "show_price",
           "label": "t:sections.product.blocks.buy_button.settings.show_price.label",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "show_dynamic_checkout",
+          "label": "t:sections.product.blocks.buy_button.settings.show_dynamic_checkout.label",
+          "info": "t:sections.product.blocks.buy_button.settings.show_dynamic_checkout.info",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "show_gift_card_recipient",
+          "label": "t:sections.product.blocks.buy_button.settings.show_gift_card_recipient.label",
+          "info": "t:sections.product.blocks.buy_button.settings.show_gift_card_recipient.info",
           "default": true
         }
       ]
@@ -1602,6 +1878,26 @@
       "type": "social_share",
       "name": "t:sections.product.blocks.social_share.name",
       "limit": 1
+    },
+    {
+      "type": "pickup_availability",
+      "name": "t:sections.product.blocks.pickup_availability.name",
+      "limit": 1
+    },
+    {
+      "type": "custom_liquid",
+      "name": "t:sections.product.blocks.custom_liquid.name",
+      "settings": [
+        {
+          "type": "liquid",
+          "id": "custom_liquid",
+          "label": "t:sections.product.blocks.custom_liquid.settings.custom_liquid.label",
+          "info": "t:sections.product.blocks.custom_liquid.settings.custom_liquid.info"
+        }
+      ]
+    },
+    {
+      "type": "@app"
     }
   ]
 }

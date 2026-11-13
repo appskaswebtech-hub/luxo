@@ -13,6 +13,11 @@ body {
   min-height: 100svh;
 }
 
+/* Full-width sections use 100vw, which includes the scrollbar on Windows; clip keeps sticky elements working */
+html {
+  overflow-x: clip;
+}
+
 html:has(dialog[scroll-lock][open], details[scroll-lock][open]) {
   overflow: hidden;
 }
@@ -73,9 +78,73 @@ p:empty {
 
 /** Theme styles below */
 body {
-  font-family: var(--font-primary--family);
+  font-family: var(--font-body-family);
+  font-weight: var(--font-body-weight);
+  font-style: var(--font-body-style);
+  font-size: var(--font-body-size);
+  line-height: var(--font-body-line-height);
+  letter-spacing: var(--font-body-letter-spacing);
   background-color: var(--color-background);
   color: var(--color-foreground);
+}
+
+.main-content {
+  flex: 1 0 auto;
+}
+
+.main-content:focus {
+  outline: none;
+}
+
+.skip-to-content:focus {
+  z-index: 10000;
+  top: 1rem;
+  left: 1rem;
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 0.75rem 1.25rem;
+  clip: auto;
+  background: var(--color-background);
+  color: var(--color-foreground);
+  outline: 2px solid currentColor;
+}
+
+/* Theme-wide heading style; sections can still set their own sizes */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading-family);
+  font-weight: var(--font-heading-weight);
+  font-style: var(--font-heading-style);
+  line-height: var(--font-heading-line-height);
+  letter-spacing: var(--font-heading-letter-spacing);
+  text-transform: var(--font-heading-text-transform);
+}
+
+/* Reveal on scroll: only sections below the fold are hidden, and only once the script runs */
+@media (prefers-reduced-motion: no-preference) {
+  .reveal {
+    opacity: 0;
+    transform: translateY(1.5rem);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  .reveal.is-visible {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Image hover effect from theme settings; off when motion is reduced */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --card-image-hover-scale: 1;
+    --card-hover-lift: 0px;
+  }
 }
 
 .visually-hidden {
@@ -126,4 +195,11 @@ body {
 /* Child elements that use the full-width utility class span the entire viewport. */
 .shopify-section > .full-width {
   grid-column: 1 / -1;
+}
+
+/* App blocks added to a section, below its own content */
+.app-blocks {
+  display: grid;
+  gap: 1.5rem;
+  padding-block: 2rem;
 }

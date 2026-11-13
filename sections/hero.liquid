@@ -2,9 +2,9 @@
   assign layout_style = section.settings.layout_style
   assign use_custom_colors = section.settings.enable_custom_colors
   
-  assign bg_color = section.settings.default_bg_color
-  assign text_color = section.settings.default_text_color
-  assign accent_color = section.settings.default_accent_color
+  assign bg_color = section.settings.color_scheme.settings.background
+  assign text_color = section.settings.color_scheme.settings.text
+  assign accent_color = section.settings.color_scheme.settings.accent
 
   if use_custom_colors
     assign bg_color = section.settings.custom_bg_color
@@ -270,14 +270,7 @@
     {%- if layout_style == 'edge_spaced' -%}
       <div class="hero-banner-{{ section.id }}__image-wrapper hero-banner-{{ section.id }}__image-left">
         {%- if section.settings.image_left != blank -%}
-          <img 
-            src="{{ section.settings.image_left | image_url: width: 800 }}" 
-            alt="{{ section.settings.image_left.alt | escape }}" 
-            class="{{ img_class }}" 
-            loading="lazy" 
-            width="800" 
-            height="1066"
-          >
+          {%- capture img_alt -%}{{ section.settings.image_left.alt }}{%- endcapture -%}{%- capture img_class -%}{{ img_class }}{%- endcapture -%}{{ section.settings.image_left | image_url: width: 800 | image_tag: widths: '100, 165, 220, 300, 400, 600, 800', sizes: '(min-width: 990px) 30vw, 60vw', loading: 'lazy', alt: img_alt, class: img_class }}
         {%- else -%}
           {{ 'image' | placeholder_svg_tag: placeholder_class }}
         {%- endif -%}
@@ -290,28 +283,14 @@
         <div class="hero-banner-{{ section.id }}__overlap-group">
           <div class="hero-banner-{{ section.id }}__overlap-item hero-banner-{{ section.id }}__overlap-back">
             {%- if section.settings.image_back != blank -%}
-              <img 
-                src="{{ section.settings.image_back | image_url: width: 800 }}" 
-                alt="{{ section.settings.image_back.alt | escape }}" 
-                class="{{ img_class }}" 
-                loading="lazy" 
-                width="800" 
-                height="1066"
-              >
+              {%- capture img_alt -%}{{ section.settings.image_back.alt }}{%- endcapture -%}{%- capture img_class -%}{{ img_class }}{%- endcapture -%}{{ section.settings.image_back | image_url: width: 800 | image_tag: widths: '100, 165, 220, 300, 400, 600, 800', sizes: '(min-width: 990px) 30vw, 60vw', loading: 'lazy', alt: img_alt, class: img_class }}
             {%- else -%}
               {{ 'image' | placeholder_svg_tag: placeholder_class }}
             {%- endif -%}
           </div>
           <div class="hero-banner-{{ section.id }}__overlap-item hero-banner-{{ section.id }}__overlap-front">
             {%- if section.settings.image_front != blank -%}
-              <img 
-                src="{{ section.settings.image_front | image_url: width: 800 }}" 
-                alt="{{ section.settings.image_front.alt | escape }}" 
-                class="{{ img_class }}" 
-                loading="lazy" 
-                width="800" 
-                height="1066"
-              >
+              {%- capture img_alt -%}{{ section.settings.image_front.alt }}{%- endcapture -%}{%- capture img_class -%}{{ img_class }}{%- endcapture -%}{{ section.settings.image_front | image_url: width: 800 | image_tag: widths: '100, 165, 220, 300, 400, 600, 800', sizes: '(min-width: 990px) 30vw, 60vw', loading: 'lazy', alt: img_alt, class: img_class }}
             {%- else -%}
               {{ 'image' | placeholder_svg_tag: placeholder_class }}
             {%- endif -%}
@@ -374,14 +353,7 @@
     {%- if layout_style == 'edge_spaced' -%}
       <div class="hero-banner-{{ section.id }}__image-wrapper hero-banner-{{ section.id }}__image-right">
         {%- if section.settings.image_right != blank -%}
-          <img 
-            src="{{ section.settings.image_right | image_url: width: 800 }}" 
-            alt="{{ section.settings.image_right.alt | escape }}" 
-            class="{{ img_class }}" 
-            loading="lazy" 
-            width="800" 
-            height="1066"
-          >
+          {%- capture img_alt -%}{{ section.settings.image_right.alt }}{%- endcapture -%}{%- capture img_class -%}{{ img_class }}{%- endcapture -%}{{ section.settings.image_right | image_url: width: 800 | image_tag: widths: '100, 165, 220, 300, 400, 600, 800', sizes: '(min-width: 990px) 30vw, 60vw', loading: 'lazy', alt: img_alt, class: img_class }}
         {%- else -%}
           {{ 'image' | placeholder_svg_tag: placeholder_class }}
         {%- endif -%}
@@ -480,22 +452,10 @@
       "content": "t:sections.hero.headers.default_colors"
     },
     {
-      "type": "color",
-      "id": "default_bg_color",
-      "label": "t:sections.hero.settings.default_bg_color.label",
-      "default": "#FAF6F0"
-    },
-    {
-      "type": "color",
-      "id": "default_text_color",
-      "label": "t:sections.hero.settings.default_text_color.label",
-      "default": "#2B1E16"
-    },
-    {
-      "type": "color",
-      "id": "default_accent_color",
-      "label": "t:sections.hero.settings.default_accent_color.label",
-      "default": "#9C4A1A"
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:labels.color_scheme",
+      "default": "scheme-1"
     },
     {
       "type": "header",

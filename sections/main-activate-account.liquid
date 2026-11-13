@@ -1,0 +1,30 @@
+{{ 'customer.css' | asset_url | stylesheet_tag }}
+
+<div class="customer">
+  <h1 class="customer__title">{{ 'customer.activate.title' | t }}</h1>
+  <p>{{ 'customer.activate.description' | t }}</p>
+
+  {%- form 'activate_customer_password' -%}
+    {% render 'customer-errors', errors: form.errors %}
+
+    <div class="customer__field">
+      <label for="ActivatePassword">{{ 'customer.fields.password' | t }}</label>
+      <input type="password" id="ActivatePassword" name="customer[password]" autocomplete="new-password" required>
+    </div>
+
+    <div class="customer__field">
+      <label for="ActivatePasswordConfirm">{{ 'customer.fields.password_confirm' | t }}</label>
+      <input type="password" id="ActivatePasswordConfirm" name="customer[password_confirmation]" autocomplete="new-password" required>
+    </div>
+
+    <button type="submit" class="customer__button">{{ 'customer.activate.submit' | t }}</button>
+    <button type="submit" name="decline" class="customer__button customer__button--secondary">{{ 'customer.activate.decline' | t }}</button>
+  {%- endform -%}
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.customer.activate",
+  "settings": []
+}
+{% endschema %}

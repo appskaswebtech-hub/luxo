@@ -27,10 +27,7 @@
           }
         },
         "rating": {
-          "type": "rating",
-          "settings": {
-            "review_count": "728"
-          }
+          "type": "rating"
         },
         "key_benefits": {
           "type": "key_benefits",
@@ -44,7 +41,7 @@
         "stock_alert": {
           "type": "stock_alert",
           "settings": {
-            "stock_text": "HURRY, ONLY 37 ITEMS LEFT IN STOCK!"
+            "threshold": 10
           }
         },
         "size_chart": {
@@ -131,7 +128,12 @@
           "type": "size_chart"
         }
       },
-      "block_order": ["description", "reviews", "shipping", "size_chart"],
+      "block_order": [
+        "description",
+        "reviews",
+        "shipping",
+        "size_chart"
+      ],
       "settings": {}
     },
     "related_products": {

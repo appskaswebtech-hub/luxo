@@ -1,0 +1,116 @@
+{% doc %}
+  Renders the gift card recipient fields inside a product form, so a customer
+  can send a gift card to someone else, optionally on a later date.
+
+  @param {object} form - The product form object
+  @param {string} section_id - Id of the section, used for unique element ids
+
+  @example
+  {% render 'gift-card-recipient-form', form: form, section_id: section.id %}
+{% enddoc %}
+
+{%- liquid
+  assign base = 'Recipient-' | append: section_id
+  assign errors = form.errors
+-%}
+
+<div class="gift-card-recipient">
+  <label class="gift-card-recipient__toggle" for="{{ base }}-checkbox">
+    <input
+      type="checkbox"
+      id="{{ base }}-checkbox"
+      name="properties[__shopify_send_gift_card_to_recipient]"
+      value="on"
+      {% if form.gift_card_recipient_enabled %}
+        checked
+      {% endif %}
+    >
+    <span>{{ 'gift_card_recipient.checkbox' | t }}</span>
+  </label>
+
+  <div class="gift-card-recipient__fields">
+    <label for="{{ base }}-email">{{ 'gift_card_recipient.email' | t }}</label>
+    <input
+      type="email"
+      id="{{ base }}-email"
+      name="properties[Recipient email]"
+      value="{{ form.email }}"
+      autocomplete="email"
+      {% if errors.email %}
+        aria-invalid="true"
+        aria-describedby="{{ base }}-email-error"
+      {% endif %}
+    >
+    {%- if errors.email -%}
+      <p id="{{ base }}-email-error" class="gift-card-recipient__error">{{ errors.email }}</p>
+    {%- endif -%}
+
+    <label for="{{ base }}-name">{{ 'gift_card_recipient.name' | t }}</label>
+    <input type="text" id="{{ base }}-name" name="properties[Recipient name]" value="{{ form.name }}" autocomplete="name">
+
+    <label for="{{ base }}-message">{{ 'gift_card_recipient.message' | t }}</label>
+    <textarea
+      id="{{ base }}-message"
+      name="properties[Message]"
+      rows="3"
+      maxlength="200"
+      aria-describedby="{{ base }}-message-limit"
+    >{{ form.message }}</textarea>
+    <p id="{{ base }}-message-limit" class="gift-card-recipient__hint">{{ 'gift_card_recipient.characters' | t: max: 200 }}</p>
+
+    <label for="{{ base }}-date">{{ 'gift_card_recipient.send_on' | t }}</label>
+    <input type="date" id="{{ base }}-date" name="properties[Send on]" value="{{ form.send_on }}" pattern="\d{4}-\d{2}-\d{2}">
+
+    <input type="hidden" name="properties[__shopify_offset]" value="" data-timezone-offset>
+  </div>
+</div>
+
+{% stylesheet %}
+  .gift-card-recipient {
+    display: grid;
+    gap: 0.75rem;
+    margin-block-end: 1rem;
+  }
+
+  .gift-card-recipient__toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+  }
+
+  .gift-card-recipient__fields {
+    display: none;
+    gap: 0.375rem;
+  }
+
+  .gift-card-recipient:has(.gift-card-recipient__toggle input:checked) .gift-card-recipient__fields {
+    display: grid;
+  }
+
+  .gift-card-recipient__fields input,
+  .gift-card-recipient__fields textarea {
+    width: 100%;
+    min-height: 2.75rem;
+    padding: 0.5rem 0.75rem;
+    border: var(--input-border-thickness, 1px) solid currentColor;
+    background: transparent;
+    color: inherit;
+  }
+
+  .gift-card-recipient__hint,
+  .gift-card-recipient__error {
+    margin: 0 0 0.5rem;
+    font-size: 0.8125rem;
+  }
+
+  .gift-card-recipient__error {
+    color: #b3261e;
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  document.querySelectorAll('[data-timezone-offset]').forEach((input) => {
+    input.value = new Date().getTimezoneOffset().toString();
+  });
+{% endjavascript %}

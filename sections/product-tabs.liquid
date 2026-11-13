@@ -9,10 +9,10 @@
     assign heading_font = section.settings.custom_heading_font
     assign body_font = section.settings.custom_body_font
   else
-    assign tabs_bg = section.settings.background_color
-    assign tabs_text = section.settings.text_color
-    assign tabs_accent = section.settings.accent_color
-    assign tabs_border = section.settings.border_color
+    assign tabs_bg = section.settings.color_scheme.settings.background
+    assign tabs_text = section.settings.color_scheme.settings.text
+    assign tabs_accent = section.settings.color_scheme.settings.accent
+    assign tabs_border = section.settings.color_scheme.settings.border
     assign heading_font = 'var(--font-heading-family)'
     assign body_font = 'var(--font-body-family)'
   endif
@@ -39,6 +39,7 @@
         <button 
           class="product-tabs-{{ section.id }}__tab-btn{% if forloop.first %} is-active{% endif %}" 
           id="TabBtn-{{ section.id }}-{{ forloop.index }}"
+          {{ block.shopify_attributes }}
           data-tab-target="TabContent-{{ section.id }}-{{ forloop.index }}"
           role="tab"
           aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
@@ -90,7 +91,7 @@
             {%- when 'size_chart' -%}
               <div class="product-tabs-{{ section.id }}__size-chart">
                 {%- if block.settings.size_chart_image != blank -%}
-                  <img src="{{ block.settings.size_chart_image | image_url: width: 800 }}" alt="{{ 'products.size_chart' | t }}" class="product-tabs-{{ section.id }}__size-chart-img" loading="lazy">
+                  {%- capture img_alt -%}{{ 'products.size_chart' | t }}{%- endcapture -%}{%- capture img_class -%}product-tabs-{{ section.id }}__size-chart-img{%- endcapture -%}{{ block.settings.size_chart_image | image_url: width: 800 | image_tag: widths: '100, 165, 220, 300, 400, 600, 800', sizes: '(min-width: 990px) 800px, 100vw', loading: 'lazy', alt: img_alt, class: img_class }}
                 {%- elsif block.settings.custom_size_chart != blank -%}
                   <div class="product-tabs-{{ section.id }}__rte">{{ block.settings.custom_size_chart }}</div>
                 {%- elsif product.metafields.custom.size_chart.value != blank -%}
@@ -353,28 +354,10 @@
       "content": "t:sections.product_tabs.headers.default_colors_and_typography"
     },
     {
-      "type": "color",
-      "id": "background_color",
-      "label": "t:sections.product_tabs.settings.background_color.label",
-      "default": "#FAF6F0"
-    },
-    {
-      "type": "color",
-      "id": "text_color",
-      "label": "t:sections.product_tabs.settings.text_color.label",
-      "default": "#2B1E16"
-    },
-    {
-      "type": "color",
-      "id": "accent_color",
-      "label": "t:sections.product_tabs.settings.accent_color.label",
-      "default": "#9C4A1A"
-    },
-    {
-      "type": "color",
-      "id": "border_color",
-      "label": "t:sections.product_tabs.settings.border_color.label",
-      "default": "#E8E2DA"
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:labels.color_scheme",
+      "default": "scheme-1"
     },
     {
       "type": "header",

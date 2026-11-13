@@ -9,10 +9,10 @@
     assign heading_font = section.settings.custom_heading_font
     assign body_font = section.settings.custom_body_font
   else
-    assign cart_bg = section.settings.background_color
-    assign cart_text = section.settings.text_color
-    assign cart_accent = section.settings.accent_color
-    assign cart_border = section.settings.border_color
+    assign cart_bg = section.settings.color_scheme.settings.background
+    assign cart_text = section.settings.color_scheme.settings.text
+    assign cart_accent = section.settings.color_scheme.settings.accent
+    assign cart_border = section.settings.color_scheme.settings.border
     assign heading_font = 'var(--font-heading-family)'
     assign body_font = 'var(--font-body-family)'
   endif
@@ -93,6 +93,16 @@
     </div>
   {%- endif -%}
 </cart-items>
+
+{%- if section.blocks.size > 0 -%}
+  <div class="app-blocks">
+    {%- for block in section.blocks -%}
+      {%- if block.type == '@app' -%}
+        {% render block %}
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+{%- endif -%}
 
 {% style %}
   .cart-page-{{ section.id }} {
@@ -330,28 +340,10 @@
       "content": "t:sections.cart.headers.default_colors"
     },
     {
-      "type": "color",
-      "id": "background_color",
-      "label": "t:sections.cart.settings.background_color.label",
-      "default": "#FAF6F0"
-    },
-    {
-      "type": "color",
-      "id": "text_color",
-      "label": "t:sections.cart.settings.text_color.label",
-      "default": "#2B1E16"
-    },
-    {
-      "type": "color",
-      "id": "accent_color",
-      "label": "t:sections.cart.settings.accent_color.label",
-      "default": "#9C4A1A"
-    },
-    {
-      "type": "color",
-      "id": "border_color",
-      "label": "t:sections.cart.settings.border_color.label",
-      "default": "#E8E2DA"
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:labels.color_scheme",
+      "default": "scheme-1"
     },
     {
       "type": "header",
@@ -405,6 +397,11 @@
       "label": "t:sections.cart.settings.custom_body_font.label",
       "default": "assistant_n4",
       "visible_if": "{{ section.settings.enable_custom_design }}"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "@app"
     }
   ]
 }

@@ -1,0 +1,13 @@
+{% comment %}
+  Not added to any template. The product page requests this section for the
+  selected variant to refresh pickup availability without reloading the page.
+{% endcomment %}
+
+{% render 'pickup-availability', variant: product.selected_or_first_available_variant %}
+
+{% schema %}
+{
+  "name": "t:sections.pickup_availability.name",
+  "settings": []
+}
+{% endschema %}
