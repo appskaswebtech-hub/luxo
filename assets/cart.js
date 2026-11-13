@@ -80,6 +80,56 @@ document.addEventListener('submit', async (event) => {
   }
 });
 
+/* Cart product suggestions: one product per slide, moved by arrows, dots or swipe */
+if (!customElements.get('cart-upsell-slider')) {
+  customElements.define(
+    'cart-upsell-slider',
+    class CartUpsellSlider extends HTMLElement {
+      connectedCallback() {
+        this.track = this.querySelector('[data-upsell-track]');
+        this.slides = [...this.track.children];
+        this.prev = this.querySelector('[data-upsell-prev]');
+        this.next = this.querySelector('[data-upsell-next]');
+        this.dots = [...this.querySelectorAll('[data-upsell-dot]')];
+
+        this.prev?.addEventListener('click', () => this.goTo(this.index() - 1));
+        this.next?.addEventListener('click', () => this.goTo(this.index() + 1));
+        this.dots.forEach((dot) => dot.addEventListener('click', () => this.goTo(Number(dot.dataset.upsellDot))));
+        this.track.addEventListener('scroll', this.onScroll, { passive: true });
+        this.sync();
+      }
+
+      disconnectedCallback() {
+        this.track?.removeEventListener('scroll', this.onScroll);
+      }
+
+      index() {
+        return Math.round(this.track.scrollLeft / (this.track.clientWidth || 1));
+      }
+
+      goTo(index) {
+        const target = Math.max(0, Math.min(index, this.slides.length - 1));
+        this.track.scrollTo({ left: target * this.track.clientWidth });
+      }
+
+      onScroll = () => {
+        cancelAnimationFrame(this.frame);
+        this.frame = requestAnimationFrame(() => this.sync());
+      };
+
+      sync() {
+        const current = this.index();
+        if (this.prev) this.prev.disabled = current <= 0;
+        if (this.next) this.next.disabled = current >= this.slides.length - 1;
+        this.dots.forEach((dot, i) => {
+          if (i === current) dot.setAttribute('aria-current', 'true');
+          else dot.removeAttribute('aria-current');
+        });
+      }
+    }
+  );
+}
+
 /* Quantity input */
 if (!customElements.get('quantity-input')) {
   customElements.define(

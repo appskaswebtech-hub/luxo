@@ -193,7 +193,9 @@
                 </div>
 
                 <div class="featured-collection-{{ section.id }}__product-bottom">
-                  <span class="featured-collection-{{ section.id }}__product-price">{% render 'price', amount: product.price %}</span>
+                  <div class="featured-collection-{{ section.id }}__product-price">
+                    {% render 'price-tag', product: product, from: true %}
+                  </div>
                   
                   {%- form 'product', product, class: form_class -%}
                     <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">

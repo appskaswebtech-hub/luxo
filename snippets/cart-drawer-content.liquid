@@ -1,5 +1,6 @@
 {% doc %}
-  Renders the cart drawer contents: line items with quantity controls and the summary.
+  Renders the cart drawer contents: line items with quantity controls, product
+  suggestions and the summary.
   Rendered by the cart drawer in the header and by the `cart-drawer` section,
   which the cart script requests to refresh the drawer after a change.
 
@@ -31,6 +32,8 @@
         {%- endfor -%}
       </ul>
     </form>
+
+    {% render 'cart-upsell' %}
 
     <div class="cart-drawer__footer">
       {% render 'cart-summary', form_id: 'CartDrawerForm', full_width: true %}

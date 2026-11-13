@@ -1,0 +1,146 @@
+{% doc %}
+  Renders product suggestions in the cart. Products come from the collection
+  chosen in theme settings, or all products when none is chosen. Products that
+  are already in the cart, and sold-out products, are left out.
+
+  The wrapper is always rendered so the cart script can refresh it after every
+  cart change through its data-cart-region.
+
+  @example
+  {% render 'cart-upsell' %}
+{% enddoc %}
+
+{%- liquid
+  assign upsell_source = collections[settings.cart_upsell_collection]
+  if upsell_source == blank
+    assign upsell_source = collections.all
+  endif
+
+  assign in_cart = cart.items | map: 'product_id'
+  assign limit = settings.cart_upsell_limit | default: 4
+  assign heading = settings.cart_upsell_heading
+  if heading == blank
+    assign heading = 'cart.upsell.heading' | t
+  endif
+-%}
+
+<div class="cart-upsell" data-cart-region="upsell">
+  {%- if settings.cart_upsell_enabled -%}
+    {%- capture upsell_items -%}
+      {%- assign shown = 0 -%}
+      {%- for upsell_product in upsell_source.products limit: 30 -%}
+        {%- if shown >= limit -%}
+          {%- break -%}
+        {%- endif -%}
+        {%- if in_cart contains upsell_product.id -%}
+          {%- continue -%}
+        {%- endif -%}
+        {%- unless upsell_product.available -%}
+          {%- continue -%}
+        {%- endunless -%}
+        {%- assign shown = shown | plus: 1 -%}
+        {%- assign upsell_variant = upsell_product.selected_or_first_available_variant -%}
+        <li class="cart-upsell__item">
+          <a href="{{ upsell_product.url }}" class="cart-upsell__media" tabindex="-1" aria-hidden="true">
+            {%- if upsell_product.featured_image -%}
+              {{
+                upsell_product.featured_image
+                | image_url: width: 160
+                | image_tag: widths: '80, 120, 160', sizes: '64px', loading: 'lazy', alt: ''
+              }}
+            {%- else -%}
+              {{ 'product-1' | placeholder_svg_tag: 'cart-upsell__placeholder' }}
+            {%- endif -%}
+          </a>
+          <div class="cart-upsell__info">
+            <a href="{{ upsell_product.url }}" class="cart-upsell__title">{{ upsell_product.title | escape }}</a>
+            {% render 'price-tag', product: upsell_product, variant: upsell_variant %}
+          </div>
+          {%- liquid
+            assign add_direct = true
+            case settings.cart_upsell_button
+              when 'choose'
+                assign add_direct = false
+              when 'auto'
+                unless upsell_product.has_only_default_variant
+                  assign add_direct = false
+                endunless
+            endcase
+          -%}
+          {%- if add_direct -%}
+            {%- form 'product', upsell_product, class: 'cart-upsell__form' -%}
+              <input type="hidden" name="id" value="{{ upsell_variant.id }}">
+              <button
+                type="submit"
+                name="add"
+                class="cart-upsell__add"
+                aria-label="{{ 'cart.upsell.add_label' | t: product: upsell_product.title }}"
+              >
+                {{- 'cart.upsell.add' | t -}}
+              </button>
+            {%- endform -%}
+          {%- else -%}
+            <a
+              href="{{ upsell_product.url }}"
+              class="cart-upsell__add"
+              aria-label="{{ 'cart.upsell.options_label' | t: product: upsell_product.title }}"
+            >
+              {{- 'cart.upsell.options' | t -}}
+            </a>
+          {%- endif -%}
+        </li>
+      {%- endfor -%}
+    {%- endcapture -%}
+
+    {%- if upsell_items != blank -%}
+      {%- liquid
+        assign navigation = settings.cart_upsell_navigation | default: 'both'
+        assign show_arrows = false
+        assign show_dots = false
+        if shown > 1
+          if navigation == 'arrows' or navigation == 'both'
+            assign show_arrows = true
+          endif
+          if navigation == 'dots' or navigation == 'both'
+            assign show_dots = true
+          endif
+        endif
+      -%}
+      <cart-upsell-slider class="cart-upsell__slider">
+        <div class="cart-upsell__top">
+          <p class="cart-upsell__heading" id="CartUpsellHeading">{{ heading | escape }}</p>
+          {%- if show_arrows -%}
+            <div class="cart-upsell__arrows">
+              <button type="button" class="cart-upsell__arrow" data-upsell-prev aria-label="{{ 'general.slider.previous' | t }}" disabled>
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false"><path d="M15 18l-6-6 6-6"/></svg>
+              </button>
+              <button type="button" class="cart-upsell__arrow" data-upsell-next aria-label="{{ 'general.slider.next' | t }}">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false"><path d="M9 18l6-6-6-6"/></svg>
+              </button>
+            </div>
+          {%- endif -%}
+        </div>
+
+        <ul class="cart-upsell__list" role="list" aria-labelledby="CartUpsellHeading" data-upsell-track>
+          {{ upsell_items }}
+        </ul>
+
+        {%- if show_dots -%}
+          <div class="cart-upsell__dots">
+            {%- for i in (1..shown) -%}
+              <button
+                type="button"
+                class="cart-upsell__dot"
+                data-upsell-dot="{{ forloop.index0 }}"
+                aria-label="{{ 'cart.upsell.go_to' | t: index: forloop.index, total: shown }}"
+                {% if forloop.first %}
+                  aria-current="true"
+                {% endif %}
+              ></button>
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+      </cart-upsell-slider>
+    {%- endif -%}
+  {%- endif -%}
+</div>

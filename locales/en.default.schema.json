@@ -1,7 +1,8 @@
 {
   "placeholders": {
     "custom_swatch_colors": "bronze: #CD7F32\nnavy: #1F2A44",
-    "image_swatch_options": "Material"
+    "image_swatch_options": "Material",
+    "cart_upsell_heading": "You may also like"
   },
   "general": {
     "404": "Not found",
@@ -45,7 +46,8 @@
       "promotional": "Promotional",
       "product": "Product"
     },
-    "card_variants": "Variant options on cards"
+    "card_variants": "Variant options on cards",
+    "cart_upsell": "Product suggestions"
   },
   "labels": {
     "alignment": "Alignment",
@@ -123,7 +125,13 @@
     "card_show_variants": "Show variant options",
     "card_show_option_label": "Show option name",
     "card_show_selected_value": "Show selected value",
-    "card_more_action": "When \"+\" is clicked"
+    "card_more_action": "When \"+\" is clicked",
+    "cart_upsell_enabled": "Show product suggestions in the cart drawer",
+    "cart_upsell_heading": "Heading",
+    "cart_upsell_collection": "Collection",
+    "cart_upsell_limit": "Products to show",
+    "cart_upsell_navigation": "Slider navigation",
+    "cart_upsell_button": "Button action"
   },
   "info": {
     "cart_layout": "Side by side applies to screens 990px and wider. Smaller screens always show the summary below the items",
@@ -142,7 +150,10 @@
     "variant_picker": "Choose how product variants are displayed",
     "scheme_gradient": "Used instead of the solid background when set",
     "card_variant_limit": "Extra values are hidden behind a \"+\" button. The selected value always shows",
-    "card_show_variants": "Lets customers pick a variant before adding to cart. When off, the first available variant is added"
+    "card_show_variants": "Lets customers pick a variant before adding to cart. When off, the first available variant is added",
+    "cart_upsell_enabled": "Products already in the cart and sold-out products are never suggested",
+    "cart_upsell_collection": "Leave empty to suggest from all products",
+    "cart_upsell_button": "Add to cart adds the first available option of products with variants"
   },
   "sections": {
     "hero": {
@@ -1810,6 +1821,14 @@
               "info": "Add app snippets or other Liquid code"
             }
           }
+        },
+        "price": {
+          "name": "Price",
+          "settings": {
+            "show_savings": {
+              "label": "Show savings when on sale"
+            }
+          }
         }
       }
     },
@@ -2169,6 +2188,17 @@
     "card_more_action": {
       "expand": "Show more values",
       "link": "Go to the product page"
+    },
+    "cart_upsell_navigation": {
+      "both": "Arrows and dots",
+      "arrows": "Arrows",
+      "dots": "Dots",
+      "none": "None (swipe only)"
+    },
+    "cart_upsell_button": {
+      "add": "Add to cart",
+      "choose": "Choose (go to product page)",
+      "auto": "Automatic (Choose for products with options)"
     }
   }
 }

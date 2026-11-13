@@ -215,6 +215,11 @@
                     </div>
                   {%- endif -%}
 
+                {%- when 'price' -%}
+                  <div class="main-product-{{ section.id }}__price-block" {{ block.shopify_attributes }}>
+                    {% render 'price-tag', product: product, variant: current_variant, form_id: form_id, savings: block.settings.show_savings %}
+                  </div>
+
                 {%- when 'description' -%}
                   <div class="main-product-{{ section.id }}__description-block" {{ block.shopify_attributes }}>
                     <h3 class="main-product-{{ section.id }}__block-heading">{{ 'products.description' | t }}</h3>
@@ -375,7 +380,9 @@
                         {% endunless %}
                       >
                         {%- if block.settings.show_price -%}
-                          <span class="main-product-{{ section.id }}__btn-price-section" data-variant-price="{{ form_id }}">{% render 'price', amount: current_variant.price %}</span>
+                          <span class="main-product-{{ section.id }}__btn-price-section">
+                            {% render 'price-tag', product: product, variant: current_variant, form_id: form_id, compare: false %}
+                          </span>
                         {%- endif -%}
                         <span class="main-product-{{ section.id }}__btn-text-section">
                           <span
@@ -511,10 +518,6 @@
 
   {%- liquid
     assign sticky_image = current_variant.featured_image | default: product.featured_image
-    assign sticky_compare = false
-    if current_variant.compare_at_price > current_variant.price
-      assign sticky_compare = true
-    endif
   -%}
   <div class="main-product-{{ section.id }}__sticky-atc" id="StickyATC-{{ section.id }}">
     <div class="main-product-{{ section.id }}__sticky-inner">
@@ -540,10 +543,7 @@
 
       <div class="main-product-{{ section.id }}__sticky-actions">
         <div class="main-product-{{ section.id }}__sticky-prices">
-          <span class="main-product-{{ section.id }}__sticky-price" data-variant-price="{{ form_id }}">{% render 'price', amount: current_variant.price %}</span>
-          <s class="main-product-{{ section.id }}__sticky-compare" data-variant-compare="{{ form_id }}"{% unless sticky_compare %} hidden{% endunless %}>
-            {%- if sticky_compare -%}{% render 'price', amount: current_variant.compare_at_price %}{%- endif -%}
-          </s>
+          {% render 'price-tag', product: product, variant: current_variant, form_id: form_id %}
         </div>
         <button
           type="submit"
@@ -983,6 +983,10 @@
     text-transform: uppercase;
   }
 
+  .main-product-{{ section.id }}__stock-block[hidden] {
+    display: none;
+  }
+
   .main-product-{{ section.id }}__stock-dot {
     width: 8px;
     height: 8px;
@@ -1353,15 +1357,10 @@
     align-items: flex-end;
   }
 
-  .main-product-{{ section.id }}__sticky-price {
-    font-weight: 700;
-    color: var(--mp-accent);
+  .main-product-{{ section.id }}__sticky-prices .price-tag {
+    flex-direction: column;
+    align-items: inherit;
     font-size: 14px;
-  }
-
-  .main-product-{{ section.id }}__sticky-compare {
-    font-size: 12px;
-    opacity: 0.55;
   }
 
   .main-product-{{ section.id }}__sticky-btn:disabled {
@@ -1472,6 +1471,9 @@
   .main-product-{{ section.id }}__review-stars .is-empty,
   .main-product-{{ section.id }}__stars .is-empty {
     opacity: 0.25;
+  }
+  .main-product-{{ section.id }}__price-block {
+    font-size: 22px;
   }
 {% endstyle %}
 
@@ -1702,6 +1704,19 @@
           "id": "subtitle",
           "label": "t:sections.product.blocks.title.settings.subtitle.label",
           "default": "AFORMO"
+        }
+      ]
+    },
+    {
+      "type": "price",
+      "name": "t:sections.product.blocks.price.name",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "show_savings",
+          "label": "t:sections.product.blocks.price.settings.show_savings.label",
+          "default": true
         }
       ]
     },

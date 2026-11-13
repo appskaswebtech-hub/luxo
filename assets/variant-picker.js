@@ -28,7 +28,6 @@ if (!customElements.get('variant-picker')) {
   class VariantPicker extends HTMLElement {
     connectedCallback() {
       this.variants = JSON.parse(this.querySelector('[data-variants]').textContent);
-      this.form = document.getElementById(this.dataset.form);
       this.groups = [...this.querySelectorAll('[data-option]')];
       this.addEventListener('change', this.onChange);
       this.updateAvailability();
@@ -91,11 +90,12 @@ if (!customElements.get('variant-picker')) {
     }
 
     update(variant) {
-      if (!this.form) return;
-
+      /* Looked up on every change, since the form can live in a block after the picker */
+      const formId = this.dataset.form;
+      const form = document.getElementById(formId);
       const buttons = [
-        ...this.form.querySelectorAll('[type="submit"][name="add"]'),
-        ...document.querySelectorAll(`[type="submit"][name="add"][form="${this.form.id}"]`),
+        ...(form ? form.querySelectorAll('[type="submit"][name="add"]') : []),
+        ...document.querySelectorAll(`[type="submit"][name="add"][form="${formId}"]`),
       ];
 
       if (!variant) {
@@ -103,7 +103,7 @@ if (!customElements.get('variant-picker')) {
         return;
       }
 
-      const idInput = this.form.querySelector('input[type="hidden"][name="id"]');
+      const idInput = form?.querySelector('input[type="hidden"][name="id"]');
       if (idInput) idInput.value = variant.id;
 
       buttons.forEach((button) => {
@@ -116,15 +116,27 @@ if (!customElements.get('variant-picker')) {
       const price = formatMoney(variant.price, format);
       const hasCompare = variant.compare_at_price > variant.price;
       const compare = hasCompare ? formatMoney(variant.compare_at_price, format) : '';
-      const scope = (name) => document.querySelectorAll(`[data-variant-${name}="${this.form.id}"]`);
+      const scope = (name) => document.querySelectorAll(`[data-variant-${name}="${formId}"]`);
 
-      scope('price').forEach((element) => {
-        element.textContent = price;
-      });
+      const savings = hasCompare ? formatMoney(variant.compare_at_price - variant.price, format) : '';
+      document.querySelectorAll(`[data-price-for="${formId}"]`).forEach((tag) => {
+        tag.classList.toggle('is-on-sale', hasCompare);
 
-      scope('compare').forEach((element) => {
-        element.textContent = compare;
-        element.hidden = !hasCompare;
+        const now = tag.querySelector('[data-price-now]');
+        if (now) now.textContent = price;
+
+        const was = tag.querySelector('[data-price-was]');
+        if (was) {
+          was.hidden = !hasCompare;
+          const amount = was.querySelector('[data-price-was-amount]');
+          if (amount) amount.textContent = compare;
+        }
+
+        const save = tag.querySelector('[data-price-save]');
+        if (save) {
+          save.hidden = !hasCompare;
+          save.textContent = hasCompare ? save.dataset.template.replace('[amount]', savings) : '';
+        }
       });
 
       scope('title').forEach((element) => {

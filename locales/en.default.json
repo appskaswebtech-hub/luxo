@@ -56,6 +56,14 @@
       "toggle": "Add a note to your order",
       "label": "Order note",
       "placeholder": "Gift message, delivery instructions…"
+    },
+    "upsell": {
+      "heading": "You may also like",
+      "add": "Add",
+      "add_label": "Add {{ product }} to cart",
+      "options": "Choose",
+      "options_label": "Choose options for {{ product }}",
+      "go_to": "Show product {{ index }} of {{ total }}"
     }
   },
   "customers": {
@@ -408,5 +416,11 @@
   },
   "facets": {
     "remove": "Remove filter: {{ filter }}"
+  },
+  "price_tag": {
+    "from": "From {{ price }}",
+    "was": "Before",
+    "save": "Save {{ amount }}",
+    "per_unit": "{{ price }} per {{ unit }}"
   }
 }

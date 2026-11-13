@@ -93,9 +93,6 @@
               if forloop.index <= 4
                 assign loading = 'eager'
               endif
-              capture price
-                render 'price', amount: result.price
-              endcapture
               assign on_sale = false
               if result.compare_at_price > result.price
                 assign on_sale = true
@@ -161,16 +158,9 @@
                   <p class="search-card__vendor">{{ result.vendor | escape }}</p>
                 {%- endif -%}
                 <a href="{{ result.url }}" class="search-card__title">{{ result.title | escape }}</a>
-                <p class="search-card__price">
-                  {%- if result.price_varies -%}
-                    {{ 'search.predictive.price_from' | t: price: price }}
-                  {%- else -%}
-                    {{ price }}
-                  {%- endif -%}
-                  {%- if on_sale -%}
-                    <s>{% render 'price', amount: result.compare_at_price %}</s>
-                  {%- endif -%}
-                </p>
+                <div class="search-card__price">
+                  {% render 'price-tag', product: result, from: true %}
+                </div>
               </div>
             </li>
           {%- else -%}

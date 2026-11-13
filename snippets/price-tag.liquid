@@ -1,0 +1,139 @@
+{% doc %}
+  Luxtote price tag: what a product costs now and, when it is on sale, what it
+  cost before and how much the customer saves. Every price on the storefront
+  uses this file, so prices look and behave the same everywhere.
+
+  Scripts update a tag through its data-price-* hooks: data-price-now,
+  data-price-was, data-price-was-amount and data-price-save.
+
+  @param {product} product - The product
+  @param {variant} [variant] - Variant to price; defaults to the selected or first available variant
+  @param {boolean} [from] - Starts with "From" and the lowest price when variant prices differ
+  @param {boolean} [compare] - Shows the before price when on sale; defaults to true
+  @param {boolean} [savings] - Shows how much the customer saves; defaults to false
+  @param {string} [form_id] - Product form id, so the tag follows the selected variant
+  @param {string} [class] - Extra classes for the tag
+
+  @example
+  {% render 'price-tag', product: product, form_id: form_id, savings: true %}
+  {% render 'price-tag', product: card_product, from: true %}
+{% enddoc %}
+
+{%- liquid
+  assign item = variant | default: product.selected_or_first_available_variant
+  assign now_amount = item.price
+  assign was_amount = item.compare_at_price
+
+  assign on_sale = false
+  if was_amount > now_amount
+    assign on_sale = true
+  endif
+
+  assign starts_at = false
+  if from and product.price_varies
+    assign starts_at = true
+    assign now_amount = product.price_min
+  endif
+
+  assign show_was = true
+  if compare == false
+    assign show_was = false
+  endif
+
+  assign save_amount = was_amount | minus: now_amount
+-%}
+
+<span
+  class="price-tag{% if on_sale %} is-on-sale{% endif %} {{ class }}"
+  data-price-tag
+  {% if form_id %}
+    data-price-for="{{ form_id }}"
+  {% endif %}
+>
+  <span class="price-tag__now" data-price-now>
+    {%- capture now_text -%}{% render 'price', amount: now_amount %}{%- endcapture -%}
+    {%- if starts_at -%}
+      {{ 'price_tag.from' | t: price: now_text }}
+    {%- else -%}
+      {{ now_text }}
+    {%- endif -%}
+  </span>
+
+  {%- if show_was -%}
+    <span class="price-tag__was" data-price-was{% unless on_sale %} hidden{% endunless %}>
+      <span class="visually-hidden">{{ 'price_tag.was' | t }}</span>
+      <del data-price-was-amount>
+        {%- if on_sale -%}{% render 'price', amount: was_amount %}{%- endif -%}
+      </del>
+    </span>
+  {%- endif -%}
+
+  {%- if savings -%}
+    <span
+      class="price-tag__save"
+      data-price-save
+      data-template="{{ 'price_tag.save' | t: amount: '[amount]' }}"
+      {% unless on_sale %}
+        hidden
+      {% endunless %}
+    >
+      {%- if on_sale -%}
+        {%- capture save_text -%}{% render 'price', amount: save_amount %}{%- endcapture -%}
+        {{ 'price_tag.save' | t: amount: save_text }}
+      {%- endif -%}
+    </span>
+  {%- endif -%}
+
+  {%- if item.unit_price_measurement -%}
+    {%- liquid
+      assign unit_ref = item.unit_price_measurement.reference_value
+      assign unit_name = item.unit_price_measurement.reference_unit
+      if unit_ref != 1
+        assign unit_name = unit_ref | append: unit_name
+      endif
+    -%}
+    {%- capture unit_text -%}{% render 'price', amount: item.unit_price %}{%- endcapture -%}
+    <span class="price-tag__unit">{{ 'price_tag.per_unit' | t: price: unit_text, unit: unit_name }}</span>
+  {%- endif -%}
+</span>
+
+{% stylesheet %}
+  .price-tag {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    column-gap: 0.5em;
+    row-gap: 0.125em;
+  }
+
+  .price-tag__now {
+    font-weight: 700;
+  }
+
+  .price-tag.is-on-sale .price-tag__now {
+    color: var(--color-accent, currentColor);
+  }
+
+  .price-tag__was {
+    font-size: 0.85em;
+    opacity: 0.6;
+  }
+
+  .price-tag__save {
+    font-size: 0.75em;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-accent, currentColor);
+  }
+
+  .price-tag__unit {
+    flex-basis: 100%;
+    font-size: 0.8em;
+    opacity: 0.7;
+  }
+
+  .price-tag [hidden] {
+    display: none;
+  }
+{% endstylesheet %}

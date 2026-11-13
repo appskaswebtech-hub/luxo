@@ -92,11 +92,18 @@
             "title": "Shipping & Returns",
             "content": "<p>Details here...</p>"
           }
+        },
+        "price": {
+          "type": "price",
+          "settings": {
+            "show_savings": true
+          }
         }
       },
       "block_order": [
         "customer_review",
         "title",
+        "price",
         "rating",
         "key_benefits",
         "variant_picker",

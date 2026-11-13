@@ -57,13 +57,32 @@ if (!customElements.get('card-variants')) {
 
       if (variant) {
         if (this.idInput) this.idInput.value = variant.id;
-        if (this.price) this.price.innerHTML = variant.price;
+        this.updatePrice(variant);
       }
 
       if (this.button) this.button.disabled = !available;
       if (this.label) {
         if (!variant) this.label.textContent = this.label.dataset.labelUnavailable;
         else this.label.textContent = available ? this.label.dataset.labelAdd : this.label.dataset.labelSoldOut;
+      }
+    }
+
+    /* Updates the card's price tag through its data-price-* hooks */
+    updatePrice(variant) {
+      const tag = this.price?.querySelector('[data-price-tag]');
+      if (!tag) return;
+
+      const onSale = Boolean(variant.compare);
+      tag.classList.toggle('is-on-sale', onSale);
+
+      const now = tag.querySelector('[data-price-now]');
+      if (now) now.textContent = variant.price;
+
+      const was = tag.querySelector('[data-price-was]');
+      if (was) {
+        was.hidden = !onSale;
+        const amount = was.querySelector('[data-price-was-amount]');
+        if (amount) amount.textContent = variant.compare;
       }
     }
 

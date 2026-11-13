@@ -769,6 +769,88 @@
       },
       {
         "type": "header",
+        "content": "t:general.cart_upsell"
+      },
+      {
+        "type": "checkbox",
+        "id": "cart_upsell_enabled",
+        "label": "t:labels.cart_upsell_enabled",
+        "info": "t:info.cart_upsell_enabled",
+        "default": true,
+        "visible_if": "{{ settings.cart_type == 'drawer' }}"
+      },
+      {
+        "type": "text",
+        "id": "cart_upsell_heading",
+        "label": "t:labels.cart_upsell_heading",
+        "placeholder": "t:placeholders.cart_upsell_heading",
+        "visible_if": "{{ settings.cart_type == 'drawer' and settings.cart_upsell_enabled }}"
+      },
+      {
+        "type": "collection",
+        "id": "cart_upsell_collection",
+        "label": "t:labels.cart_upsell_collection",
+        "info": "t:info.cart_upsell_collection"
+      },
+      {
+        "type": "range",
+        "id": "cart_upsell_limit",
+        "label": "t:labels.cart_upsell_limit",
+        "min": 1,
+        "max": 8,
+        "step": 1,
+        "default": 4,
+        "visible_if": "{{ settings.cart_type == 'drawer' and settings.cart_upsell_enabled }}"
+      },
+      {
+        "type": "select",
+        "id": "cart_upsell_button",
+        "label": "t:labels.cart_upsell_button",
+        "info": "t:info.cart_upsell_button",
+        "options": [
+          {
+            "value": "add",
+            "label": "t:options.cart_upsell_button.add"
+          },
+          {
+            "value": "choose",
+            "label": "t:options.cart_upsell_button.choose"
+          },
+          {
+            "value": "auto",
+            "label": "t:options.cart_upsell_button.auto"
+          }
+        ],
+        "default": "add",
+        "visible_if": "{{ settings.cart_type == 'drawer' and settings.cart_upsell_enabled }}"
+      },
+      {
+        "type": "select",
+        "id": "cart_upsell_navigation",
+        "label": "t:labels.cart_upsell_navigation",
+        "options": [
+          {
+            "value": "both",
+            "label": "t:options.cart_upsell_navigation.both"
+          },
+          {
+            "value": "arrows",
+            "label": "t:options.cart_upsell_navigation.arrows"
+          },
+          {
+            "value": "dots",
+            "label": "t:options.cart_upsell_navigation.dots"
+          },
+          {
+            "value": "none",
+            "label": "t:options.cart_upsell_navigation.none"
+          }
+        ],
+        "default": "both",
+        "visible_if": "{{ settings.cart_type == 'drawer' and settings.cart_upsell_enabled }}"
+      },
+      {
+        "type": "header",
         "content": "t:general.cart_page"
       },
       {

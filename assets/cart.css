@@ -659,6 +659,191 @@ form[aria-busy] [type='submit'] {
   border-block-start: 1px solid color-mix(in srgb, var(--color-foreground) 12%, transparent);
 }
 
+/* Product suggestions */
+.cart-upsell:empty {
+  display: none;
+}
+
+.cart-upsell {
+  padding: 1rem 1.5rem 1.25rem;
+  border-block-start: 1px solid color-mix(in srgb, var(--color-foreground) 12%, transparent);
+}
+
+.cart-upsell__slider {
+  display: block;
+}
+
+.cart-upsell__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-block-end: 0.75rem;
+}
+
+.cart-upsell__heading {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.cart-upsell__arrows {
+  display: flex;
+  gap: 0.375rem;
+}
+
+.cart-upsell__arrow {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 1px solid color-mix(in srgb, var(--color-foreground) 25%, transparent);
+  border-radius: 50%;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.cart-upsell__arrow:hover:not(:disabled) {
+  border-color: currentColor;
+}
+
+.cart-upsell__arrow:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+/* One product per slide; the track still scrolls by touch but shows no scrollbar */
+.cart-drawer .cart-upsell__list {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  list-style: none;
+}
+
+.cart-drawer .cart-upsell__list::-webkit-scrollbar {
+  display: none;
+}
+
+.cart-upsell__dots {
+  display: flex;
+  justify-content: center;
+  gap: 0.375rem;
+  margin-block-start: 0.75rem;
+}
+
+.cart-upsell__dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--color-foreground) 25%, transparent);
+  cursor: pointer;
+  transition: width 0.2s ease, background-color 0.2s ease;
+}
+
+.cart-upsell__dot[aria-current='true'] {
+  width: 1.25rem;
+  border-radius: 0.25rem;
+  background: var(--color-foreground);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cart-drawer .cart-upsell__list {
+    scroll-behavior: auto;
+  }
+
+  .cart-upsell__dot {
+    transition: none;
+  }
+}
+
+.cart-upsell__item {
+  display: grid;
+  grid-template-columns: 4rem minmax(0, 1fr);
+  grid-template-areas:
+    'media info'
+    'media action';
+  flex: 0 0 100%;
+  gap: 0.25rem 0.75rem;
+  padding: 0.625rem;
+  border: 1px solid color-mix(in srgb, var(--color-foreground) 12%, transparent);
+  scroll-snap-align: start;
+}
+
+.cart-upsell__media {
+  grid-area: media;
+  display: block;
+  width: 4rem;
+  aspect-ratio: 1;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--color-foreground) 5%, transparent);
+}
+
+.cart-upsell__media img,
+.cart-upsell__placeholder {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cart-upsell__info {
+  grid-area: info;
+  display: grid;
+  gap: 0.125rem;
+  min-width: 0;
+  font-size: 0.8125rem;
+}
+
+.cart-upsell__title {
+  overflow: hidden;
+  color: inherit;
+  text-decoration: none;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.cart-upsell__form {
+  grid-area: action;
+}
+
+.cart-upsell__item > a.cart-upsell__add {
+  grid-area: action;
+}
+
+.cart-upsell__add {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2rem;
+  padding: 0.25rem 0.875rem;
+  border: 1px solid currentColor;
+  border-radius: var(--button-radius, 0);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-decoration: none;
+  text-transform: var(--button-text-transform, none);
+  cursor: pointer;
+  justify-self: start;
+}
+
+.cart-upsell__add:hover {
+  background: var(--color-foreground);
+  color: var(--color-background);
+}
+
 /* Summary scrolls with the items instead of staying pinned to the bottom */
 .cart-drawer__content--flow {
   overflow-y: auto;

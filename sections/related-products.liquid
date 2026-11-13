@@ -142,7 +142,9 @@
                   </div>
 
                   <div class="related-products-{{ section.id }}__product-bottom">
-                    <span class="related-products-{{ section.id }}__product-price">{% render 'price', amount: related_product.price %}</span>
+                    <div class="related-products-{{ section.id }}__product-price">
+                      {% render 'price-tag', product: related_product, from: true %}
+                    </div>
                     
                     {%- form 'product', related_product, class: form_class -%}
                       <input type="hidden" name="id" value="{{ related_product.selected_or_first_available_variant.id }}">

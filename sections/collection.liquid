@@ -131,10 +131,7 @@
                 <div class="collection-grid-{{ section.id }}__featured-content">
                   <h4 class="collection-grid-{{ section.id }}__featured-title">{{ featured_product.title | escape }}</h4>
                   <div class="collection-grid-{{ section.id }}__featured-price">
-                    <span class="collection-grid-{{ section.id }}__price-current">{% render 'price', amount: featured_product.price %}</span>
-                    {%- if featured_product.compare_at_price > featured_product.price -%}
-                      <span class="collection-grid-{{ section.id }}__price-compare">{% render 'price', amount: featured_product.compare_at_price %}</span>
-                    {%- endif -%}
+                    {% render 'price-tag', product: featured_product %}
                   </div>
                 </div>
               </a>
@@ -345,7 +342,8 @@
                         [
                           {%- for variant in product.variants -%}
                             {%- capture variant_price -%}{% render 'price', amount: variant.price %}{%- endcapture -%}
-                            {"id":{{ variant.id }},"available":{{ variant.available | json }},"options":{{ variant.options | json }},"price":{{ variant_price | strip | json }}}{% unless forloop.last %},{% endunless %}
+                            {%- capture variant_compare -%}{% if variant.compare_at_price > variant.price %}{% render 'price', amount: variant.compare_at_price %}{% endif %}{%- endcapture -%}
+                            {"id":{{ variant.id }},"available":{{ variant.available | json }},"options":{{ variant.options | json }},"price":{{ variant_price | strip | json }},"compare":{{ variant_compare | strip | json }}}{% unless forloop.last %},{% endunless %}
                           {%- endfor -%}
                         ]
                       </script>
@@ -354,11 +352,7 @@
 
                   <div class="collection-grid-{{ section.id }}__card-bottom">
                     <span class="collection-grid-{{ section.id }}__price" data-card-price>
-                      {%- if product.has_only_default_variant -%}
-                        {% render 'price', amount: product.price %}
-                      {%- else -%}
-                        {% render 'price', amount: card_variant.price %}
-                      {%- endif -%}
+                      {% render 'price-tag', product: product, variant: card_variant %}
                     </span>
 
                     {%- if quick_add != 'none' -%}

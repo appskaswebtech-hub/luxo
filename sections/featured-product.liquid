@@ -42,18 +42,13 @@
           </h2>
 
         {%- when 'price' -%}
-          <p class="featured-product__price" {{ block.shopify_attributes }}>
+          <div class="featured-product__price" {{ block.shopify_attributes }}>
             {%- if product != blank -%}
-              <span data-variant-price="{{ form_id }}">{% render 'price', amount: current_variant.price %}</span>
-              {%- if current_variant.compare_at_price > current_variant.price -%}
-                <s data-variant-compare="{{ form_id }}">{% render 'price', amount: current_variant.compare_at_price %}</s>
-              {%- else -%}
-                <s data-variant-compare="{{ form_id }}" hidden></s>
-              {%- endif -%}
+              {% render 'price-tag', product: product, variant: current_variant, form_id: form_id, savings: true %}
             {%- else -%}
               {% render 'price', amount: 1999 %}
             {%- endif -%}
-          </p>
+          </div>
 
         {%- when 'variant_picker' -%}
           {%- if product != blank -%}
@@ -174,16 +169,7 @@
   }
 
   .featured-product__price {
-    display: flex;
-    gap: 0.75rem;
-    margin: 0;
     font-size: 1.125rem;
-    font-weight: 600;
-  }
-
-  .featured-product__price s {
-    font-weight: 400;
-    opacity: 0.6;
   }
 
   .featured-product__quantity {
