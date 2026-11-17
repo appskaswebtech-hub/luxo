@@ -203,4 +203,23 @@
   <script type="application/json" data-variants>
     {{ product.variants | json }}
   </script>
+
+  {%- comment -%} Prices formatted by Shopify in the customer's market currency {%- endcomment -%}
+  <script type="application/json" data-variant-prices>
+    {
+      {%- for item in product.variants -%}
+        {%- liquid
+          assign item_save = 0
+          if item.compare_at_price > item.price
+            assign item_save = item.compare_at_price | minus: item.price
+          endif
+        -%}
+        {%- capture item_price -%}{% render 'price', amount: item.price %}{%- endcapture -%}
+        {%- capture item_compare -%}{% if item_save > 0 %}{% render 'price', amount: item.compare_at_price %}{% endif %}{%- endcapture -%}
+        {%- capture item_saving -%}{% if item_save > 0 %}{% render 'price', amount: item_save %}{% endif %}{%- endcapture -%}
+        {%- capture item_unit -%}{% if item.unit_price_measurement %}{% render 'price', amount: item.unit_price %}{% endif %}{%- endcapture -%}
+        "{{ item.id }}":{"price":{{ item_price | strip | json }},"compare":{{ item_compare | strip | json }},"save":{{ item_saving | strip | json }},"unit":{{ item_unit | strip | json }}}{% unless forloop.last %},{% endunless %}
+      {%- endfor -%}
+    }
+  </script>
 </variant-picker>

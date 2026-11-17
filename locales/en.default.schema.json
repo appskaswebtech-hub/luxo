@@ -48,7 +48,9 @@
     },
     "card_variants": "Variant options on cards",
     "cart_upsell": "Product suggestions",
-    "filters": "Filters"
+    "filters": "Filters",
+    "cart_free_shipping": "Free shipping progress",
+    "cart_trust": "Trust points"
   },
   "labels": {
     "alignment": "Alignment",
@@ -143,7 +145,14 @@
     "card_slider_arrows": "Show arrows",
     "card_slider_indicator": "Indicator",
     "card_slider_max_dots": "Visible dots",
-    "card_slider_indicator_color": "Dots and progress line"
+    "card_slider_indicator_color": "Dots and progress line",
+    "cart_summary_card": "Show order summary in a card",
+    "cart_free_shipping": "Show free shipping progress bar",
+    "cart_free_shipping_threshold": "Free shipping threshold",
+    "cart_trust_badges": "Show trust points under checkout",
+    "cart_trust_1": "Secure checkout text",
+    "cart_trust_2": "Returns text",
+    "cart_trust_3": "Shipping text"
   },
   "info": {
     "cart_layout": "Side by side applies to screens 990px and wider. Smaller screens always show the summary below the items",
@@ -167,7 +176,9 @@
     "cart_upsell_collection": "Leave empty to suggest from all products",
     "cart_upsell_button": "Add to cart adds the first available option of products with variants",
     "filter_apply": "Results update without reloading the page in both modes",
-    "card_slider_max_dots": "With more images than this, the dots slide along as customers move through the images"
+    "card_slider_max_dots": "With more images than this, the dots slide along as customers move through the images",
+    "cart_free_shipping": "Shown in the cart page and cart drawer. Hidden when a customer shops in a different currency from your store.",
+    "cart_free_shipping_threshold": "Order amount in your store currency, for example 100. Match it to your free shipping rate in Settings > Shipping and delivery."
   },
   "sections": {
     "hero": {

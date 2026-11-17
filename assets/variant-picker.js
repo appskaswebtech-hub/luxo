@@ -28,6 +28,13 @@ if (!customElements.get('variant-picker')) {
   class VariantPicker extends HTMLElement {
     connectedCallback() {
       this.variants = JSON.parse(this.querySelector('[data-variants]').textContent);
+      /* Prices already formatted in the customer's market currency; formatMoney is only a fallback */
+      const priceData = this.querySelector('[data-variant-prices]');
+      try {
+        this.prices = priceData ? JSON.parse(priceData.textContent) : {};
+      } catch (error) {
+        this.prices = {};
+      }
       this.groups = [...this.querySelectorAll('[data-option]')];
       this.addEventListener('change', this.onChange);
       this.updateAvailability();
@@ -119,12 +126,13 @@ if (!customElements.get('variant-picker')) {
       });
 
       const format = this.dataset.moneyFormat || '{{amount}}';
-      const price = formatMoney(variant.price, format);
+      const formatted = this.prices?.[variant.id] || {};
+      const price = formatted.price || formatMoney(variant.price, format);
       const hasCompare = variant.compare_at_price > variant.price;
-      const compare = hasCompare ? formatMoney(variant.compare_at_price, format) : '';
+      const compare = hasCompare ? formatted.compare || formatMoney(variant.compare_at_price, format) : '';
       const scope = (name) => document.querySelectorAll(`[data-variant-${name}="${formId}"]`);
 
-      const savings = hasCompare ? formatMoney(variant.compare_at_price - variant.price, format) : '';
+      const savings = hasCompare ? formatted.save || formatMoney(variant.compare_at_price - variant.price, format) : '';
       document.querySelectorAll(`[data-price-for="${formId}"]`).forEach((tag) => {
         tag.classList.toggle('is-on-sale', hasCompare);
 
@@ -151,7 +159,7 @@ if (!customElements.get('variant-picker')) {
           if (measure) {
             const reference = measure.reference_value === 1 ? '' : measure.reference_value;
             unit.textContent = unit.dataset.template
-              .replace('[price]', formatMoney(variant.unit_price, format))
+              .replace('[price]', formatted.unit || formatMoney(variant.unit_price, format))
               .replace('[unit]', `${reference}${measure.reference_unit}`);
           }
         }

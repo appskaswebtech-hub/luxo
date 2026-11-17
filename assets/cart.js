@@ -506,3 +506,53 @@ if (!customElements.get('cart-drawer')) {
     }
   );
 }
+
+/* Free shipping progress in another market currency: converts the store-currency
+   threshold with the market rate Shopify adds to the page, then formats it locally */
+if (!customElements.get('free-shipping')) {
+  customElements.define(
+    'free-shipping',
+    class FreeShipping extends HTMLElement {
+      connectedCallback() {
+        if (!this.hasAttribute('data-convert')) return;
+        const rate = Number(window.Shopify?.currency?.rate);
+        if (!rate) return;
+
+        const threshold = Math.round(Number(this.dataset.threshold) * rate);
+        const total = Number(this.dataset.total);
+        const remaining = threshold - total;
+        const progress = Math.min(100, Math.floor((total * 100) / threshold));
+
+        let amount;
+        try {
+          amount = new Intl.NumberFormat(document.documentElement.lang || undefined, {
+            style: 'currency',
+            currency: this.dataset.currency,
+          }).format(remaining / 100);
+        } catch (error) {
+          return;
+        }
+
+        const text = this.querySelector('.cart-summary__shipping-text');
+        if (text) {
+          if (remaining > 0) {
+            const strong = document.createElement('strong');
+            strong.textContent = amount;
+            const [before, after = ''] = this.dataset.template.split('[amount]');
+            text.replaceChildren(before, strong, after);
+          } else {
+            text.textContent = this.dataset.unlocked;
+          }
+        }
+
+        const bar = this.querySelector('[role="progressbar"]');
+        if (bar) {
+          bar.setAttribute('aria-valuenow', String(progress));
+          const fill = bar.querySelector('span');
+          if (fill) fill.style.width = `${progress}%`;
+        }
+        this.hidden = false;
+      }
+    }
+  );
+}

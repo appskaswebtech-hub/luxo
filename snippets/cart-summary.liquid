@@ -1,18 +1,97 @@
 {% doc %}
-  Renders the cart totals, order note, checkout button and express checkout buttons.
-  Shared by the cart page and cart drawer.
+  Renders the cart totals, free shipping progress, order note, checkout button,
+  express checkout buttons and trust points. Shared by the cart page and cart drawer.
 
   @param {string} form_id - Id of the cart form the note and checkout button belong to
   @param {boolean} [show_express] - Show express checkout buttons such as Shop Pay
   @param {boolean} [full_width] - Stretch to the container width with labels left and amounts right
+  @param {boolean} [card] - Show the summary inside a card (cart page)
 
   @example
-  {% render 'cart-summary', form_id: 'CartForm', show_express: true %}
+  {% render 'cart-summary', form_id: 'CartForm', show_express: true, card: true %}
 {% enddoc %}
 
-<div class="cart-summary{% if full_width %} cart-summary--full{% endif %}">
+{%- liquid
+  assign show_shipping = false
+  if settings.cart_free_shipping
+    if settings.cart_free_shipping_threshold > 0
+      assign show_shipping = true
+    endif
+  endif
+
+  if show_shipping
+    assign threshold = settings.cart_free_shipping_threshold | times: 100
+    assign remaining = threshold | minus: cart.total_price
+    assign progress = cart.total_price | times: 100 | divided_by: threshold | at_most: 100
+
+    comment
+      In another market currency, the threshold is converted in the browser with the market rate
+    endcomment
+    assign convert = false
+    if cart.currency.iso_code != shop.currency
+      assign convert = true
+    endif
+  endif
+
+  assign trust_count = 0
+  if settings.cart_trust_badges
+    if settings.cart_trust_1 != blank
+      assign trust_count = trust_count | plus: 1
+    endif
+    if settings.cart_trust_2 != blank
+      assign trust_count = trust_count | plus: 1
+    endif
+    if settings.cart_trust_3 != blank
+      assign trust_count = trust_count | plus: 1
+    endif
+  endif
+-%}
+
+<div class="cart-summary{% if full_width %} cart-summary--full{% endif %}{% if card %} cart-summary--card{% endif %}">
   <div class="cart-summary__totals" data-cart-region="totals">
+    {%- if card -%}
+      <h2 class="cart-summary__heading">{{ 'cart.summary' | t }}</h2>
+    {%- endif -%}
+
+    {%- if show_shipping -%}
+      <free-shipping
+        class="cart-summary__shipping"
+        {% if convert %}
+          data-convert
+          data-threshold="{{ threshold }}"
+          data-total="{{ cart.total_price }}"
+          data-currency="{{ cart.currency.iso_code }}"
+          data-template="{{ 'cart.shipping.remaining_html' | t: amount: '[amount]' | escape }}"
+          data-unlocked="{{ 'cart.shipping.unlocked' | t | escape }}"
+          hidden
+        {% endif %}
+      >
+        <p class="cart-summary__shipping-text">
+          {%- if remaining > 0 -%}
+            {%- capture remaining_amount -%}<strong>{% render 'price', amount: remaining %}</strong>{%- endcapture -%}
+            {{ 'cart.shipping.remaining_html' | t: amount: remaining_amount }}
+          {%- else -%}
+            {{ 'cart.shipping.unlocked' | t }}
+          {%- endif -%}
+        </p>
+        <div
+          class="cart-summary__shipping-bar"
+          role="progressbar"
+          aria-label="{{ 'cart.shipping.label' | t }}"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          aria-valuenow="{{ progress }}"
+        >
+          <span style="width: {{ progress }}%;"></span>
+        </div>
+      </free-shipping>
+    {%- endif -%}
+
     {%- if cart.cart_level_discount_applications.size > 0 -%}
+      <p class="cart-summary__row">
+        <span>{{ 'cart.subtotal' | t }}</span>
+        <span>{% render 'price', amount: cart.items_subtotal_price %}</span>
+      </p>
       <ul class="cart-summary__discounts" role="list">
         {%- for discount in cart.cart_level_discount_applications -%}
           <li>
@@ -39,7 +118,10 @@
 
   {%- if settings.cart_note -%}
     <details class="cart-summary__note"{% if cart.note != blank %} open{% endif %}>
-      <summary>{{ 'cart.note.toggle' | t }}</summary>
+      <summary>
+        {{- 'cart.note.toggle' | t -}}
+        <svg class="cart-summary__note-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </summary>
       <label class="visually-hidden" for="{{ form_id }}-note">{{ 'cart.note.label' | t }}</label>
       <textarea
         id="{{ form_id }}-note"
@@ -52,12 +134,36 @@
   {%- endif -%}
 
   <button type="submit" name="checkout" form="{{ form_id }}" class="cart-summary__checkout">
-    {{ 'cart.checkout' | t }}
+    <svg viewBox="0 0 20 20" fill="none" aria-hidden="true" focusable="false"><rect x="4" y="9" width="12" height="8.5" rx="1.5" stroke="currentColor" stroke-width="1.5"/><path d="M7 9V6.5a3 3 0 0 1 6 0V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    <span>{{ 'cart.checkout' | t }}</span>
   </button>
 
   {%- if show_express and additional_checkout_buttons -%}
     <div class="cart-summary__express">
       {{ content_for_additional_checkout_buttons }}
     </div>
+  {%- endif -%}
+
+  {%- if trust_count > 0 -%}
+    <ul class="cart-summary__trust" role="list">
+      {%- if settings.cart_trust_1 != blank -%}
+        <li>
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><path d="M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6l7-3Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>{{ settings.cart_trust_1 | escape }}</span>
+        </li>
+      {%- endif -%}
+      {%- if settings.cart_trust_2 != blank -%}
+        <li>
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><path d="M4 12a8 8 0 1 0 2.4-5.7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M4 4v4h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>{{ settings.cart_trust_2 | escape }}</span>
+        </li>
+      {%- endif -%}
+      {%- if settings.cart_trust_3 != blank -%}
+        <li>
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><circle cx="7" cy="17.5" r="1.6" stroke="currentColor" stroke-width="1.4"/><circle cx="17.5" cy="17.5" r="1.6" stroke="currentColor" stroke-width="1.4"/></svg>
+          <span>{{ settings.cart_trust_3 | escape }}</span>
+        </li>
+      {%- endif -%}
+    </ul>
   {%- endif -%}
 </div>

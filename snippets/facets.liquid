@@ -142,14 +142,17 @@
 
             {%- when 'price_range' -%}
               {%- liquid
-                assign range_max = filter.range_max | money_without_currency | remove: ','
+                comment
+                  Plain numbers from the amounts in cents, so the fields work with any market currency format
+                endcomment
+                assign range_max = filter.range_max | divided_by: 100.0 | ceil
                 assign current_min = ''
                 if filter.min_value.value
-                  assign current_min = filter.min_value.value | money_without_currency | remove: ','
+                  assign current_min = filter.min_value.value | divided_by: 100.0
                 endif
                 assign current_max = ''
                 if filter.max_value.value
-                  assign current_max = filter.max_value.value | money_without_currency | remove: ','
+                  assign current_max = filter.max_value.value | divided_by: 100.0
                 endif
               -%}
               <fieldset class="facets__panel">

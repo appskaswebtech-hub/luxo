@@ -1047,6 +1047,62 @@
         "visible_if": "{{ settings.cart_layout == 'cart-page--split' }}"
       },
       {
+        "type": "checkbox",
+        "id": "cart_summary_card",
+        "label": "t:labels.cart_summary_card",
+        "default": true
+      },
+      {
+        "type": "header",
+        "content": "t:general.cart_free_shipping"
+      },
+      {
+        "type": "checkbox",
+        "id": "cart_free_shipping",
+        "label": "t:labels.cart_free_shipping",
+        "info": "t:info.cart_free_shipping",
+        "default": true
+      },
+      {
+        "type": "number",
+        "id": "cart_free_shipping_threshold",
+        "label": "t:labels.cart_free_shipping_threshold",
+        "info": "t:info.cart_free_shipping_threshold",
+        "default": 100,
+        "visible_if": "{{ settings.cart_free_shipping }}"
+      },
+      {
+        "type": "header",
+        "content": "t:general.cart_trust"
+      },
+      {
+        "type": "checkbox",
+        "id": "cart_trust_badges",
+        "label": "t:labels.cart_trust_badges",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "cart_trust_1",
+        "label": "t:labels.cart_trust_1",
+        "default": "Secure checkout",
+        "visible_if": "{{ settings.cart_trust_badges }}"
+      },
+      {
+        "type": "text",
+        "id": "cart_trust_2",
+        "label": "t:labels.cart_trust_2",
+        "default": "Easy returns",
+        "visible_if": "{{ settings.cart_trust_badges }}"
+      },
+      {
+        "type": "text",
+        "id": "cart_trust_3",
+        "label": "t:labels.cart_trust_3",
+        "default": "Fast shipping",
+        "visible_if": "{{ settings.cart_trust_badges }}"
+      },
+      {
         "type": "header",
         "content": "t:general.product_image"
       },
