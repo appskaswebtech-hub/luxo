@@ -78,7 +78,12 @@
       </div>
 
       <div class="seasonal-sale-banner-{{ section.id }}__countdown-wrapper">
-        <div class="seasonal-sale-banner-{{ section.id }}__countdown" data-end-date="{{ countdown_end_date }}" id="Countdown-{{ section.id }}">
+        <div
+          class="seasonal-sale-banner-{{ section.id }}__countdown"
+          data-end-date="{{ countdown_end_date | escape }}"
+          data-ended-text="{{ 'sections.seasonal_sale.ended' | t }}"
+          id="Countdown-{{ section.id }}"
+        >
           <div class="seasonal-sale-banner-{{ section.id }}__timer-block">
             <span class="seasonal-sale-banner-{{ section.id }}__timer-num" data-days>00</span>
             <span class="seasonal-sale-banner-{{ section.id }}__timer-label">{{ section.settings.days_label }}</span>
@@ -101,9 +106,9 @@
         </div>
       </div>
 
-      {%- if section.settings.button_text != blank and section.settings.button_link != blank -%}
-        <a href="{{ section.settings.button_link }}" class="seasonal-sale-banner-{{ section.id }}__btn">
-          {{ section.settings.button_text }}
+      {%- if section.settings.button_text != blank -%}
+        <a href="{{ section.settings.button_link | default: routes.all_products_collection_url }}" class="seasonal-sale-banner-{{ section.id }}__btn">
+          {{ section.settings.button_text | escape }}
         </a>
       {%- endif -%}
 
@@ -372,11 +377,18 @@
   document.addEventListener('DOMContentLoaded', function() {
     const countdownContainers = document.querySelectorAll('.seasonal-sale-banner-{{ section.id }}__countdown');
 
+    /* Without an end date the countdown runs to the end of the week, so the banner always looks live */
+    const endOfWeek = () => {
+      const end = new Date();
+      end.setDate(end.getDate() + ((7 - end.getDay()) % 7));
+      end.setHours(23, 59, 59, 0);
+      return end.getTime();
+    };
+
     countdownContainers.forEach(container => {
       const endDateString = container.getAttribute('data-end-date');
-      if (!endDateString) return;
-
-      const countDownDate = new Date(endDateString).getTime();
+      const parsed = endDateString ? new Date(endDateString).getTime() : NaN;
+      const countDownDate = Number.isNaN(parsed) ? endOfWeek() : parsed;
 
       const x = setInterval(function() {
         const now = new Date().getTime();
@@ -396,7 +408,10 @@
 
         if (distance < 0) {
           clearInterval(x);
-          container.innerHTML = "<span class='seasonal-sale-banner-{{ section.id }}__timer-label'>SALE ENDED</span>";
+          const ended = document.createElement('span');
+          ended.className = 'seasonal-sale-banner-{{ section.id }}__timer-label';
+          ended.textContent = container.dataset.endedText;
+          container.replaceChildren(ended);
         }
       }, 1000);
     });
@@ -439,7 +454,8 @@
     {
       "type": "url",
       "id": "button_link",
-      "label": "t:sections.seasonal_sale_banner.settings.button_link.label"
+      "label": "t:sections.seasonal_sale_banner.settings.button_link.label",
+      "default": "/collections/all"
     },
     {
       "type": "header",
@@ -450,7 +466,7 @@
       "id": "countdown_end_date",
       "label": "t:sections.seasonal_sale_banner.settings.countdown_end_date.label",
       "info": "t:sections.seasonal_sale_banner.settings.countdown_end_date.info",
-      "default": "2025-12-31T23:59:59"
+      "placeholder": "2026-12-31T23:59:59"
     },
     {
       "type": "text",

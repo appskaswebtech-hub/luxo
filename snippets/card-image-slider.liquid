@@ -1,0 +1,262 @@
+{% doc %}
+  Renders a small image slider for a product card: each product image is a
+  slide, moved by arrows, the indicator or swipe. Theme settings control the
+  arrows, the indicator (dots or a progress line), how many dots show before
+  they slide, and how many images the slider holds. Used by collection,
+  featured collection and search cards.
+
+  @param {product} product - The product on the card
+  @param {string} url - Link for every slide, usually the product URL
+  @param {string} [image_class] - Classes for each image, so the card keeps its own image styles
+  @param {string} [sizes] - Sizes attribute for the images
+
+  @example
+  {% render 'card-image-slider', product: product, url: product.url, image_class: 'card__image' %}
+{% enddoc %}
+
+{%- liquid
+  assign limit = 50
+  if settings.card_slider_limit != 'all'
+    assign limit = settings.card_slider_limit | default: 5 | plus: 0
+  endif
+  assign sizes = sizes | default: '(min-width: 990px) 25vw, 50vw'
+  assign slide_total = product.images.size | at_most: limit
+  assign indicator = settings.card_slider_indicator | default: 'dots'
+  assign show_arrows = settings.card_slider_arrows
+  assign max_dots = settings.card_slider_max_dots | default: 5
+-%}
+
+<card-image-slider class="card-slider" data-max-dots="{{ max_dots }}">
+  <div class="card-slider__track" data-slider-track>
+    {%- for image in product.images limit: limit -%}
+      {%- liquid
+        assign slide_alt = image.alt | default: product.title
+        assign slide_loading = 'lazy'
+      -%}
+      <a
+        href="{{ url }}"
+        class="card-slider__slide"
+        {% unless forloop.first %}
+          tabindex="-1"
+          aria-hidden="true"
+        {% endunless %}
+      >
+        {{
+          image
+          | image_url: width: 600
+          | image_tag:
+            widths: '165, 220, 300, 400, 600',
+            sizes: sizes,
+            loading: slide_loading,
+            alt: slide_alt,
+            class: image_class
+        }}
+      </a>
+    {%- endfor -%}
+  </div>
+
+  {%- if show_arrows -%}
+    <button type="button" class="card-slider__arrow card-slider__arrow--prev" data-slider-prev aria-label="{{ 'general.slider.previous' | t }}" disabled>
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <button type="button" class="card-slider__arrow card-slider__arrow--next" data-slider-next aria-label="{{ 'general.slider.next' | t }}">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false"><path d="M9 18l6-6-6-6"/></svg>
+    </button>
+  {%- endif -%}
+
+  {%- case indicator -%}
+    {%- when 'dots' -%}
+      {%- assign visible_dots = slide_total | at_most: max_dots -%}
+      <div class="card-slider__dots" style="--visible-dots: {{ visible_dots }};">
+        <div class="card-slider__dots-strip" data-slider-strip>
+          {%- for i in (1..slide_total) -%}
+            <button
+              type="button"
+              class="card-slider__dot"
+              data-slider-dot="{{ forloop.index0 }}"
+              aria-label="{{ 'products.card_image' | t: index: forloop.index, total: slide_total }}"
+              {% if forloop.first %}
+                aria-current="true"
+              {% endif %}
+            ></button>
+          {%- endfor -%}
+        </div>
+      </div>
+    {%- when 'progress' -%}
+      <div class="card-slider__progress" aria-hidden="true">
+        <span class="card-slider__progress-fill" data-slider-progress style="width: {{ 100.0 | divided_by: slide_total }}%;"></span>
+      </div>
+  {%- endcase -%}
+</card-image-slider>
+
+<script src="{{ 'card-slider.js' | asset_url }}" defer></script>
+
+{% stylesheet %}
+  .card-slider {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .card-slider__track {
+    display: flex;
+    height: 100%;
+    contain: paint;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+  }
+
+  .card-slider__track::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Each slide clips its own image, so nothing from the next slide shows at the edge */
+  .card-slider__slide {
+    display: block;
+    flex: 0 0 100%;
+    width: 100%;
+    overflow: hidden;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+
+  .card-slider__slide img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: none;
+  }
+
+  .card-slider__arrow {
+    position: absolute;
+    top: 50%;
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: var(--card-slider-arrow-bg, transparent);
+    color: var(--card-slider-arrow-icon, #1a1a1a);
+    cursor: pointer;
+    opacity: 0;
+    transform: translateY(-50%);
+    transition: opacity 0.2s ease;
+  }
+
+  /* A soft shadow on the icon keeps it visible on light and dark images */
+  .card-slider__arrow svg {
+    filter: drop-shadow(0 1px 2px rgb(0 0 0 / 0.35));
+  }
+
+  .card-slider__arrow--prev {
+    left: 0.5rem;
+  }
+
+  .card-slider__arrow--next {
+    right: 0.5rem;
+  }
+
+  .card-slider:hover .card-slider__arrow:not(:disabled),
+  .card-slider__arrow:focus-visible {
+    opacity: 1;
+  }
+
+  @media (hover: none) {
+    .card-slider__arrow:not(:disabled) {
+      opacity: 1;
+    }
+  }
+
+  /* Dots: a window of --visible-dots dots; the strip slides when there are more */
+  .card-slider__dots {
+    --dot: 0.4375rem;
+    --dot-gap: 0.3125rem;
+    position: absolute;
+    left: 50%;
+    bottom: 0.625rem;
+    z-index: 2;
+    width: calc(var(--visible-dots) * (var(--dot) + var(--dot-gap)) - var(--dot-gap) + 1rem);
+    overflow: hidden;
+    padding: 0.3125rem 0.5rem;
+    border-radius: 999px;
+    background: rgb(0 0 0 / 0.25);
+    transform: translateX(-50%);
+  }
+
+  .card-slider__dots-strip {
+    display: flex;
+    gap: var(--dot-gap);
+    transition: transform 0.3s ease;
+  }
+
+  .card-slider__dot {
+    flex-shrink: 0;
+    width: var(--dot);
+    height: var(--dot);
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: var(--card-slider-dot, #fff);
+    opacity: 0.5;
+    cursor: pointer;
+    transition: transform 0.3s ease, opacity 0.2s ease;
+  }
+
+  .card-slider__dot[aria-current='true'] {
+    opacity: 1;
+    transform: scale(1.25);
+  }
+
+  /* Dots at the edge of the window shrink when more dots sit beyond them */
+  .card-slider__dot.is-edge {
+    transform: scale(0.6);
+  }
+
+  /* Progress line */
+  .card-slider__progress {
+    position: absolute;
+    left: 0.75rem;
+    right: 0.75rem;
+    bottom: 0.75rem;
+    z-index: 2;
+    height: 3px;
+    overflow: hidden;
+    border-radius: 3px;
+    background: color-mix(in srgb, var(--card-slider-dot, #fff) 35%, transparent);
+  }
+
+  .card-slider__progress-fill {
+    display: block;
+    height: 100%;
+    border-radius: 3px;
+    background: var(--card-slider-dot, #fff);
+    transition: width 0.3s ease;
+  }
+
+  .card-slider__arrow:focus-visible,
+  .card-slider__dot:focus-visible {
+    outline: 2px solid var(--color-accent, currentColor);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card-slider__track {
+      scroll-behavior: auto;
+    }
+
+    .card-slider__arrow,
+    .card-slider__dot,
+    .card-slider__dots-strip,
+    .card-slider__progress-fill {
+      transition: none;
+    }
+  }
+{% endstylesheet %}

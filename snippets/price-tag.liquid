@@ -84,17 +84,27 @@
     </span>
   {%- endif -%}
 
-  {%- if item.unit_price_measurement -%}
-    {%- liquid
-      assign unit_ref = item.unit_price_measurement.reference_value
-      assign unit_name = item.unit_price_measurement.reference_unit
-      if unit_ref != 1
-        assign unit_name = unit_ref | append: unit_name
-      endif
-    -%}
-    {%- capture unit_text -%}{% render 'price', amount: item.unit_price %}{%- endcapture -%}
-    <span class="price-tag__unit">{{ 'price_tag.per_unit' | t: price: unit_text, unit: unit_name }}</span>
-  {%- endif -%}
+  {%- comment -%} Always present so the unit price can appear when a variant with one is picked {%- endcomment -%}
+  <span
+    class="price-tag__unit"
+    data-price-unit
+    data-template="{{ 'price_tag.per_unit' | t: price: '[price]', unit: '[unit]' }}"
+    {% unless item.unit_price_measurement %}
+      hidden
+    {% endunless %}
+  >
+    {%- if item.unit_price_measurement -%}
+      {%- liquid
+        assign unit_ref = item.unit_price_measurement.reference_value
+        assign unit_name = item.unit_price_measurement.reference_unit
+        if unit_ref != 1
+          assign unit_name = unit_ref | append: unit_name
+        endif
+      -%}
+      {%- capture unit_text -%}{% render 'price', amount: item.unit_price %}{%- endcapture -%}
+      {{ 'price_tag.per_unit' | t: price: unit_text, unit: unit_name }}
+    {%- endif -%}
+  </span>
 </span>
 
 {% stylesheet %}

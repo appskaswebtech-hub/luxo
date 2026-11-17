@@ -21,14 +21,14 @@
           "type": "menu",
           "settings": {
             "menu_title": "Quick Links",
-            "menu": "customer-account"
+            "menu": "customer-account-main-menu"
           }
         },
         "menu_2": {
           "type": "menu",
           "settings": {
             "menu_title": "Quick Links",
-            "menu": "customer-account"
+            "menu": "customer-account-main-menu"
           }
         },
         "social_links": {

@@ -30,7 +30,10 @@
         <div class="main-product-{{ section.id }}__card-frame main-product-{{ section.id }}__gallery-card">
           {%- liquid
             assign media_count = product.media.size
-            assign active_media = current_variant.featured_media | default: product.featured_media
+            assign active_media = product.featured_media
+            if section.settings.variant_media_switch and current_variant.featured_media
+              assign active_media = current_variant.featured_media
+            endif
             assign active_index = 1
             for media in product.media
               if media.id == active_media.id
@@ -41,10 +44,20 @@
           <media-gallery
             class="main-product-{{ section.id }}__gallery-wrapper main-product-{{ section.id }}__thumbs-{{ section.settings.thumbnail_position | default: 'right' }}"
             data-section="{{ section.id }}"
+            data-variant-switch="{{ section.settings.variant_media_switch }}"
+            data-close-label="{{ 'general.accessibility.close' | t }}"
+            data-prev-label="{{ 'products.zoom_previous' | t }}"
+            data-next-label="{{ 'products.zoom_next' | t }}"
           >
             <div class="main-product-{{ section.id }}__main-image-wrapper">
               {%- if product.tags.size > 0 -%}
                 <span class="main-product-{{ section.id }}__main-badge">{{ product.tags.first | upcase }}</span>
+              {%- endif -%}
+
+              {%- if section.settings.enable_zoom and product.media.size > 0 -%}
+                <button type="button" class="main-product-{{ section.id }}__zoom" data-media-zoom aria-label="{{ 'products.zoom' | t }}">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true" focusable="false"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M20 20l-4.8-4.8M10.5 7.5v6M7.5 10.5h6"/></svg>
+                </button>
               {%- endif -%}
 
               {%- if media_count > 1 -%}
@@ -68,6 +81,10 @@
                 <div
                   class="main-product-{{ section.id }}__media-item main-product-{{ section.id }}__media-item--{{ media.media_type }}"
                   data-media-id="{{ media.id }}"
+                  {% if media.media_type == 'image' %}
+                    data-zoom-src="{{ media | image_url: width: 2400 }}"
+                    data-zoom-alt="{{ media_alt }}"
+                  {% endif %}
                   {% unless is_active %}
                     hidden
                   {% endunless %}
@@ -139,6 +156,25 @@
             {%- endif -%}
           </media-gallery>
           <script src="{{ 'media-gallery.js' | asset_url }}" defer></script>
+
+          {%- assign model_media = product.media | where: 'media_type', 'model' -%}
+          {%- if model_media.size > 0 -%}
+            {%- comment -%} Opens the 3D model in the customer's space on supported phones {%- endcomment -%}
+            <button
+              type="button"
+              class="main-product-{{ section.id }}__xr-button"
+              data-shopify-xr
+              data-shopify-model3d-id="{{ model_media.first.id }}"
+              data-shopify-title="{{ product.title | escape }}"
+              data-shopify-xr-hidden
+            >
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true" focusable="false"><path d="M12 2l9 5v10l-9 5-9-5V7l9-5z"/><path d="M12 22V12M21 7l-9 5-9-5"/></svg>
+              {{ 'products.view_in_space' | t }}
+            </button>
+            <script type="application/json" data-product-models>
+              {{ model_media | json }}
+            </script>
+          {%- endif -%}
         </div>
 
         {%- for block in section.blocks -%}
@@ -214,6 +250,18 @@
                       <span class="main-product-{{ section.id }}__review-link">{{ 'products.reviews_count' | t: count: review_total }}</span>
                     </div>
                   {%- endif -%}
+
+                {%- when 'sku' -%}
+                  <p
+                    class="main-product-{{ section.id }}__sku"
+                    {% if current_variant.sku == blank %}
+                      hidden
+                    {% endif %}
+                    {{ block.shopify_attributes }}
+                  >
+                    {{ 'products.sku' | t }}:
+                    <span data-variant-sku="{{ form_id }}">{{ current_variant.sku | escape }}</span>
+                  </p>
 
                 {%- when 'price' -%}
                   <div class="main-product-{{ section.id }}__price-block" {{ block.shopify_attributes }}>
@@ -403,6 +451,11 @@
                       {%- if block.settings.show_dynamic_checkout -%}
                         <div class="main-product-form__dynamic-checkout">{{ form | payment_button }}</div>
                       {%- endif -%}
+
+                      <p class="main-product-form__error" role="alert" data-form-error hidden></p>
+
+                      {%- comment -%} Shop Pay Installments banner; Shopify shows it when installments are on {%- endcomment -%}
+                      <div class="main-product-form__installments">{{ form | payment_terms }}</div>
                     {%- endform -%}
                   </div>
 
@@ -697,6 +750,190 @@
 
   .main-product-{{ section.id }}__thumbnail {
     position: relative;
+  }
+
+  .main-product-{{ section.id }}__zoom {
+    position: absolute;
+    right: 15px;
+    bottom: 15px;
+    z-index: 3;
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: 1px solid var(--mp-border);
+    border-radius: 50%;
+    background: var(--mp-bg);
+    color: var(--mp-text);
+    cursor: zoom-in;
+  }
+
+  .main-product-{{ section.id }}__zoom[hidden] {
+    display: none;
+  }
+
+  .media-loupe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 4;
+    width: 190px;
+    height: 190px;
+    border: 3px solid var(--mp-bg, #fff);
+    border-radius: 50%;
+    background-color: var(--mp-soft-bg, #f5efe7);
+    background-repeat: no-repeat;
+    box-shadow: 0 0 0 1px var(--mp-accent, #9c4a1a), 0 18px 40px rgb(0 0 0 / 0.22);
+    opacity: 0;
+    pointer-events: none;
+    scale: 0.6;
+    transition: opacity 0.18s ease, scale 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
+    will-change: transform;
+  }
+
+  .media-loupe.is-visible {
+    opacity: 1;
+    scale: 1;
+  }
+
+  .has-loupe {
+    cursor: none;
+  }
+
+  .media-zoom {
+    width: 100vw;
+    max-width: 100vw;
+    height: 100dvh;
+    max-height: 100dvh;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    background: var(--mp-bg, #faf6f0);
+    color: var(--mp-text, #2b1e16);
+  }
+
+  .media-zoom::backdrop {
+    background: rgb(0 0 0 / 0.5);
+  }
+
+  .media-zoom__stage {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .media-zoom__image {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    cursor: zoom-in;
+    user-select: none;
+  }
+
+  .media-zoom__stage.is-zoomed {
+    display: block;
+    overflow: auto;
+    overscroll-behavior: contain;
+  }
+
+  .media-zoom__stage.is-zoomed .media-zoom__image {
+    width: 250%;
+    max-width: none;
+    max-height: none;
+    cursor: zoom-out;
+  }
+
+  .media-zoom__close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 1px solid var(--mp-border, rgb(0 0 0 / 0.12));
+    border-radius: 50%;
+    background: var(--mp-bg, #fff);
+    color: inherit;
+    cursor: pointer;
+  }
+
+  .media-zoom__close svg,
+  .media-zoom__nav svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .media-zoom__nav {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px;
+    border: 1px solid var(--mp-border, rgb(0 0 0 / 0.12));
+    border-radius: 999px;
+    background: var(--mp-bg, #fff);
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+    transform: translateX(-50%);
+  }
+
+  .media-zoom__nav button {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+  }
+
+  .media-zoom--single .media-zoom__nav {
+    display: none;
+  }
+
+  .media-zoom button:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .media-loupe {
+      transition: none;
+    }
+  }
+
+  .main-product-{{ section.id }}__xr-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    min-height: 44px;
+    margin-top: 12px;
+    border: 1px solid var(--mp-border);
+    background: var(--mp-soft-bg);
+    color: var(--mp-text);
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  /* Shopify hides the button on devices without AR support */
+  .main-product-{{ section.id }}__xr-button[data-shopify-xr-hidden] {
+    display: none;
   }
 
   .main-product-media__thumb-icon {
@@ -1046,6 +1283,76 @@
   }
 
   .main-product-{{ section.id }}__one-time-option { border-bottom: none; }
+
+  .main-product-{{ section.id }}__sku {
+    margin: 0;
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    opacity: 0.7;
+  }
+
+  .main-product-{{ section.id }}__sku[hidden] {
+    display: none;
+  }
+
+  .main-product-form__error {
+    margin: 0;
+    padding: 10px 12px;
+    border-left: 3px solid #b3261e;
+    background: color-mix(in srgb, #b3261e 8%, transparent);
+    color: #b3261e;
+    font-size: 13px;
+  }
+
+  .main-product-form__error[hidden] {
+    display: none;
+  }
+
+  .main-product-form__installments:empty {
+    display: none;
+  }
+
+  /* Buy buttons: space between Add to cart and the dynamic checkout button */
+  .main-product-{{ section.id }}__buy-button-block .main-product-form {
+    display: grid;
+    gap: 10px;
+  }
+
+  /* The plain "Buy it now" button follows the theme; branded buttons like Shop Pay keep their own look */
+  .main-product-{{ section.id }}__buy-button-block .shopify-payment-button__button--unbranded {
+    min-height: 50px;
+    border: 1px solid var(--mp-accent);
+    border-radius: var(--button-radius, 0);
+    background: var(--mp-accent);
+    color: #fff;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  .main-product-{{ section.id }}__buy-button-block .shopify-payment-button__button--unbranded:hover:not([disabled]) {
+    background: transparent;
+    color: var(--mp-accent);
+  }
+
+  .main-product-{{ section.id }}__buy-button-block .shopify-payment-button__button--branded {
+    min-height: 50px;
+    border-radius: var(--button-radius, 0);
+    overflow: hidden;
+  }
+
+  .main-product-{{ section.id }}__buy-button-block .shopify-payment-button__more-options {
+    margin-top: 6px;
+    color: var(--mp-text);
+    font-size: 12px;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
 
   .main-product-{{ section.id }}__add-to-cart-btn {
     width: 100%;
@@ -1589,6 +1896,19 @@
       "default": "right"
     },
     {
+      "type": "checkbox",
+      "id": "variant_media_switch",
+      "label": "t:sections.product.settings.variant_media_switch.label",
+      "info": "t:sections.product.settings.variant_media_switch.info",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_zoom",
+      "label": "t:sections.product.settings.enable_zoom.label",
+      "default": true
+    },
+    {
       "type": "header",
       "content": "t:sections.product.headers.section_spacing"
     },
@@ -1710,6 +2030,11 @@
           "default": "AFORMO"
         }
       ]
+    },
+    {
+      "type": "sku",
+      "name": "t:sections.product.blocks.sku.name",
+      "limit": 1
     },
     {
       "type": "price",

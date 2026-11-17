@@ -36,6 +36,21 @@ async function refreshCartSection(container, sectionId, sections) {
   }
 }
 
+/* Shows a message such as "only 5 left" next to a product form; an empty message hides it */
+function showFormError(form, message) {
+  let box = form.querySelector('[data-form-error]');
+  if (!box && message) {
+    box = document.createElement('p');
+    box.className = 'form-error';
+    box.setAttribute('role', 'alert');
+    box.dataset.formError = '';
+    form.append(box);
+  }
+  if (!box) return;
+  box.textContent = message;
+  box.hidden = !message;
+}
+
 /* Add to cart: stays on the page and opens the drawer or popup when one is enabled */
 document.addEventListener('submit', async (event) => {
   const form = event.target;
@@ -67,10 +82,13 @@ document.addEventListener('submit', async (event) => {
     const data = await response.json();
 
     if (!response.ok || data.status) {
-      console.error('Add to cart failed:', data.description || data.message || response.statusText);
+      const message = data.description || data.message || response.statusText;
+      console.error('Add to cart failed:', message);
+      showFormError(form, message);
       return;
     }
 
+    showFormError(form, '');
     document.dispatchEvent(new CustomEvent('cart:added', { detail: { item: data } }));
     document.dispatchEvent(new CustomEvent('cart:open', { detail: { sections: data.sections } }));
   } catch (error) {
@@ -227,9 +245,19 @@ if (!customElements.get('cart-items')) {
           const data = await response.json();
 
           if (!response.ok || data.status) {
-            console.error('Cart update failed:', data.description || data.message || response.statusText);
+            const message = data.description || data.message || response.statusText;
+            console.error('Cart update failed:', message);
+            this.showError(message);
             if (input) input.value = input.defaultValue;
             return;
+          }
+
+          /* Shopify lowers the quantity to what is in stock; tell the customer when that happens */
+          const line = data.items?.find((item) => item.key === key);
+          if (line && quantity > line.quantity && this.dataset.quantityError) {
+            this.showError(this.dataset.quantityError.replace('[quantity]', line.quantity));
+          } else {
+            this.showError('');
           }
 
           this.render(data.sections);
@@ -294,6 +322,21 @@ if (!customElements.get('cart-items')) {
         if (focusedKey) {
           this.querySelector(`input[data-key="${CSS.escape(focusedKey)}"]`)?.focus();
         }
+      }
+
+      /* Message above the cart items; an empty message hides it */
+      showError(message) {
+        let box = this.querySelector('[data-cart-error]');
+        if (!box && message) {
+          box = document.createElement('p');
+          box.className = 'cart-error';
+          box.setAttribute('role', 'alert');
+          box.dataset.cartError = '';
+          this.prepend(box);
+        }
+        if (!box) return;
+        box.textContent = message;
+        box.hidden = !message;
       }
 
       announce() {

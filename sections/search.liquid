@@ -63,7 +63,7 @@
   </{{ search_tag }}>
 
   {%- if search.performed -%}
-    <p class="search-page__count">
+    <p class="search-page__count" data-facets-update="search-count-{{ section.id }}">
       {%- if search.results_count == 0 -%}
         {{ 'search.no_results_html' | t: terms: search.terms }}
       {%- else -%}
@@ -78,11 +78,14 @@
         sort_options: search.sort_options,
         sort_by: search.sort_by,
         action: routes.search_url,
+        form_id: 'SearchFacets',
+        section_id: section.id,
         terms: search.terms,
         clear_url: search_clear_url
       %}
     {%- endif -%}
 
+    <div data-facets-update="search-results-{{ section.id }}" data-facets-count="{{ 'search.results_for_html' | t: terms: search.terms, count: search.results_count | strip_html }}">
     {%- paginate search.results by 24 -%}
       <ul class="search-page__grid" role="list">
         {%- for result in search.results -%}
@@ -98,7 +101,18 @@
                 assign on_sale = true
               endif
             -%}
+            {%- liquid
+              assign image_behavior = settings.card_image_behavior | default: 'slider'
+              assign use_slider = false
+              if image_behavior == 'slider' and result.images.size > 1
+                assign use_slider = true
+              endif
+            -%}
             <li class="search-card">
+              {%- if use_slider -%}
+              <div class="search-card__media">
+                {% render 'card-image-slider', product: result, url: result.url, image_class: 'search-card__image', sizes: '(min-width: 990px) 25vw, (min-width: 750px) 33vw, 50vw' %}
+              {%- else -%}
               <a href="{{ result.url }}" class="search-card__media" tabindex="-1" aria-hidden="true">
                 {%- if result.featured_image -%}
                   {{
@@ -111,7 +125,7 @@
                       alt: image_alt,
                       class: 'search-card__image'
                   }}
-                  {%- if settings.card_hover_image and result.images[1] -%}
+                  {%- if image_behavior == 'hover' and result.images[1] -%}
                     {{
                       result.images[1]
                       | image_url: width: 600
@@ -126,6 +140,7 @@
                 {%- else -%}
                   {{ 'product-1' | placeholder_svg_tag: 'search-card__image search-card__placeholder' }}
                 {%- endif -%}
+              {%- endif -%}
 
                 {%- if result.available == false -%}
                   {%- if settings.card_sold_out_badge -%}
@@ -151,7 +166,7 @@
                     <span class="search-card__badge search-card__badge--sale {{ badge_position }}">{{ sale_label }}</span>
                   {%- endif -%}
                 {%- endif -%}
-              </a>
+              {%- if use_slider -%}</div>{%- else -%}</a>{%- endif -%}
 
               <div class="search-card__body">
                 {%- if settings.card_show_vendor and result.vendor != blank -%}
@@ -188,6 +203,7 @@
         </nav>
       {%- endif -%}
     {%- endpaginate -%}
+    </div>
   {%- endif -%}
 </div>
 
@@ -348,10 +364,19 @@
   }
 
   .search-card__image {
-    transition: transform 0.6s ease;
+    transition: transform 0.6s ease, opacity 0.35s ease;
   }
 
-  .search-card:hover .search-card__image:not(.search-card__image--hover) {
+  /* One image: it zooms. Two images: the first fades out and the second fades in and zooms */
+  .search-card:hover .search-card__media:not(:has(.search-card__image--hover, .card-slider)) .search-card__image {
+    transform: scale(var(--card-image-hover-scale));
+  }
+
+  .search-card:hover .search-card__media:has(.search-card__image--hover) .search-card__image:not(.search-card__image--hover) {
+    opacity: 0;
+  }
+
+  .search-card:hover .search-card__image--hover {
     transform: scale(var(--card-image-hover-scale));
   }
 

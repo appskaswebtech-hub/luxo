@@ -38,6 +38,20 @@
     
     <header class="editorial-blog-{{ section.id }}__header">
       <h1 class="editorial-blog-{{ section.id }}__heading">{%- assign blog_fallback = 'blog_listing.title_fallback' | t -%}{{ blog.title | default: blog_fallback }}</h1>
+      {%- if blog.all_tags.size > 0 -%}
+        <nav class="editorial-blog-{{ section.id }}__tags" aria-label="{{ 'blog_listing.filter_label' | t }}">
+          <ul role="list">
+            <li>
+              <a href="{{ blog.url }}"{% if current_tags == blank %} class="is-active" aria-current="page"{% endif %}>{{ 'blog_listing.all_tags' | t }}</a>
+            </li>
+            {%- for tag in blog.all_tags -%}
+              <li>
+                <a href="{{ blog.url }}/tagged/{{ tag | handleize }}"{% if current_tags contains tag %} class="is-active" aria-current="page"{% endif %}>{{ tag | escape }}</a>
+              </li>
+            {%- endfor -%}
+          </ul>
+        </nav>
+      {%- endif -%}
     </header>
 
     {% paginate blog.articles by 6 %}
@@ -60,7 +74,15 @@
                   <a href="{{ article.url }}">{{ article.title | escape }}</a>
                 </h3>
                 
-                <p class="editorial-blog-{{ section.id }}__date">{{ article.published_at | date: "%B %d, %Y" }}</p>
+                <p class="editorial-blog-{{ section.id }}__date">
+                  {{ article.published_at | time_tag: format: 'date' }}
+                  {%- if article.author != blank -%}
+                    <span aria-hidden="true"> · </span>{{ 'blog_listing.by_author' | t: author: article.author }}
+                  {%- endif -%}
+                  {%- if blog.comments_enabled? -%}
+                    <span aria-hidden="true"> · </span><a href="{{ article.url }}#Comments">{{ 'article.comments.count' | t: count: article.comments_count }}</a>
+                  {%- endif -%}
+                </p>
                 
                 <hr class="editorial-blog-{{ section.id }}__divider" />
                 
@@ -144,6 +166,36 @@
     letter-spacing: -0.02em;
     margin: 0;
     color: var(--blog-text);
+  }
+
+  .editorial-blog-{{ section.id }}__tags ul {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    margin: 1.5rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .editorial-blog-{{ section.id }}__tags a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.25rem;
+    padding: 0 1rem;
+    border: 1px solid var(--blog-border);
+    border-radius: 999px;
+    color: var(--blog-text);
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  }
+
+  .editorial-blog-{{ section.id }}__tags a:hover,
+  .editorial-blog-{{ section.id }}__tags a.is-active {
+    border-color: var(--blog-accent);
+    background: var(--blog-accent);
+    color: var(--blog-bg);
   }
 
   .editorial-blog-{{ section.id }}__grid {

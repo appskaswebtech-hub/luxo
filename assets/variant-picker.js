@@ -104,7 +104,13 @@ if (!customElements.get('variant-picker')) {
       }
 
       const idInput = form?.querySelector('input[type="hidden"][name="id"]');
-      if (idInput) idInput.value = variant.id;
+      if (idInput) {
+        idInput.value = variant.id;
+        /* Shop Pay Installments and other Shopify widgets follow this field */
+        idInput.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+      const formError = form?.querySelector('[data-form-error]');
+      if (formError) formError.hidden = true;
 
       buttons.forEach((button) => {
         button.disabled = !variant.available;
@@ -137,6 +143,24 @@ if (!customElements.get('variant-picker')) {
           save.hidden = !hasCompare;
           save.textContent = hasCompare ? save.dataset.template.replace('[amount]', savings) : '';
         }
+
+        const unit = tag.querySelector('[data-price-unit]');
+        if (unit) {
+          const measure = variant.unit_price_measurement;
+          unit.hidden = !measure;
+          if (measure) {
+            const reference = measure.reference_value === 1 ? '' : measure.reference_value;
+            unit.textContent = unit.dataset.template
+              .replace('[price]', formatMoney(variant.unit_price, format))
+              .replace('[unit]', `${reference}${measure.reference_unit}`);
+          }
+        }
+      });
+
+      scope('sku').forEach((element) => {
+        element.textContent = variant.sku || '';
+        const holder = element.parentElement;
+        if (holder) holder.hidden = !variant.sku;
       });
 
       scope('title').forEach((element) => {

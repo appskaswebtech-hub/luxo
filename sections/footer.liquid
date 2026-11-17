@@ -113,8 +113,14 @@
             <div class="footer-{{ section.id }}__links-group" {{ block.shopify_attributes }}>
               <h4 class="footer-{{ section.id }}__heading">{{ block.settings.menu_title }}</h4>
               <ul class="footer-{{ section.id }}__list">
-                {%- for link in linklists[block.settings.menu].links -%}
-                  <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+                {%- liquid
+                  assign column_menu = linklists[block.settings.menu]
+                  if column_menu.links.size == 0
+                    assign column_menu = linklists['footer']
+                  endif
+                -%}
+                {%- for link in column_menu.links -%}
+                  <li><a href="{{ link.url }}">{{ link.title | escape }}</a></li>
                 {%- endfor -%}
                 {%- if block.settings.show_policies -%}
                   {%- if shop.policies.privacy_policy != blank -%}
@@ -358,7 +364,7 @@
 
   .footer-{{ section.id }}__columns-right {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 20px;
   }
 
@@ -393,6 +399,7 @@
 
   .footer-{{ section.id }}__list a {
     display: block;
+    overflow-wrap: anywhere;
     background-color: var(--link-bg);
     color: var(--link-text);
     text-decoration: none;
@@ -527,7 +534,7 @@
       gap: 40px;
     }
     .footer-{{ section.id }}__columns-right {
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     }
   }
 
@@ -850,7 +857,7 @@
     {
       "type": "menu",
       "name": "t:sections.footer.blocks.menu.name",
-      "limit": 2,
+      "limit": 5,
       "settings": [
         {
           "type": "text",

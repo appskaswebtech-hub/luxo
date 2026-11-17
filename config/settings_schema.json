@@ -18,7 +18,7 @@
         "type": "font_picker",
         "id": "type_header_font",
         "label": "t:labels.font",
-        "default": "assistant_n4"
+        "default": "playfair_display_n6"
       },
       {
         "type": "range",
@@ -81,7 +81,7 @@
         "type": "font_picker",
         "id": "type_body_font",
         "label": "t:labels.font",
-        "default": "assistant_n4"
+        "default": "montserrat_n5"
       },
       {
         "type": "range",
@@ -328,10 +328,121 @@
         "default": "portrait"
       },
       {
+        "type": "select",
+        "id": "card_image_behavior",
+        "label": "t:labels.card_image_behavior",
+        "options": [
+          {
+            "value": "hover",
+            "label": "t:options.card_image_behavior.hover"
+          },
+          {
+            "value": "slider",
+            "label": "t:options.card_image_behavior.slider"
+          },
+          {
+            "value": "none",
+            "label": "t:options.card_image_behavior.none"
+          }
+        ],
+        "default": "slider"
+      },
+      {
+        "type": "select",
+        "id": "card_slider_limit",
+        "label": "t:labels.card_slider_limit",
+        "options": [
+          {
+            "value": "3",
+            "label": "t:options.card_slider_limit.3"
+          },
+          {
+            "value": "4",
+            "label": "t:options.card_slider_limit.4"
+          },
+          {
+            "value": "5",
+            "label": "t:options.card_slider_limit.5"
+          },
+          {
+            "value": "6",
+            "label": "t:options.card_slider_limit.6"
+          },
+          {
+            "value": "8",
+            "label": "t:options.card_slider_limit.8"
+          },
+          {
+            "value": "10",
+            "label": "t:options.card_slider_limit.10"
+          },
+          {
+            "value": "all",
+            "label": "t:options.card_slider_limit.all"
+          }
+        ],
+        "default": "5",
+        "visible_if": "{{ settings.card_image_behavior == 'slider' }}"
+      },
+      {
         "type": "checkbox",
-        "id": "card_hover_image",
-        "label": "t:labels.hover_image",
-        "default": true
+        "id": "card_slider_arrows",
+        "label": "t:labels.card_slider_arrows",
+        "default": true,
+        "visible_if": "{{ settings.card_image_behavior == 'slider' }}"
+      },
+      {
+        "type": "select",
+        "id": "card_slider_indicator",
+        "label": "t:labels.card_slider_indicator",
+        "options": [
+          {
+            "value": "dots",
+            "label": "t:options.card_slider_indicator.dots"
+          },
+          {
+            "value": "progress",
+            "label": "t:options.card_slider_indicator.progress"
+          },
+          {
+            "value": "none",
+            "label": "t:options.card_slider_indicator.none"
+          }
+        ],
+        "default": "dots",
+        "visible_if": "{{ settings.card_image_behavior == 'slider' }}"
+      },
+      {
+        "type": "range",
+        "id": "card_slider_max_dots",
+        "label": "t:labels.card_slider_max_dots",
+        "info": "t:info.card_slider_max_dots",
+        "min": 3,
+        "max": 9,
+        "step": 1,
+        "default": 5,
+        "visible_if": "{{ settings.card_image_behavior == 'slider' and settings.card_slider_indicator == 'dots' }}"
+      },
+      {
+        "type": "color",
+        "id": "card_slider_arrow_bg",
+        "label": "t:labels.card_slider_arrow_bg",
+        "default": "rgba(0,0,0,0)",
+        "visible_if": "{{ settings.card_image_behavior == 'slider' }}"
+      },
+      {
+        "type": "color",
+        "id": "card_slider_arrow_icon",
+        "label": "t:labels.card_slider_arrow_icon",
+        "default": "#2B1E16",
+        "visible_if": "{{ settings.card_image_behavior == 'slider' }}"
+      },
+      {
+        "type": "color",
+        "id": "card_slider_dot",
+        "label": "t:labels.card_slider_indicator_color",
+        "default": "#FFFFFF",
+        "visible_if": "{{ settings.card_image_behavior == 'slider' }}"
       },
       {
         "type": "checkbox",
@@ -471,6 +582,64 @@
           }
         ],
         "default": "top_left"
+      }
+    ]
+  },
+  {
+    "name": "t:general.filters",
+    "settings": [
+      {
+        "type": "select",
+        "id": "filter_style",
+        "label": "t:labels.filter_style",
+        "options": [
+          {
+            "value": "pills",
+            "label": "t:options.filter_style.pills"
+          },
+          {
+            "value": "tiles",
+            "label": "t:options.filter_style.tiles"
+          },
+          {
+            "value": "minimal",
+            "label": "t:options.filter_style.minimal"
+          }
+        ],
+        "default": "pills"
+      },
+      {
+        "type": "select",
+        "id": "filter_icon",
+        "label": "t:labels.filter_icon",
+        "options": [
+          {
+            "value": "arrow",
+            "label": "t:options.filter_icon.arrow"
+          },
+          {
+            "value": "plus",
+            "label": "t:options.filter_icon.plus"
+          }
+        ],
+        "default": "plus"
+      },
+      {
+        "type": "select",
+        "id": "filter_apply",
+        "label": "t:labels.filter_apply",
+        "info": "t:info.filter_apply",
+        "options": [
+          {
+            "value": "instant",
+            "label": "t:options.filter_apply.instant"
+          },
+          {
+            "value": "button",
+            "label": "t:options.filter_apply.button"
+          }
+        ],
+        "default": "button"
       }
     ]
   },

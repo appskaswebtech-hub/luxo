@@ -127,8 +127,12 @@
           {%- endunless -%}
 
           {%- for product in collection.products limit: section.settings.products_limit -%}
+            {%- assign card_variant = product.selected_or_first_available_variant -%}
             <div class="featured-collection-{{ section.id }}__product-wrapper">
-              <div class="featured-collection-{{ section.id }}__product-card">
+              <card-variants
+                class="featured-collection-{{ section.id }}__product-card"
+                data-selected="{{ card_variant.options | json | escape }}"
+              >
                  
                 <div class="featured-collection-{{ section.id }}__product-top">
                   {%- liquid
@@ -168,21 +172,34 @@
                   </span>
                 </div>
 
+                {%- liquid
+                  assign image_behavior = settings.card_image_behavior | default: 'slider'
+                  assign use_slider = false
+                  if image_behavior == 'slider' and product.images.size > 1
+                    assign use_slider = true
+                  endif
+                -%}
+                {%- if use_slider -%}
+                <div class="featured-collection-{{ section.id }}__image-wrapper featured-collection-{{ section.id }}__ratio-{{ image_ratio }}">
+                  {%- capture slider_class -%}featured-collection-{{ section.id }}__product-image featured-collection-{{ section.id }}__fit-{{ image_fit }}{%- endcapture -%}
+                  {% render 'card-image-slider', product: product, url: product.url, image_class: slider_class %}
+                {%- else -%}
                 <a href="{{ product.url }}" class="featured-collection-{{ section.id }}__image-wrapper featured-collection-{{ section.id }}__ratio-{{ image_ratio }}">
                   {%- if product.featured_image != blank -%}
                     {%- capture img_alt -%}{{ product.featured_image.alt }}{%- endcapture -%}{%- capture img_class -%}featured-collection-{{ section.id }}__product-image featured-collection-{{ section.id }}__fit-{{ image_fit }}{%- endcapture -%}{{ product.featured_image | image_url: width: 800 | image_tag: widths: '100, 165, 220, 300, 400, 600, 800', sizes: '(min-width: 990px) 25vw, 50vw', loading: 'lazy', alt: img_alt, class: img_class }}
-                    {%- if settings.card_hover_image and product.images[1] != blank -%}
+                    {%- if image_behavior == 'hover' and product.images[1] != blank -%}
                       {%- capture img_alt -%}{{ product.images[1].alt }}{%- endcapture -%}{%- capture img_class -%}featured-collection-{{ section.id }}__product-image-hover featured-collection-{{ section.id }}__fit-{{ image_fit }}{%- endcapture -%}{{ product.images[1] | image_url: width: 800 | image_tag: widths: '100, 165, 220, 300, 400, 600, 800', sizes: '(min-width: 990px) 25vw, 50vw', loading: 'lazy', alt: img_alt, class: img_class }}
                     {%- endif -%}
                   {%- else -%}
                     {{ 'product-1' | placeholder_svg_tag: placeholder_class }}
                   {%- endif -%}
-                  
+                {%- endif -%}
+
                   <span class="featured-collection-{{ section.id }}__corner featured-collection-{{ section.id }}__corner--tl"></span>
                   <span class="featured-collection-{{ section.id }}__corner featured-collection-{{ section.id }}__corner--tr"></span>
                   <span class="featured-collection-{{ section.id }}__corner featured-collection-{{ section.id }}__corner--bl"></span>
                   <span class="featured-collection-{{ section.id }}__corner featured-collection-{{ section.id }}__corner--br"></span>
-                </a>
+                {%- if use_slider -%}</div>{%- else -%}</a>{%- endif -%}
 
                 <div class="featured-collection-{{ section.id }}__product-body">
                   <h3 class="featured-collection-{{ section.id }}__product-title">
@@ -196,17 +213,34 @@
                       {{ 'products.description_fallback' | t }}
                     {%- endif -%}
                   </p>
+
+                  {% render 'card-variant-options', product: product, variant: card_variant %}
                 </div>
 
                 <div class="featured-collection-{{ section.id }}__product-bottom">
-                  <div class="featured-collection-{{ section.id }}__product-price">
-                    {% render 'price-tag', product: product, from: true %}
+                  <div class="featured-collection-{{ section.id }}__product-price" data-card-price>
+                    {%- if settings.card_show_variants -%}
+                      {% render 'price-tag', product: product, variant: card_variant %}
+                    {%- else -%}
+                      {% render 'price-tag', product: product, from: true %}
+                    {%- endif -%}
                   </div>
-                  
+
                   {%- form 'product', product, class: form_class -%}
-                    <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
-                    <button type="submit" name="add" class="featured-collection-{{ section.id }}__add-btn" {% if product.available == false %}disabled{% endif %}>
-                      <span>{% if product.available %}{{ 'products.buy.add_to_cart' | t }}{% else %}{{ 'products.buy.sold_out' | t }}{% endif %}</span>
+                    <input type="hidden" name="id" value="{{ card_variant.id }}" data-card-variant-id>
+                    <button type="submit" name="add" class="featured-collection-{{ section.id }}__add-btn"{% unless card_variant.available %} disabled{% endunless %}>
+                      <span
+                        data-card-button-label
+                        data-label-add="{{ 'products.buy.add_to_cart' | t }}"
+                        data-label-sold-out="{{ 'products.buy.sold_out' | t }}"
+                        data-label-unavailable="{{ 'products.variant.unavailable' | t }}"
+                      >
+                        {%- if card_variant.available -%}
+                          {{ 'products.buy.add_to_cart' | t }}
+                        {%- else -%}
+                          {{ 'products.buy.sold_out' | t }}
+                        {%- endif -%}
+                      </span>
                       <svg width="13" height="5" viewBox="0 0 13 5" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M9.45052 4.21172C9.63052 3.82772 9.80452 3.49172 9.97252 3.20372C10.1525 2.91572 10.3265 2.67572 10.4945 2.48372H0.000515878V1.72772H10.4945C10.3265 1.52372 10.1525 1.27772 9.97252 0.989718C9.80452 0.701718 9.63052 0.371718 9.45052 -0.000281632H10.0805C10.8365 0.875719 11.6285 1.52372 12.4565 1.94372V2.26772C11.6285 2.67572 10.8365 3.32372 10.0805 4.21172H9.45052Z" fill="currentColor"></path>
                       </svg>
@@ -214,9 +248,10 @@
                   {%- endform -%}
                 </div>
 
-              </div>
+              </card-variants>
             </div>
           {%- endfor -%}
+          <script src="{{ 'card-variants.js' | asset_url }}" defer></script>
           
         </div>
         
@@ -435,15 +470,17 @@
     opacity: 0;
   }
 
-  .featured-collection-{{ section.id }}__product-card:hover .featured-collection-{{ section.id }}__product-image:not(:only-child) {
+  /* One image: it zooms. Two images: the first fades out and the second fades in and zooms */
+  .featured-collection-{{ section.id }}__product-card:hover .featured-collection-{{ section.id }}__image-wrapper:has(.featured-collection-{{ section.id }}__product-image-hover) .featured-collection-{{ section.id }}__product-image {
     opacity: 0;
   }
 
   .featured-collection-{{ section.id }}__product-card:hover .featured-collection-{{ section.id }}__product-image-hover {
     opacity: 1;
+    transform: scale(var(--card-image-hover-scale));
   }
 
-  .featured-collection-{{ section.id }}__product-card:hover .featured-collection-{{ section.id }}__product-image:only-child {
+  .featured-collection-{{ section.id }}__product-card:hover .featured-collection-{{ section.id }}__image-wrapper:not(:has(.featured-collection-{{ section.id }}__product-image-hover, .card-slider)) .featured-collection-{{ section.id }}__product-image {
     transform: scale(var(--card-image-hover-scale));
   }
 

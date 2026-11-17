@@ -1,0 +1,215 @@
+{% doc %}
+  Renders an article's comments, paginated, and the comment form with its error
+  and success messages. Shows nothing when comments are turned off for the blog.
+
+  @param {article} article - The article
+  @param {blog} blog - The article's blog
+
+  @example
+  {% render 'article-comments', article: article, blog: blog %}
+{% enddoc %}
+
+{%- if blog.comments_enabled? -%}
+  <div class="article-comments" id="Comments">
+    {%- if article.comments_count > 0 -%}
+      <h2 class="article-comments__title">{{ 'article.comments.count' | t: count: article.comments_count }}</h2>
+
+      {%- paginate article.comments by 5 -%}
+        <ul class="article-comments__list" role="list">
+          {%- for comment in article.comments -%}
+            <li class="article-comments__item" id="{{ comment.id }}">
+              <div class="article-comments__body">{{ comment.content }}</div>
+              <p class="article-comments__meta">
+                {{ comment.author | escape }} · {{ comment.created_at | time_tag: format: 'date' }}
+              </p>
+            </li>
+          {%- endfor -%}
+        </ul>
+        {%- if paginate.pages > 1 -%}
+          <nav class="article-comments__pages" aria-label="{{ 'article.comments.pagination' | t }}">
+            {{ paginate | default_pagination }}
+          </nav>
+        {%- endif -%}
+      {%- endpaginate -%}
+    {%- endif -%}
+
+    {%- form 'new_comment', article, class: 'article-comments__form' -%}
+      <h2 class="article-comments__title">{{ 'article.comments.leave' | t }}</h2>
+
+      {%- if form.posted_successfully? -%}
+        <p class="article-comments__notice" role="status" tabindex="-1">
+          {%- if blog.moderated? -%}
+            {{ 'article.comments.success_moderated' | t }}
+          {%- else -%}
+            {{ 'article.comments.success' | t }}
+          {%- endif -%}
+        </p>
+      {%- endif -%}
+
+      {%- if form.errors -%}
+        <div class="article-comments__errors" role="alert" tabindex="-1">
+          <p>{{ 'customer.errors.heading' | t }}</p>
+          <ul>
+            {%- for field in form.errors -%}
+              <li>{{ form.errors.translated_fields[field] | capitalize }} {{ form.errors.messages[field] }}</li>
+            {%- endfor -%}
+          </ul>
+        </div>
+      {%- endif -%}
+
+      <div class="article-comments__fields">
+        <label class="article-comments__field" for="CommentAuthor">
+          <span>{{ 'article.comments.name' | t }}</span>
+          <input
+            type="text"
+            id="CommentAuthor"
+            name="comment[author]"
+            value="{{ form.author }}"
+            autocomplete="name"
+            required
+            {% if form.errors contains 'author' %}
+              aria-invalid="true"
+            {% endif %}
+          >
+        </label>
+        <label class="article-comments__field" for="CommentEmail">
+          <span>{{ 'article.comments.email' | t }}</span>
+          <input
+            type="email"
+            id="CommentEmail"
+            name="comment[email]"
+            value="{{ form.email }}"
+            autocomplete="email"
+            required
+            {% if form.errors contains 'email' %}
+              aria-invalid="true"
+            {% endif %}
+          >
+        </label>
+      </div>
+      <label class="article-comments__field" for="CommentBody">
+        <span>{{ 'article.comments.message' | t }}</span>
+        <textarea
+          id="CommentBody"
+          name="comment[body]"
+          rows="5"
+          required
+          {% if form.errors contains 'body' %}
+            aria-invalid="true"
+          {% endif %}
+        >{{ form.body }}</textarea>
+      </label>
+
+      {%- if blog.moderated? -%}
+        <p class="article-comments__hint">{{ 'article.comments.moderated' | t }}</p>
+      {%- endif -%}
+
+      <button type="submit" class="article-comments__submit">{{ 'article.comments.submit' | t }}</button>
+    {%- endform -%}
+  </div>
+{%- endif -%}
+
+{% stylesheet %}
+  .article-comments {
+    display: grid;
+    gap: 2rem;
+    margin-top: 3rem;
+  }
+
+  .article-comments__title {
+    margin: 0 0 1rem;
+    font-size: 1.375rem;
+  }
+
+  .article-comments__list {
+    display: grid;
+    gap: 1.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .article-comments__item {
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid color-mix(in srgb, currentColor 12%, transparent);
+  }
+
+  .article-comments__body p {
+    margin: 0 0 0.5rem;
+  }
+
+  .article-comments__meta {
+    margin: 0;
+    font-size: 0.8125rem;
+    opacity: 0.7;
+  }
+
+  .article-comments__form {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .article-comments__fields {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .article-comments__field {
+    display: grid;
+    gap: 0.375rem;
+    font-size: 0.875rem;
+  }
+
+  .article-comments__field input,
+  .article-comments__field textarea {
+    width: 100%;
+    padding: 0.75rem 0.875rem;
+    border: var(--input-border-thickness, 1px) solid color-mix(in srgb, currentColor 30%, transparent);
+    border-radius: var(--style-border-radius-inputs, 0);
+    background: transparent;
+    color: inherit;
+    font: inherit;
+  }
+
+  .article-comments__notice,
+  .article-comments__errors {
+    margin: 0;
+    padding: 0.875rem 1rem;
+    border-left: 3px solid currentColor;
+  }
+
+  .article-comments__errors {
+    color: #b3261e;
+  }
+
+  .article-comments__errors ul {
+    margin: 0.5rem 0 0;
+    padding-left: 1.25rem;
+  }
+
+  .article-comments__hint {
+    margin: 0;
+    font-size: 0.8125rem;
+    opacity: 0.75;
+  }
+
+  .article-comments__submit {
+    justify-self: start;
+    min-height: 3rem;
+    padding: 0.75rem 2rem;
+    border: 0;
+    border-radius: var(--button-radius, 0);
+    background: var(--color-button, currentColor);
+    color: var(--color-button-text, #fff);
+    font: inherit;
+    font-weight: 700;
+    text-transform: var(--button-text-transform, none);
+    cursor: pointer;
+  }
+
+  @media screen and (min-width: 750px) {
+    .article-comments__fields {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+{% endstylesheet %}

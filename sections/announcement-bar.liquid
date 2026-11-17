@@ -1,0 +1,539 @@
+{%- liquid
+  assign scheme = section.settings.color_scheme.settings
+  assign count = section.blocks.size
+  assign menu = linklists[section.settings.menu]
+
+  assign show_country = false
+  if section.settings.show_currency
+    if localization.available_countries.size > 1
+      assign show_country = true
+    endif
+  endif
+
+  assign show_language = false
+  if section.settings.show_language
+    if localization.available_languages.size > 1
+      assign show_language = true
+    endif
+  endif
+
+  assign phone_link = section.settings.phone | remove: ' ' | remove: '(' | remove: ')' | remove: '-'
+  if section.settings.phone != blank
+    assign count = count | plus: 1
+  endif
+-%}
+
+<div
+  class="announcement-bar full-width"
+  style="
+    --ab-bg: {{ scheme.background }};
+    --ab-text: {{ scheme.text }};
+    --ab-accent: {{ scheme.accent }};
+    --ab-border: {{ scheme.border }};
+  "
+>
+  <div class="announcement-bar__inner">
+    <div class="announcement-bar__start">
+      {%- if menu.links.size > 0 -%}
+        <ul class="announcement-bar__links">
+          {%- for link in menu.links -%}
+            <li><a href="{{ link.url }}">{{ link.title | escape }}</a></li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+    </div>
+
+    {%- if count > 0 -%}
+      <announcement-rotator
+        class="announcement-bar__center"
+        data-autoplay="{{ section.settings.autoplay }}"
+        data-speed="{{ section.settings.autoplay_speed | times: 1000 }}"
+        role="region"
+        aria-roledescription="{{ 'sections.announcement.carousel' | t }}"
+        aria-label="{{ 'sections.announcement.label' | t }}"
+      >
+        {%- if count > 1 -%}
+          <button type="button" class="announcement-bar__nav" data-step="-1" aria-label="{{ 'sections.announcement.previous' | t }}">
+            <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false"><path d="M10 3 5 8l5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        {%- endif -%}
+
+        <div class="announcement-bar__track" aria-live="{% if section.settings.autoplay %}off{% else %}polite{% endif %}">
+          {%- for block in section.blocks -%}
+            <div
+              class="announcement-bar__slide"
+              role="group"
+              aria-roledescription="{{ 'sections.announcement.slide' | t }}"
+              aria-label="{{ 'sections.announcement.position' | t: index: forloop.index, count: count }}"
+              {% unless forloop.first %}
+                hidden
+              {% endunless %}
+              {{ block.shopify_attributes }}
+            >
+              {%- if block.settings.link != blank -%}
+                <a href="{{ block.settings.link }}" class="announcement-bar__text">{{ block.settings.text }}</a>
+              {%- else -%}
+                <p class="announcement-bar__text">{{ block.settings.text }}</p>
+              {%- endif -%}
+            </div>
+          {%- endfor -%}
+          {%- if section.settings.phone != blank -%}
+            {%- liquid
+              assign phone_index = section.blocks.size | plus: 1
+            -%}
+            <div
+              class="announcement-bar__slide"
+              role="group"
+              aria-roledescription="{{ 'sections.announcement.slide' | t }}"
+              aria-label="{{ 'sections.announcement.position' | t: index: phone_index, count: count }}"
+              {% if section.blocks.size > 0 %}
+                hidden
+              {% endif %}
+            >
+              <p class="announcement-bar__text announcement-bar__phone">
+                <span class="announcement-bar__dot" aria-hidden="true"></span>
+                {{ 'general.header.call_us' | t }}
+                <a href="tel:{{ phone_link }}">{{ section.settings.phone | escape }}</a>
+              </p>
+            </div>
+          {%- endif -%}
+        </div>
+
+        {%- if count > 1 -%}
+          <button type="button" class="announcement-bar__nav" data-step="1" aria-label="{{ 'sections.announcement.next' | t }}">
+            <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false"><path d="m6 3 5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        {%- endif -%}
+      </announcement-rotator>
+    {%- endif -%}
+
+    <ul class="announcement-bar__end">
+      {%- if section.settings.show_account -%}
+        <li class="announcement-bar__account">
+          <a href="{% if customer %}{{ routes.account_url }}{% else %}{{ routes.account_login_url }}{% endif %}">
+            {%- if customer -%}{{ 'general.header.my_account' | t }}{%- else -%}{{ 'general.header.log_in' | t }}{%- endif -%}
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6"/></svg>
+          </a>
+          <ul class="announcement-bar__drop">
+            {%- if customer -%}
+              <li><a href="{{ routes.account_url }}">{{ 'general.header.my_account' | t }}</a></li>
+              <li><a href="{{ routes.account_addresses_url }}">{{ 'general.header.addresses' | t }}</a></li>
+              <li><a href="{{ routes.account_logout_url }}">{{ 'general.header.log_out' | t }}</a></li>
+            {%- else -%}
+              <li><a href="{{ routes.account_login_url }}">{{ 'general.header.log_in' | t }}</a></li>
+              <li><a href="{{ routes.account_register_url }}">{{ 'general.header.register' | t }}</a></li>
+            {%- endif -%}
+            <li><a href="{{ routes.cart_url }}">{{ 'general.header.my_cart' | t }}</a></li>
+          </ul>
+        </li>
+      {%- endif -%}
+
+      {%- if show_country -%}
+        <li>
+          {% render 'localization-selector', type: 'country', form_id: 'AnnouncementCountryForm', style: 'compact' %}
+        </li>
+      {%- endif -%}
+
+      {%- if show_language -%}
+        <li>
+          {% render 'localization-selector', type: 'language', form_id: 'AnnouncementLanguageForm', style: 'compact' %}
+        </li>
+      {%- endif -%}
+    </ul>
+  </div>
+</div>
+
+{% stylesheet %}
+  .announcement-bar {
+    position: relative;
+    z-index: 40;
+    background: var(--ab-bg);
+    color: var(--ab-text);
+    font-size: 12.5px;
+    border-bottom: 1px solid var(--ab-border);
+  }
+
+  .announcement-bar__inner {
+    display: grid;
+    grid-template-columns: 1fr minmax(0, auto) 1fr;
+    align-items: center;
+    gap: 20px;
+    max-width: var(--page-width, 1240px);
+    min-height: 42px;
+    margin: 0 auto;
+    padding: 0 var(--page-margin, 20px);
+  }
+
+  .announcement-bar__start {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    min-width: 0;
+  }
+
+  .announcement-bar__links,
+  .announcement-bar__end {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .announcement-bar__links {
+    gap: 22px;
+  }
+
+  .announcement-bar__end {
+    grid-column: 3;
+    justify-content: flex-end;
+  }
+
+  .announcement-bar a {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: inherit;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .announcement-bar a:hover {
+    color: var(--ab-accent);
+  }
+
+  .announcement-bar a:focus-visible,
+  .announcement-bar__nav:focus-visible {
+    outline: 1px solid currentColor;
+    outline-offset: 2px;
+  }
+
+  .announcement-bar__phone {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    color: var(--ab-accent);
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+  }
+
+  .announcement-bar__phone a {
+    color: inherit;
+  }
+
+  .announcement-bar__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--ab-accent);
+    animation: announcement-pulse 1.8s infinite;
+  }
+
+  .announcement-bar__center {
+    display: flex;
+    grid-column: 2;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .announcement-bar__track {
+    min-width: 0;
+    text-align: center;
+  }
+
+  .announcement-bar__slide {
+    padding: 6px 0;
+  }
+
+  .announcement-bar__slide:not([hidden]) {
+    animation: announcement-in 0.35s ease;
+  }
+
+  .announcement-bar__text {
+    margin: 0;
+    letter-spacing: 0.04em;
+  }
+
+  .announcement-bar__text p {
+    display: inline;
+    margin: 0;
+  }
+
+  .announcement-bar__nav {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+  }
+
+  .announcement-bar__nav svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  .announcement-bar__account {
+    position: relative;
+  }
+
+  .announcement-bar__drop {
+    position: absolute;
+    top: 130%;
+    right: 0;
+    z-index: 30;
+    min-width: 160px;
+    margin: 0;
+    padding: 8px 0;
+    list-style: none;
+    background: var(--ab-text);
+    border: 1px solid var(--ab-border);
+    border-radius: 8px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(8px);
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+  }
+
+  .announcement-bar__account:hover .announcement-bar__drop,
+  .announcement-bar__account:focus-within .announcement-bar__drop {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+  }
+
+  .announcement-bar .announcement-bar__drop a {
+    display: block;
+    padding: 8px 18px;
+    color: var(--ab-bg);
+    font-size: 13px;
+  }
+
+  .announcement-bar .announcement-bar__drop a:hover {
+    background: color-mix(in srgb, var(--ab-bg) 8%, transparent);
+    color: var(--ab-bg);
+  }
+
+  @keyframes announcement-in {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  @keyframes announcement-pulse {
+    0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--ab-accent) 60%, transparent); }
+    70% { box-shadow: 0 0 0 10px transparent; }
+    100% { box-shadow: 0 0 0 0 transparent; }
+  }
+
+  @media (max-width: 989px) {
+    .announcement-bar__inner {
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      padding-top: 4px;
+      padding-bottom: 4px;
+    }
+
+    .announcement-bar__start {
+      display: none;
+    }
+
+    .announcement-bar__center {
+      grid-column: 1;
+      justify-content: flex-start;
+    }
+
+    .announcement-bar__track {
+      text-align: left;
+    }
+
+    .announcement-bar__end {
+      grid-column: 2;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .announcement-bar__nav {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .announcement-bar__slide:not([hidden]),
+    .announcement-bar__dot {
+      animation: none;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  if (!customElements.get('announcement-rotator')) {
+    customElements.define(
+      'announcement-rotator',
+      class AnnouncementRotator extends HTMLElement {
+        connectedCallback() {
+          this.slides = Array.from(this.querySelectorAll('.announcement-bar__slide'));
+          this.index = 0;
+          if (this.slides.length < 2) return;
+
+          this.querySelectorAll('[data-step]').forEach((button) => {
+            button.addEventListener('click', () => this.go(this.index + Number(button.dataset.step)));
+          });
+
+          const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+          if (this.dataset.autoplay === 'true' && !reduced) {
+            this.addEventListener('mouseenter', () => this.stop());
+            this.addEventListener('mouseleave', () => this.play());
+            this.addEventListener('focusin', () => this.stop());
+            this.addEventListener('focusout', () => this.play());
+            this.play();
+          }
+
+          this.onBlockSelect = (event) => {
+            const at = this.slides.findIndex((slide) => slide === event.target || slide.contains(event.target));
+            if (at > -1) {
+              this.stop();
+              this.go(at);
+            }
+          };
+          document.addEventListener('shopify:block:select', this.onBlockSelect);
+        }
+
+        disconnectedCallback() {
+          this.stop();
+          if (this.onBlockSelect) document.removeEventListener('shopify:block:select', this.onBlockSelect);
+        }
+
+        go(next) {
+          const total = this.slides.length;
+          this.index = (next + total) % total;
+          this.slides.forEach((slide, i) => {
+            slide.hidden = i !== this.index;
+          });
+        }
+
+        play() {
+          this.stop();
+          this.timer = setInterval(() => this.go(this.index + 1), Number(this.dataset.speed) || 5000);
+        }
+
+        stop() {
+          clearInterval(this.timer);
+        }
+      }
+    );
+  }
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "t:sections.announcement_bar.name",
+  "class": "announcement-bar-section",
+  "max_blocks": 6,
+  "enabled_on": {
+    "groups": ["header"]
+  },
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:labels.color_scheme",
+      "default": "scheme-3"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.announcement_bar.headers.announcements"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "t:sections.announcement_bar.settings.autoplay.label",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "autoplay_speed",
+      "label": "t:sections.announcement_bar.settings.autoplay_speed.label",
+      "min": 3,
+      "max": 10,
+      "step": 1,
+      "unit": "s",
+      "default": 5,
+      "visible_if": "{{ section.settings.autoplay }}"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.announcement_bar.headers.links"
+    },
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "t:sections.announcement_bar.settings.menu.label",
+      "info": "t:sections.announcement_bar.settings.menu.info"
+    },
+    {
+      "type": "text",
+      "id": "phone",
+      "label": "t:sections.announcement_bar.settings.phone.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_account",
+      "label": "t:sections.announcement_bar.settings.show_account.label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_currency",
+      "label": "t:sections.announcement_bar.settings.show_currency.label",
+      "info": "t:sections.announcement_bar.settings.show_currency.info",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_language",
+      "label": "t:sections.announcement_bar.settings.show_language.label",
+      "info": "t:sections.announcement_bar.settings.show_language.info",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "announcement",
+      "name": "t:sections.announcement_bar.blocks.announcement.name",
+      "settings": [
+        {
+          "type": "inline_richtext",
+          "id": "text",
+          "label": "t:sections.announcement_bar.blocks.announcement.settings.text.label",
+          "default": "Welcome to our store"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "t:sections.announcement_bar.blocks.announcement.settings.link.label"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.announcement_bar.name",
+      "blocks": [
+        { "type": "announcement", "settings": { "text": "Free shipping on orders over $75" } },
+        { "type": "announcement", "settings": { "text": "New arrivals every week" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

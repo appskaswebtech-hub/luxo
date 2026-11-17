@@ -1,0 +1,605 @@
+{%- liquid
+  assign scheme = section.settings.color_scheme.settings
+  assign count = section.blocks.size
+  assign overlay = section.settings.overlay_opacity | divided_by: 100.0
+  assign region_label = section.settings.accessibility_label
+  if region_label == blank
+    assign region_label = 'sections.slideshow.label' | t
+  endif
+-%}
+
+<slide-show
+  class="slideshow slideshow--{{ section.settings.height }}"
+  style="
+    --ss-bg: {{ scheme.background }};
+    --ss-text: {{ scheme.text }};
+    --ss-accent: {{ scheme.accent }};
+    --ss-overlay: {{ overlay }};
+  "
+  data-autoplay="{{ section.settings.autoplay }}"
+  data-speed="{{ section.settings.autoplay_speed | times: 1000 }}"
+  role="region"
+  aria-roledescription="{{ 'sections.slideshow.carousel' | t }}"
+  aria-label="{{ region_label | escape }}"
+>
+  <div class="slideshow__track" data-track>
+    {%- for block in section.blocks -%}
+      <div
+        class="slideshow__slide slideshow__slide--{{ block.settings.content_position }}"
+        id="Slide-{{ section.id }}-{{ forloop.index }}"
+        role="group"
+        aria-roledescription="{{ 'sections.slideshow.slide' | t }}"
+        aria-label="{{ 'sections.slideshow.position' | t: index: forloop.index, count: count }}"
+        {{ block.shopify_attributes }}
+      >
+        <div class="slideshow__media">
+          {%- if block.settings.video != blank -%}
+            {%- liquid
+              assign poster = block.settings.image | default: block.settings.video.preview_image
+              assign poster_url = poster | image_url: width: 1800
+            -%}
+            {{
+              block.settings.video
+              | video_tag:
+                autoplay: true,
+                loop: true,
+                muted: true,
+                playsinline: true,
+                controls: false,
+                preload: 'metadata',
+                image_size: '1800x',
+                poster: poster_url,
+                class: 'slideshow__image slideshow__video'
+            }}
+          {%- elsif block.settings.image != blank -%}
+            {%- liquid
+              assign loading = 'lazy'
+              assign priority = 'auto'
+              if forloop.first and section.index < 3
+                assign loading = 'eager'
+                assign priority = 'high'
+              endif
+            -%}
+            {{
+              block.settings.image
+              | image_url: width: 3200
+              | image_tag:
+                widths: '375, 550, 750, 1100, 1500, 1800, 2200, 2800, 3200',
+                sizes: '100vw',
+                loading: loading,
+                fetchpriority: priority,
+                class: 'slideshow__image'
+            }}
+          {%- else -%}
+            {%- capture placeholder -%}lifestyle-{% cycle '1', '2' %}{%- endcapture -%}
+            {{ placeholder | placeholder_svg_tag: 'slideshow__image slideshow__placeholder' }}
+          {%- endif -%}
+        </div>
+
+        {%- capture slide_content -%}{{ block.settings.subheading }}{{ block.settings.heading }}{{ block.settings.text }}{{ block.settings.button_label }}{%- endcapture -%}
+        {%- if slide_content != blank -%}
+          <div class="slideshow__content">
+            <div class="slideshow__box{% if block.settings.show_box %} slideshow__box--solid{% endif %}">
+              {%- if block.settings.subheading != blank -%}
+                <p class="slideshow__subheading">{{ block.settings.subheading | escape }}</p>
+              {%- endif -%}
+              {%- if block.settings.heading != blank -%}
+                {%- if forloop.first and section.index == 1 -%}
+                  <h1 class="slideshow__heading">{{ block.settings.heading | escape }}</h1>
+                {%- else -%}
+                  <h2 class="slideshow__heading">{{ block.settings.heading | escape }}</h2>
+                {%- endif -%}
+              {%- endif -%}
+              {%- if block.settings.text != blank -%}
+                <div class="slideshow__text">{{ block.settings.text }}</div>
+              {%- endif -%}
+              {%- if block.settings.button_label != blank -%}
+                <a
+                  class="slideshow__button"
+                  {% if block.settings.button_link != blank %}
+                    href="{{ block.settings.button_link }}"
+                  {% else %}
+                    role="link" aria-disabled="true"
+                  {% endif %}
+                >
+                  {{- block.settings.button_label | escape -}}
+                </a>
+              {%- endif -%}
+            </div>
+          </div>
+        {%- endif -%}
+      </div>
+    {%- endfor -%}
+  </div>
+
+  {%- if count > 1 -%}
+    <div class="slideshow__controls">
+      <button type="button" class="slideshow__control" data-step="-1" aria-label="{{ 'sections.slideshow.previous' | t }}">
+        <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false"><path d="M10 3 5 8l5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="slideshow__dots">
+        {%- for block in section.blocks -%}
+          <button
+            type="button"
+            class="slideshow__dot"
+            data-dot="{{ forloop.index0 }}"
+            aria-controls="Slide-{{ section.id }}-{{ forloop.index }}"
+            aria-label="{{ 'sections.slideshow.go_to' | t: index: forloop.index }}"
+            {% if forloop.first %}
+              aria-current="true"
+            {% endif %}
+          ></button>
+        {%- endfor -%}
+      </div>
+      <button type="button" class="slideshow__control" data-step="1" aria-label="{{ 'sections.slideshow.next' | t }}">
+        <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false"><path d="m6 3 5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      {%- if section.settings.autoplay -%}
+        <button
+          type="button"
+          class="slideshow__control"
+          data-toggle
+          aria-pressed="false"
+          aria-label="{{ 'sections.slideshow.pause' | t }}"
+          data-label-pause="{{ 'sections.slideshow.pause' | t }}"
+          data-label-play="{{ 'sections.slideshow.play' | t }}"
+        >
+          <svg class="slideshow__icon-pause" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M5 3h2v10H5zM9 3h2v10H9z" fill="currentColor"/></svg>
+          <svg class="slideshow__icon-play" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M5 3l8 5-8 5z" fill="currentColor"/></svg>
+        </button>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+</slide-show>
+
+{% stylesheet %}
+  .slideshow {
+    position: relative;
+    display: block;
+    background: var(--ss-bg);
+    color: var(--ss-text);
+  }
+
+  .slideshow__track {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+  }
+
+  .slideshow__track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .slideshow__slide {
+    position: relative;
+    display: grid;
+    flex: 0 0 100%;
+    scroll-snap-align: start;
+    min-height: var(--ss-height);
+  }
+
+  .slideshow--small { --ss-height: 26rem; }
+  .slideshow--medium { --ss-height: 34rem; }
+  .slideshow--large { --ss-height: 44rem; }
+  .slideshow--full { --ss-height: 100svh; }
+
+  .slideshow__media {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+  }
+
+  .slideshow__media::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: #000;
+    opacity: var(--ss-overlay);
+  }
+
+  .slideshow__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .slideshow__placeholder {
+    background: color-mix(in srgb, var(--ss-text) 8%, var(--ss-bg));
+    fill: color-mix(in srgb, var(--ss-text) 40%, transparent);
+  }
+
+  .slideshow__content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    width: 100%;
+    max-width: var(--page-width, 1400px);
+    margin: 0 auto;
+    padding: 3rem 1.25rem 5rem;
+  }
+
+  .slideshow__slide--left .slideshow__content { justify-content: flex-start; align-items: center; text-align: left; }
+  .slideshow__slide--center .slideshow__content { justify-content: center; align-items: center; text-align: center; }
+  .slideshow__slide--right .slideshow__content { justify-content: flex-end; align-items: center; text-align: right; }
+  .slideshow__slide--bottom-left .slideshow__content { justify-content: flex-start; align-items: flex-end; text-align: left; }
+
+  .slideshow__box {
+    max-width: 36rem;
+    color: #fff;
+  }
+
+  .slideshow__box--solid {
+    padding: 2rem;
+    background: var(--ss-bg);
+    color: var(--ss-text);
+  }
+
+  .slideshow__subheading {
+    margin: 0 0 0.75rem;
+    font-size: 0.8125rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .slideshow__heading {
+    margin: 0 0 1rem;
+    font-family: var(--font-heading-family);
+    font-weight: var(--font-heading-weight);
+    font-size: clamp(2rem, 5vw, 4rem);
+    line-height: 1.05;
+    color: inherit;
+  }
+
+  .slideshow__text {
+    margin-bottom: 1.5rem;
+  }
+
+  .slideshow__text p {
+    margin: 0;
+  }
+
+  .slideshow__button {
+    display: inline-flex;
+    align-items: center;
+    min-height: 3rem;
+    padding: 0 2rem;
+    border-radius: var(--button-radius, 0);
+    background: var(--ss-accent);
+    color: var(--ss-bg);
+    font-weight: 600;
+    text-decoration: none;
+    text-transform: var(--button-text-transform, none);
+  }
+
+  .slideshow__controls {
+    position: absolute;
+    right: 0;
+    bottom: 1rem;
+    left: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    color: #fff;
+  }
+
+  .slideshow__control {
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.35);
+    color: inherit;
+    cursor: pointer;
+  }
+
+  .slideshow__control svg {
+    width: 0.875rem;
+    height: 0.875rem;
+  }
+
+  .slideshow__icon-play,
+  .slideshow__control[aria-pressed='true'] .slideshow__icon-pause {
+    display: none;
+  }
+
+  .slideshow__control[aria-pressed='true'] .slideshow__icon-play {
+    display: block;
+  }
+
+  .slideshow__dots {
+    display: flex;
+    gap: 0.25rem;
+  }
+
+  .slideshow__dot {
+    position: relative;
+    width: 1.5rem;
+    height: 1.5rem;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+  }
+
+  .slideshow__dot::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0.5rem;
+    height: 0.5rem;
+    border: 1px solid #fff;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .slideshow__dot[aria-current='true']::before {
+    background: #fff;
+  }
+
+  .slideshow__control:focus-visible,
+  .slideshow__dot:focus-visible,
+  .slideshow__button:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+  }
+
+  @media screen and (max-width: 749px) {
+    .slideshow--small { --ss-height: 22rem; }
+    .slideshow--medium { --ss-height: 28rem; }
+    .slideshow--large { --ss-height: 36rem; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .slideshow__track {
+      scroll-behavior: auto;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  if (!customElements.get('slide-show')) {
+    customElements.define(
+      'slide-show',
+      class SlideShow extends HTMLElement {
+        connectedCallback() {
+          this.track = this.querySelector('[data-track]');
+          this.slides = Array.from(this.track.children);
+          this.dots = Array.from(this.querySelectorAll('[data-dot]'));
+          this.toggle = this.querySelector('[data-toggle]');
+          this.index = 0;
+          /* Background videos stay still for visitors who prefer reduced motion */
+          if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            this.querySelectorAll('video').forEach((video) => video.pause());
+          }
+          if (this.slides.length < 2) return;
+
+          this.querySelectorAll('[data-step]').forEach((button) => {
+            button.addEventListener('click', () => this.go(this.index + Number(button.dataset.step)));
+          });
+          this.dots.forEach((dot) => dot.addEventListener('click', () => this.go(Number(dot.dataset.dot))));
+
+          this.track.addEventListener(
+            'scroll',
+            () => {
+              const at = Math.round(this.track.scrollLeft / this.track.clientWidth);
+              if (at !== this.index) this.mark(at);
+            },
+            { passive: true }
+          );
+
+          const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+          this.paused = reduced || this.dataset.autoplay !== 'true';
+          if (this.toggle) {
+            this.syncToggle();
+            this.toggle.addEventListener('click', () => {
+              this.paused = !this.paused;
+              this.syncToggle();
+              this.paused ? this.stop() : this.play();
+            });
+          }
+          this.addEventListener('mouseenter', () => this.stop());
+          this.addEventListener('mouseleave', () => this.play());
+          this.addEventListener('focusin', () => this.stop());
+          this.addEventListener('focusout', () => this.play());
+          this.play();
+
+          document.addEventListener('shopify:block:select', (event) => {
+            const at = this.slides.findIndex((slide) => slide.contains(event.target) || slide === event.target);
+            if (at > -1) {
+              this.paused = true;
+              this.stop();
+              this.go(at);
+            }
+          });
+        }
+
+        disconnectedCallback() {
+          this.stop();
+        }
+
+        go(next) {
+          const total = this.slides.length;
+          const at = (next + total) % total;
+          this.track.scrollTo({ left: this.track.clientWidth * at });
+          this.mark(at);
+        }
+
+        mark(at) {
+          this.index = at;
+          this.dots.forEach((dot, i) => {
+            if (i === at) dot.setAttribute('aria-current', 'true');
+            else dot.removeAttribute('aria-current');
+          });
+        }
+
+        syncVideos() {
+          this.querySelectorAll('video').forEach((video) => {
+            if (this.paused) video.pause();
+            else video.play().catch(() => {});
+          });
+        }
+
+        syncToggle() {
+          this.syncVideos();
+          this.toggle.setAttribute('aria-pressed', String(this.paused));
+          this.toggle.setAttribute('aria-label', this.paused ? this.toggle.dataset.labelPlay : this.toggle.dataset.labelPause);
+        }
+
+        play() {
+          this.stop();
+          if (this.paused) return;
+          this.timer = setInterval(() => this.go(this.index + 1), Number(this.dataset.speed) || 5000);
+        }
+
+        stop() {
+          clearInterval(this.timer);
+        }
+      }
+    );
+  }
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "t:sections.slideshow.name",
+  "class": "slideshow-section",
+  "max_blocks": 8,
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:labels.color_scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "select",
+      "id": "height",
+      "label": "t:sections.slideshow.settings.height.label",
+      "default": "medium",
+      "options": [
+        { "value": "small", "label": "t:sections.slideshow.settings.height.options__small" },
+        { "value": "medium", "label": "t:sections.slideshow.settings.height.options__medium" },
+        { "value": "large", "label": "t:sections.slideshow.settings.height.options__large" },
+        { "value": "full", "label": "t:sections.slideshow.settings.height.options__full" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "t:sections.slideshow.settings.overlay_opacity.label",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "unit": "%",
+      "default": 25
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "t:sections.slideshow.settings.autoplay.label",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "autoplay_speed",
+      "label": "t:sections.slideshow.settings.autoplay_speed.label",
+      "min": 3,
+      "max": 10,
+      "step": 1,
+      "unit": "s",
+      "default": 6,
+      "visible_if": "{{ section.settings.autoplay }}"
+    },
+    {
+      "type": "text",
+      "id": "accessibility_label",
+      "label": "t:sections.slideshow.settings.accessibility_label.label",
+      "info": "t:sections.slideshow.settings.accessibility_label.info"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "slide",
+      "name": "t:sections.slideshow.blocks.slide.name",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "t:sections.slideshow.blocks.slide.settings.image.label"
+        },
+        {
+          "type": "video",
+          "id": "video",
+          "label": "t:sections.slideshow.blocks.slide.settings.video.label",
+          "info": "t:sections.slideshow.blocks.slide.settings.video.info"
+        },
+        {
+          "type": "text",
+          "id": "subheading",
+          "label": "t:sections.slideshow.blocks.slide.settings.subheading.label",
+          "default": "New season"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "t:sections.slideshow.blocks.slide.settings.heading.label",
+          "default": "Image slide"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "t:sections.slideshow.blocks.slide.settings.text.label",
+          "default": "<p>Tell your brand's story through images.</p>"
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "t:sections.slideshow.blocks.slide.settings.button_label.label",
+          "default": "Shop now"
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "t:sections.slideshow.blocks.slide.settings.button_link.label"
+        },
+        {
+          "type": "select",
+          "id": "content_position",
+          "label": "t:sections.slideshow.blocks.slide.settings.content_position.label",
+          "default": "center",
+          "options": [
+            { "value": "left", "label": "t:sections.slideshow.blocks.slide.settings.content_position.options__left" },
+            { "value": "center", "label": "t:sections.slideshow.blocks.slide.settings.content_position.options__center" },
+            { "value": "right", "label": "t:sections.slideshow.blocks.slide.settings.content_position.options__right" },
+            { "value": "bottom-left", "label": "t:sections.slideshow.blocks.slide.settings.content_position.options__bottom_left" }
+          ]
+        },
+        {
+          "type": "checkbox",
+          "id": "show_box",
+          "label": "t:sections.slideshow.blocks.slide.settings.show_box.label",
+          "default": false
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.slideshow.name",
+      "category": "t:general.categories.image",
+      "blocks": [
+        { "type": "slide" },
+        { "type": "slide", "settings": { "heading": "Second slide", "subheading": "Just in" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

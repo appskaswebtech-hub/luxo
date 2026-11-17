@@ -43,7 +43,20 @@
                 {%- endif -%}
               {%- endif -%}
             </td>
-            <td data-label="{{ 'customer.order.price' | t }}">{{ line_item.final_price | money }}</td>
+            <td data-label="{{ 'customer.order.price' | t }}">
+              {{ line_item.final_price | money }}
+              {%- if line_item.unit_price_measurement -%}
+                {%- liquid
+                  assign unit_ref = line_item.unit_price_measurement.reference_value
+                  assign unit_name = line_item.unit_price_measurement.reference_unit
+                  if unit_ref != 1
+                    assign unit_name = unit_ref | append: unit_name
+                  endif
+                  assign unit_amount = line_item.unit_price | money
+                -%}
+                <br><small>{{ 'price_tag.per_unit' | t: price: unit_amount, unit: unit_name }}</small>
+              {%- endif -%}
+            </td>
             <td data-label="{{ 'customer.order.quantity' | t }}">{{ line_item.quantity }}</td>
             <td data-label="{{ 'customer.order.total' | t }}">{{ line_item.final_line_price | money }}</td>
           </tr>

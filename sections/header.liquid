@@ -24,64 +24,6 @@
        --header-radius: {{ section.settings.custom_radius }}px;
      {% endif %}">
 
-  <div class="header-topbar">
-    <div class="header-container">
-      <div class="header-topbar__grid">
-        
-        <ul class="header-topbar__links">
-          {%- if section.settings.topbar_menu != blank -%}
-            {%- for link in linklists[section.settings.topbar_menu].links -%}
-              <li><a href="{{ link.url }}">{{ link.title }}</a></li>
-            {%- endfor -%}
-          {%- endif -%}
-        </ul>
-
-        {%- if section.settings.phone != blank -%}
-          <div class="header-topbar__phone">
-            <span class="header-pulse-dot"></span>
-            {{ 'general.header.call_us' | t }}
-            <a href="tel:{{ section.settings.phone | remove: ' ' | remove: '(' | remove: ')' | remove: '-' }}">
-              {{- section.settings.phone -}}
-            </a>
-          </div>
-        {%- endif -%}
-
-        <ul class="header-topbar__account">
-          <li class="header-has-drop">
-            <a href="{% if customer %}{{ routes.account_url }}{% else %}{{ routes.account_login_url }}{% endif %}">
-              {%- if customer -%}{{ 'general.header.my_account' | t }}{%- else -%}{{ 'general.header.log_in' | t }}{%- endif -%}
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 9l6 6 6-6"/></svg>
-            </a>
-            <ul class="header-drop">
-              {%- if customer -%}
-                <li><a href="{{ routes.account_url }}">{{ 'general.header.my_account' | t }}</a></li>
-                <li><a href="{{ routes.account_addresses_url }}">{{ 'general.header.addresses' | t }}</a></li>
-                <li><a href="{{ routes.account_logout_url }}">{{ 'general.header.log_out' | t }}</a></li>
-              {%- else -%}
-                <li><a href="{{ routes.account_login_url }}">{{ 'general.header.log_in' | t }}</a></li>
-                <li><a href="{{ routes.account_register_url }}">{{ 'general.header.register' | t }}</a></li>
-              {%- endif -%}
-              <li><a href="{{ routes.cart_url }}">{{ 'general.header.my_cart' | t }}</a></li>
-            </ul>
-          </li>
-
-          {%- if section.settings.show_currency and localization.available_countries.size > 1 -%}
-            <li>
-              {% render 'localization-selector', type: 'country', form_id: 'HeaderCountryForm', style: 'compact' %}
-            </li>
-          {%- endif -%}
-
-          {%- if section.settings.show_language and localization.available_languages.size > 1 -%}
-            <li>
-              {% render 'localization-selector', type: 'language', form_id: 'HeaderLanguageForm', style: 'compact' %}
-            </li>
-          {%- endif -%}
-        </ul>
-
-      </div>
-    </div>
-  </div>
-
   <div class="header-mainbar">
     <div class="header-container">
       <div class="header-mainbar__grid">
@@ -241,11 +183,20 @@
                   {%- if link.links.size > 0 -%}
                     <ul class="header-subnav">
                       {%- for child in link.links -%}
-                        <li>
-                          <a href="{{ child.url }}">
-                            <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M9 6l6 6-6 6"/></svg>
-                            {{ child.title }}
+                        <li class="{% if child.links.size > 0 %}header-has-third{% endif %}">
+                          <a href="{{ child.url }}"{% if child.current %} aria-current="page"{% endif %}>
+                            <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+                            <span>{{ child.title | escape }}</span>
                           </a>
+                          {%- if child.links.size > 0 -%}
+                            <ul class="header-thirdnav">
+                              {%- for grandchild in child.links -%}
+                                <li>
+                                  <a href="{{ grandchild.url }}"{% if grandchild.current %} aria-current="page"{% endif %}>{{ grandchild.title | escape }}</a>
+                                </li>
+                              {%- endfor -%}
+                            </ul>
+                          {%- endif -%}
                         </li>
                       {%- endfor -%}
                     </ul>
@@ -283,7 +234,21 @@
               </button>
               <ul class="header-mobile__sub">
                 {%- for child in link.links -%}
-                  <li><a href="{{ child.url }}">{{ child.title }}</a></li>
+                  <li>
+                    {%- if child.links.size > 0 -%}
+                      <button class="header-mobile__toggle header-mobile__toggle--child" aria-expanded="false" data-header-toggle>
+                        {{ child.title | escape }}
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+                      </button>
+                      <ul class="header-mobile__sub header-mobile__sub--third">
+                        {%- for grandchild in child.links -%}
+                          <li><a href="{{ grandchild.url }}">{{ grandchild.title | escape }}</a></li>
+                        {%- endfor -%}
+                      </ul>
+                    {%- else -%}
+                      <a href="{{ child.url }}">{{ child.title | escape }}</a>
+                    {%- endif -%}
+                  </li>
                 {%- endfor -%}
               </ul>
             {%- else -%}
@@ -450,35 +415,6 @@
       "id": "logo",
       "label": "t:sections.header.settings.logo.label",
       "info": "t:sections.header.settings.logo.info"
-    },
-    {
-      "type": "header",
-      "content": "t:sections.header.headers.top_bar"
-    },
-    {
-      "type": "link_list",
-      "id": "topbar_menu",
-      "label": "t:sections.header.settings.topbar_menu.label"
-    },
-    {
-      "type": "text",
-      "id": "phone",
-      "label": "t:sections.header.settings.phone.label",
-      "default": "(+91) 90129 83208"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_currency",
-      "label": "t:sections.header.settings.show_currency.label",
-      "info": "t:sections.header.settings.show_currency.info",
-      "default": true
-    },
-    {
-      "type": "checkbox",
-      "id": "show_language",
-      "label": "t:sections.header.settings.show_language.label",
-      "info": "t:sections.header.settings.show_language.info",
-      "default": true
     },
     {
       "type": "header",

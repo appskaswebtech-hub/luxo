@@ -34,6 +34,7 @@
   data-section="{{ section.id }}"
   data-cart-total-value="{% render 'price', amount: cart.total_price %}"
   data-cart-count-value="{{ cart.item_count }}"
+  data-quantity-error="{{ 'cart.errors.quantity_limit' | t: quantity: '[quantity]' }}"
   {% if cart.empty? %}data-empty{% endif %}
   style="
     --cart-bg: {{ cart_bg }};

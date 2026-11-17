@@ -101,6 +101,8 @@
           </div>
         </div>
 
+        {% render 'article-comments', article: article, blog: blog %}
+
         <div class="theme-article-{{ section.id }}__footer-nav">
           {%- if blog.previous_article -%}
             <a href="{{ blog.previous_article.url }}" class="theme-article-{{ section.id }}__nav-link theme-article-{{ section.id }}__nav-prev">

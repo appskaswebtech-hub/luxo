@@ -1,0 +1,234 @@
+{% doc %}
+  Renders selectable variant options on a product card, plus the variant data
+  the card script needs. Follows the "Variant options on cards" theme settings:
+  show or hide options, option name, selected value, how many values show and
+  what the "+" button does.
+
+  Render inside a <card-variants> element that also holds the card's price
+  ([data-card-price]) and product form (input [data-card-variant-id] and a
+  button[name="add"] with a [data-card-button-label] span).
+
+  @param {product} product - The product on the card
+  @param {variant} variant - The variant the card starts on
+
+  @example
+  {% render 'card-variant-options', product: product, variant: card_variant %}
+{% enddoc %}
+
+{%- unless product.has_only_default_variant -%}
+  {%- liquid
+    assign variant_limit = 0
+    if settings.card_variant_limit != 'all'
+      assign variant_limit = settings.card_variant_limit | plus: 0
+    endif
+  -%}
+
+  {%- if settings.card_show_variants -%}
+    <div class="card-options">
+      {%- for option in product.options_with_values -%}
+        {%- assign option_index = forloop.index0 -%}
+        <div class="card-options__group" role="group" aria-label="{{ option.name | escape }}">
+          {%- if settings.card_show_option_label or settings.card_show_selected_value -%}
+            <span class="card-options__label" aria-hidden="true">
+              {%- if settings.card_show_option_label -%}
+                {{- option.name | escape -}}
+                {%- if settings.card_show_selected_value %}: {% endif -%}
+              {%- endif -%}
+              {%- if settings.card_show_selected_value -%}
+                <span data-selected-label="{{ option_index }}">{{ variant.options[option_index] | escape }}</span>
+              {%- endif -%}
+            </span>
+          {%- endif -%}
+
+          <div class="card-options__values">
+            {%- assign hidden_count = 0 -%}
+            {%- for value in option.values -%}
+              {%- liquid
+                assign is_selected = false
+                if variant.options[option_index] == value
+                  assign is_selected = true
+                endif
+                assign is_hidden = false
+                if variant_limit > 0 and forloop.index > variant_limit
+                  unless is_selected
+                    assign is_hidden = true
+                    assign hidden_count = hidden_count | plus: 1
+                  endunless
+                endif
+                assign value_name = value | escape
+                assign swatch_color = value.swatch.color | default: value_name
+              -%}
+              {%- if option.name == 'Color' or option.name == 'Colour' -%}
+                <button
+                  type="button"
+                  class="card-options__swatch"
+                  style="--swatch: {{ swatch_color }};"
+                  title="{{ value_name }}"
+                  aria-label="{{ value_name }}"
+                  aria-pressed="{{ is_selected }}"
+                  data-option-index="{{ option_index }}"
+                  data-option-value="{{ value_name }}"
+                  {% if is_hidden %}
+                    hidden
+                  {% endif %}
+                ></button>
+              {%- else -%}
+                <button
+                  type="button"
+                  class="card-options__pill"
+                  aria-pressed="{{ is_selected }}"
+                  data-option-index="{{ option_index }}"
+                  data-option-value="{{ value_name }}"
+                  {% if is_hidden %}
+                    hidden
+                  {% endif %}
+                >
+                  {{- value_name -}}
+                </button>
+              {%- endif -%}
+            {%- endfor -%}
+
+            {%- if hidden_count > 0 -%}
+              {%- if settings.card_more_action == 'link' -%}
+                <a
+                  href="{{ product.url }}"
+                  class="card-options__more"
+                  aria-label="{{ 'products.view_more_options' | t: count: hidden_count, option: option.name, product: product.title }}"
+                >
+                  +{{ hidden_count }}
+                </a>
+              {%- else -%}
+                <button
+                  type="button"
+                  class="card-options__more"
+                  data-show-more
+                  aria-label="{{ 'products.show_more_options' | t: count: hidden_count, option: option.name }}"
+                >
+                  +{{ hidden_count }}
+                </button>
+              {%- endif -%}
+            {%- endif -%}
+          </div>
+        </div>
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
+
+  <script type="application/json" data-card-variants>
+    [
+      {%- for item in product.variants -%}
+        {%- capture item_price -%}{% render 'price', amount: item.price %}{%- endcapture -%}
+        {%- capture item_compare -%}{% if item.compare_at_price > item.price %}{% render 'price', amount: item.compare_at_price %}{% endif %}{%- endcapture -%}
+        {"id":{{ item.id }},"available":{{ item.available | json }},"options":{{ item.options | json }},"price":{{ item_price | strip | json }},"compare":{{ item_compare | strip | json }}}{% unless forloop.last %},{% endunless %}
+      {%- endfor -%}
+    ]
+  </script>
+{%- endunless -%}
+
+{% stylesheet %}
+  .card-options {
+    display: grid;
+    gap: 0.625rem;
+    margin-block: 0.5rem;
+  }
+
+  .card-options__group {
+    display: grid;
+    gap: 0.375rem;
+  }
+
+  .card-options__label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    opacity: 0.75;
+  }
+
+  .card-options__values {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.375rem;
+  }
+
+  .card-options__swatch {
+    position: relative;
+    width: 1.125rem;
+    height: 1.125rem;
+    padding: 0;
+    border: 1px solid color-mix(in srgb, currentColor 25%, transparent);
+    border-radius: 50%;
+    background: var(--swatch);
+    cursor: pointer;
+  }
+
+  .card-options__swatch[aria-pressed='true'] {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+  }
+
+  .card-options__swatch.is-unavailable {
+    opacity: 0.4;
+  }
+
+  .card-options__pill {
+    min-height: 1.5rem;
+    padding: 0.125rem 0.5rem;
+    border: 1px solid color-mix(in srgb, currentColor 25%, transparent);
+    border-radius: 999px;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  }
+
+  .card-options__pill:hover {
+    border-color: currentColor;
+  }
+
+  .card-options__pill[aria-pressed='true'] {
+    color: var(--color-background, #fff);
+    background: var(--color-foreground, #000);
+    border-color: var(--color-foreground, #000);
+  }
+
+  .card-options__pill.is-unavailable {
+    text-decoration: line-through;
+    opacity: 0.5;
+  }
+
+  .card-options__swatch:focus-visible,
+  .card-options__pill:focus-visible,
+  .card-options__more:focus-visible {
+    outline: 2px solid var(--color-accent, currentColor);
+    outline-offset: 2px;
+  }
+
+  .card-options__more {
+    min-height: 1.5rem;
+    padding: 0.125rem 0.375rem;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-decoration: none;
+    opacity: 0.7;
+    cursor: pointer;
+  }
+
+  .card-options__more:hover {
+    opacity: 1;
+    text-decoration: underline;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card-options__pill {
+      transition: none;
+    }
+  }
+{% endstylesheet %}

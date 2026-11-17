@@ -3,13 +3,13 @@
   assign columns_desktop = section.settings.columns_desktop
   assign columns_mobile = section.settings.columns_mobile
   assign image_ratio = settings.card_image_ratio
-  assign show_second_image = settings.card_hover_image
+  assign image_behavior = settings.card_image_behavior | default: 'slider'
+  assign show_second_image = false
+  if image_behavior == 'hover'
+    assign show_second_image = true
+  endif
   assign show_vendor = settings.card_show_vendor
   assign badge_position = 'collection-grid-' | append: section.id | append: '__badge--' | append: settings.card_badge_position
-  assign variant_limit = 0
-  if settings.card_variant_limit != 'all'
-    assign variant_limit = settings.card_variant_limit | plus: 0
-  endif
   assign quick_add = section.settings.quick_add
   assign show_filters = section.settings.show_filters
   assign filter_layout = section.settings.filter_layout
@@ -61,7 +61,7 @@
           {%- if collection.description != blank -%}
             <p class="collection-grid-{{ section.id }}__banner-desc">{{ collection.description | strip_html | truncate: 150 }}</p>
           {%- endif -%}
-          <span class="collection-grid-{{ section.id }}__banner-count">{{ 'collection_page.products_count' | t: count: collection.products_count }}</span>
+          <span class="collection-grid-{{ section.id }}__banner-count" data-facets-update="collection-count-{{ section.id }}">{{ 'collection_page.products_count' | t: count: collection.products_count }}</span>
         </div>
       </div>
     {%- endif -%}
@@ -73,47 +73,32 @@
           
           <div class="collection-grid-{{ section.id }}__filter-sidebar" id="FilterSidebar-{{ section.id }}">
             <div class="collection-grid-{{ section.id }}__filter-header">
-              <h2 class="collection-grid-{{ section.id }}__filter-heading">{{ 'collection_page.filters' | t }}</h2>
-              <button type="button" class="collection-grid-{{ section.id }}__filter-close" id="FilterClose-{{ section.id }}">✕</button>
+              <h2 class="collection-grid-{{ section.id }}__filter-heading" id="FilterHeading-{{ section.id }}">{{ 'collection_page.filters' | t }}</h2>
+              <button
+                type="button"
+                class="collection-grid-{{ section.id }}__filter-close"
+                id="FilterClose-{{ section.id }}"
+                aria-label="{{ 'general.accessibility.close' | t }}"
+              >
+                <span aria-hidden="true">✕</span>
+              </button>
             </div>
-            
-            <form id="CollectionGridForm-{{ section.id }}" class="collection-grid-{{ section.id }}__filter-form">
-              {%- for filter in collection.filters -%}
-                <details class="collection-grid-{{ section.id }}__filter-group" open>
-                  <summary class="collection-grid-{{ section.id }}__filter-summary">
-                    <span>{{ filter.label }}</span>
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 9l6 6 6-6"/></svg>
-                  </summary>
-                  <div class="collection-grid-{{ section.id }}__filter-options">
-                    {%- case filter.type -%}
-                      {%- when 'list' -%}
-                        {%- for value in filter.values -%}
-                          <label class="collection-grid-{{ section.id }}__filter-checkbox">
-                            <input 
-                              type="checkbox" 
-                              name="{{ value.param_name }}" 
-                              value="{{ value.value }}"
-                              {% if value.active %}checked{% endif %}
-                            >
-                            <span>{{ value.label }} ({{ value.count }})</span>
-                          </label>
-                        {%- endfor -%}
-                      {%- when 'price_range' -%}
-                        <div class="collection-grid-{{ section.id }}__price-range">
-                          <input type="number" name="{{ filter.min_value.param_name }}" placeholder="{{ 'collection_page.min' | t }}" value="{{ filter.min_value.value }}" min="0">
-                          <span>-</span>
-                          <input type="number" name="{{ filter.max_value.param_name }}" placeholder="{{ 'collection_page.max' | t }}" value="{{ filter.max_value.value }}" min="0">
-                        </div>
-                    {%- endcase -%}
-                  </div>
-                </details>
-              {%- endfor -%}
-            </form>
 
-            <div class="collection-grid-{{ section.id }}__filter-actions">
-              <button type="button" class="collection-grid-{{ section.id }}__filter-apply" id="FilterApply-{{ section.id }}">{{ 'collection_page.apply' | t }}</button>
-              <a href="{{ collection.url }}" class="collection-grid-{{ section.id }}__filter-reset">{{ 'collection_page.clear_all' | t }}</a>
-            </div>
+            {%- liquid
+              assign facets_form_id = 'CollectionFacets-' | append: section.id
+              assign clear_url = collection.url
+              if collection.sort_by != blank
+                assign clear_url = collection.url | append: '?sort_by=' | append: collection.sort_by
+              endif
+            -%}
+            {% render 'facets',
+              filters: collection.filters,
+              action: collection.url,
+              form_id: facets_form_id,
+              layout: 'sidebar',
+              section_id: section.id,
+              clear_url: clear_url
+            %}
           </div>
 
           {%- if filter_layout == 'vertical' and featured_product != blank -%}
@@ -146,31 +131,48 @@
         {%- if show_filters or show_sorting -%}
           <div class="collection-grid-{{ section.id }}__toolbar">
             {%- if show_filters and filter_layout == 'horizontal' -%}
-              <button type="button" class="collection-grid-{{ section.id }}__filter-toggle" id="FilterToggle-{{ section.id }}">
+              <button type="button" class="collection-grid-{{ section.id }}__filter-toggle" id="FilterToggle-{{ section.id }}" aria-controls="FilterSidebar-{{ section.id }}" aria-expanded="false">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
                 {{ 'collection_page.filter' | t }}
               </button>
             {%- elsif show_filters and filter_layout == 'vertical' -%}
-              <button type="button" class="collection-grid-{{ section.id }}__filter-toggle collection-grid-{{ section.id }}__filter-toggle--mobile" id="FilterToggleMobile-{{ section.id }}">
+              <button type="button" class="collection-grid-{{ section.id }}__filter-toggle collection-grid-{{ section.id }}__filter-toggle--mobile" id="FilterToggleMobile-{{ section.id }}" aria-controls="FilterSidebar-{{ section.id }}" aria-expanded="false">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
                 {{ 'collection_page.filter' | t }}
               </button>
             {%- endif -%}
 
             {%- if show_sorting -%}
+              {%- unless show_filters -%}
+                <form action="{{ collection.url }}" method="get" class="collection-grid-{{ section.id }}__sort-form">
+              {%- endunless -%}
               <div class="collection-grid-{{ section.id }}__sort-wrapper">
                 <label for="SortBy-{{ section.id }}" class="collection-grid-{{ section.id }}__sort-label">{{ 'collection_page.sort_by' | t }}</label>
-                <select name="sort_by" id="SortBy-{{ section.id }}" class="collection-grid-{{ section.id }}__sort-select">
+                <select
+                  name="sort_by"
+                  id="SortBy-{{ section.id }}"
+                  class="collection-grid-{{ section.id }}__sort-select"
+                  {% if show_filters %}
+                    form="CollectionFacets-{{ section.id }}"
+                  {% else %}
+                    data-sort-only="{{ section.id }}"
+                  {% endif %}
+                >
                   {%- assign sort_by = collection.sort_by | default: collection.default_sort_by -%}
                   {%- for option in collection.sort_options -%}
-                    <option value="{{ option.value }}" {% if option.value == sort_by %}selected{% endif %}>{{ option.name }}</option>
+                    <option value="{{ option.value | escape }}" {% if option.value == sort_by %}selected{% endif %}>{{ option.name | escape }}</option>
                   {%- endfor -%}
                 </select>
               </div>
+              {%- unless show_filters -%}
+                  <noscript><button type="submit">{{ 'collection_page.apply' | t }}</button></noscript>
+                </form>
+              {%- endunless -%}
             {%- endif -%}
           </div>
         {%- endif -%}
 
+        <div data-facets-update="collection-results-{{ section.id }}" data-facets-count="{{ 'collection_page.products_count' | t: count: collection.products_count }}">
         {%- paginate collection.products by products_per_page -%}
           {%- if collection.products.size > 0 -%}
             <div class="collection-grid-{{ section.id }}__grid">
@@ -187,6 +189,12 @@
                   </div>
 
                   <div class="collection-grid-{{ section.id }}__card-image-wrapper">
+                    {%- if image_behavior == 'slider' and product.images.size > 1 -%}
+                      {%- capture slider_class -%}collection-grid-{{ section.id }}__card-image collection-grid-{{ section.id }}__card-image-ratio--{{ image_ratio }}{%- endcapture -%}
+                      <div class="collection-grid-{{ section.id }}__card-image-link">
+                        {% render 'card-image-slider', product: product, url: product.url, image_class: slider_class %}
+                      </div>
+                    {%- else -%}
                     <a href="{{ product.url }}" class="collection-grid-{{ section.id }}__card-image-link">
                       {%- if product.featured_image != blank -%}
                         {%- capture img_alt -%}{{ product.featured_image.alt }}{%- endcapture -%}{%- capture img_class -%}collection-grid-{{ section.id }}__card-image collection-grid-{{ section.id }}__card-image-ratio--{{ image_ratio }}{%- endcapture -%}{{ product.featured_image | image_url: width: 600 | image_tag: widths: '100, 165, 220, 300, 400, 600', sizes: '(min-width: 990px) 25vw, 50vw', loading: 'lazy', alt: img_alt, class: img_class }}
@@ -198,6 +206,7 @@
                         {%- capture img_alt -%}{{ product.images[1].alt }}{%- endcapture -%}{%- capture img_class -%}collection-grid-{{ section.id }}__card-image collection-grid-{{ section.id }}__card-image--secondary{%- endcapture -%}{{ product.images[1] | image_url: width: 600 | image_tag: widths: '100, 165, 220, 300, 400, 600', sizes: '(min-width: 990px) 25vw, 50vw', loading: 'lazy', alt: img_alt, class: img_class }}
                       {%- endif -%}
                     </a>
+                    {%- endif -%}
 
                     <span class="collection-grid-{{ section.id }}__corner collection-grid-{{ section.id }}__corner--tl"></span>
                     <span class="collection-grid-{{ section.id }}__corner collection-grid-{{ section.id }}__corner--tr"></span>
@@ -247,107 +256,7 @@
                       {%- endif -%}
                     </p>
 
-                    {%- unless product.has_only_default_variant -%}
-                      {%- if settings.card_show_variants -%}
-                      <div class="collection-grid-{{ section.id }}__card-variants">
-                        {%- for option in product.options_with_values -%}
-                          {%- assign option_index = forloop.index0 -%}
-                          <div class="collection-grid-{{ section.id }}__variant-group" role="group" aria-label="{{ option.name | escape }}">
-                            {%- if settings.card_show_option_label or settings.card_show_selected_value -%}
-                              <span class="collection-grid-{{ section.id }}__variant-label" aria-hidden="true">
-                                {%- if settings.card_show_option_label -%}
-                                  {{- option.name | escape -}}
-                                  {%- if settings.card_show_selected_value %}: {% endif -%}
-                                {%- endif -%}
-                                {%- if settings.card_show_selected_value -%}
-                                  <span data-selected-label="{{ option_index }}">{{ card_variant.options[option_index] | escape }}</span>
-                                {%- endif -%}
-                              </span>
-                            {%- endif -%}
-                            <div class="collection-grid-{{ section.id }}__variant-values">
-                              {%- assign hidden_count = 0 -%}
-                              {%- for value in option.values -%}
-                                {%- liquid
-                                  assign is_selected = false
-                                  if card_variant.options[option_index] == value
-                                    assign is_selected = true
-                                  endif
-                                  assign is_hidden = false
-                                  if variant_limit > 0 and forloop.index > variant_limit
-                                    unless is_selected
-                                      assign is_hidden = true
-                                      assign hidden_count = hidden_count | plus: 1
-                                    endunless
-                                  endif
-                                  assign value_name = value | escape
-                                  assign swatch_color = value.swatch.color | default: value_name
-                                -%}
-                                {%- if option.name == 'Color' or option.name == 'Colour' -%}
-                                  <button
-                                    type="button"
-                                    class="collection-grid-{{ section.id }}__swatch-color"
-                                    style="background-color: {{ swatch_color }};"
-                                    title="{{ value_name }}"
-                                    aria-label="{{ value_name }}"
-                                    aria-pressed="{{ is_selected }}"
-                                    data-option-index="{{ option_index }}"
-                                    data-option-value="{{ value_name }}"
-                                    {% if is_hidden %}
-                                      hidden
-                                    {% endif %}
-                                  ></button>
-                                {%- else -%}
-                                  <button
-                                    type="button"
-                                    class="collection-grid-{{ section.id }}__swatch-pill"
-                                    aria-pressed="{{ is_selected }}"
-                                    data-option-index="{{ option_index }}"
-                                    data-option-value="{{ value_name }}"
-                                    {% if is_hidden %}
-                                      hidden
-                                    {% endif %}
-                                  >
-                                    {{- value_name -}}
-                                  </button>
-                                {%- endif -%}
-                              {%- endfor -%}
-                              {%- if hidden_count > 0 -%}
-                                {%- if settings.card_more_action == 'link' -%}
-                                  <a
-                                    href="{{ product.url }}"
-                                    class="collection-grid-{{ section.id }}__swatch-more"
-                                    aria-label="{{ 'products.view_more_options' | t: count: hidden_count, option: option.name, product: product.title }}"
-                                  >
-                                    +{{ hidden_count }}
-                                  </a>
-                                {%- else -%}
-                                  <button
-                                    type="button"
-                                    class="collection-grid-{{ section.id }}__swatch-more"
-                                    data-show-more
-                                    aria-label="{{ 'products.show_more_options' | t: count: hidden_count, option: option.name }}"
-                                  >
-                                    +{{ hidden_count }}
-                                  </button>
-                                {%- endif -%}
-                              {%- endif -%}
-                            </div>
-                          </div>
-                        {%- endfor -%}
-                      </div>
-
-                      {%- endif -%}
-
-                      <script type="application/json" data-card-variants>
-                        [
-                          {%- for variant in product.variants -%}
-                            {%- capture variant_price -%}{% render 'price', amount: variant.price %}{%- endcapture -%}
-                            {%- capture variant_compare -%}{% if variant.compare_at_price > variant.price %}{% render 'price', amount: variant.compare_at_price %}{% endif %}{%- endcapture -%}
-                            {"id":{{ variant.id }},"available":{{ variant.available | json }},"options":{{ variant.options | json }},"price":{{ variant_price | strip | json }},"compare":{{ variant_compare | strip | json }}}{% unless forloop.last %},{% endunless %}
-                          {%- endfor -%}
-                        ]
-                      </script>
-                    {%- endunless -%}
+                    {% render 'card-variant-options', product: product, variant: card_variant %}
                   </div>
 
                   <div class="collection-grid-{{ section.id }}__card-bottom">
@@ -393,6 +302,7 @@
             </div>
           {%- endif -%}
         {%- endpaginate -%}
+        </div>
       </div>
     </div>
 
@@ -596,87 +506,10 @@
     display: block;
   }
 
-  .collection-grid-{{ section.id }}__filter-group {
-    border-bottom: 1px solid var(--grid-border);
-    padding: 15px 0;
-  }
-
-  .collection-grid-{{ section.id }}__filter-summary {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-weight: 700;
-    cursor: pointer;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    list-style: none;
-  }
-
-  .collection-grid-{{ section.id }}__filter-summary::-webkit-details-marker {
-    display: none;
-  }
-
-  .collection-grid-{{ section.id }}__filter-group[open] .collection-grid-{{ section.id }}__filter-summary svg {
-    transform: rotate(180deg);
-  }
-
-  .collection-grid-{{ section.id }}__filter-options {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding-top: 15px;
-  }
-
-  .collection-grid-{{ section.id }}__filter-checkbox {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    cursor: pointer;
-    font-size: 0.9rem;
-  }
-
-  .collection-grid-{{ section.id }}__filter-checkbox input {
-    accent-color: var(--grid-accent);
+  .collection-grid-{{ section.id }}__filter-sidebar .facets input[type='checkbox'] {
     width: 18px;
     height: 18px;
-  }
-
-  .collection-grid-{{ section.id }}__price-range {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .collection-grid-{{ section.id }}__price-range input {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid var(--grid-border);
-    background: transparent;
-    color: var(--grid-text);
-  }
-
-  .collection-grid-{{ section.id }}__filter-actions {
-    margin-top: 20px;
-  }
-
-  .collection-grid-{{ section.id }}__filter-apply {
-    width: 100%;
-    padding: 12px;
-    background: var(--grid-accent);
-    color: #fff;
-    border: none;
-    font-weight: 700;
-    text-transform: uppercase;
-    cursor: pointer;
-  }
-
-  .collection-grid-{{ section.id }}__filter-reset {
-    display: block;
-    text-align: center;
-    margin-top: 10px;
-    color: var(--grid-text);
-    text-decoration: underline;
-    font-size: 0.9rem;
+    accent-color: var(--grid-accent);
   }
 
   .collection-grid-{{ section.id }}__sidebar-featured {
@@ -850,8 +683,13 @@
     transform: translateY(var(--card-hover-lift));
   }
 
-  .collection-grid-{{ section.id }}__card:hover .collection-grid-{{ section.id }}__card-image:not(.collection-grid-{{ section.id }}__card-image--secondary) {
+  /* One image: it zooms. Two images: the first fades out and the second fades in and zooms */
+  .collection-grid-{{ section.id }}__card:hover .collection-grid-{{ section.id }}__card-image-link:not(:has(.collection-grid-{{ section.id }}__card-image--secondary, .card-slider)) .collection-grid-{{ section.id }}__card-image {
     transform: scale(var(--card-image-hover-scale));
+  }
+
+  .collection-grid-{{ section.id }}__card:hover .collection-grid-{{ section.id }}__card-image-link:has(.collection-grid-{{ section.id }}__card-image--secondary) .collection-grid-{{ section.id }}__card-image:not(.collection-grid-{{ section.id }}__card-image--secondary) {
+    opacity: 0;
   }
 
   .collection-grid-{{ section.id }}__card-top-bar {
@@ -924,6 +762,7 @@
 
   .collection-grid-{{ section.id }}__card:hover .collection-grid-{{ section.id }}__card-image--secondary {
     opacity: 1;
+    transform: scale(var(--card-image-hover-scale));
   }
 
   .collection-grid-{{ section.id }}__corner {
@@ -1011,106 +850,6 @@
     color: var(--grid-text);
     opacity: 0.7;
     margin: 0 0 10px;
-  }
-
-  .collection-grid-{{ section.id }}__card-variants {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-bottom: 10px;
-  }
-
-  .collection-grid-{{ section.id }}__variant-group {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
-  }
-
-  .collection-grid-{{ section.id }}__variant-label {
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    opacity: 0.7;
-  }
-
-  .collection-grid-{{ section.id }}__variant-values {
-    display: flex;
-    gap: 5px;
-    flex-wrap: wrap;
-  }
-
-  .collection-grid-{{ section.id }}__swatch-color {
-    position: relative;
-    width: 18px;
-    height: 18px;
-    padding: 0;
-    border-radius: 50%;
-    border: 1px solid var(--grid-border);
-    cursor: pointer;
-  }
-
-  .collection-grid-{{ section.id }}__swatch-color[aria-pressed='true'] {
-    outline: 2px solid var(--grid-text);
-    outline-offset: 2px;
-  }
-
-  .collection-grid-{{ section.id }}__swatch-pill {
-    min-height: 24px;
-    font: inherit;
-    font-size: 0.65rem;
-    padding: 2px 8px;
-    border: 1px solid var(--grid-border);
-    border-radius: 20px;
-    background: transparent;
-    color: inherit;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: background-color 0.2s ease, color 0.2s ease;
-  }
-
-  .collection-grid-{{ section.id }}__swatch-pill:hover,
-  .collection-grid-{{ section.id }}__swatch-pill[aria-pressed='true'] {
-    border-color: var(--grid-text);
-  }
-
-  .collection-grid-{{ section.id }}__swatch-pill[aria-pressed='true'] {
-    background: var(--grid-text);
-    color: var(--grid-bg);
-  }
-
-  .collection-grid-{{ section.id }}__swatch-pill.is-unavailable {
-    text-decoration: line-through;
-    opacity: 0.5;
-  }
-
-  .collection-grid-{{ section.id }}__swatch-color.is-unavailable {
-    opacity: 0.4;
-  }
-
-  .collection-grid-{{ section.id }}__swatch-color:focus-visible,
-  .collection-grid-{{ section.id }}__swatch-pill:focus-visible {
-    outline: 2px solid var(--grid-accent);
-    outline-offset: 2px;
-  }
-
-  .collection-grid-{{ section.id }}__swatch-more {
-    min-height: 24px;
-    padding: 2px 6px;
-    border: 0;
-    background: none;
-    color: inherit;
-    font: inherit;
-    font-size: 0.7rem;
-    font-weight: 600;
-    opacity: 0.7;
-    align-self: center;
-    cursor: pointer;
-  }
-
-  .collection-grid-{{ section.id }}__swatch-more:hover {
-    opacity: 1;
-    text-decoration: underline;
   }
 
   .collection-grid-{{ section.id }}__card-bottom {
@@ -1264,50 +1003,57 @@
     const filterToggle = document.getElementById('FilterToggle-' + sectionId);
     const filterToggleMobile = document.getElementById('FilterToggleMobile-' + sectionId);
     const filterClose = document.getElementById('FilterClose-' + sectionId);
-    const filterApply = document.getElementById('FilterApply-' + sectionId);
-    const sortBySelect = document.getElementById('SortBy-' + sectionId);
-    const filterForm = document.getElementById('CollectionGridForm-' + sectionId);
+    const toggles = [filterToggle, filterToggleMobile].filter(Boolean);
+    let lastToggle = null;
 
-    const openFilter = () => {
-      if (filterSidebar) filterSidebar.classList.add('is-open');
+    const focusable = () =>
+      [...filterSidebar.querySelectorAll('a[href], button:not([disabled]), input:not([disabled]), select, summary')].filter(
+        (element) => element.offsetParent !== null
+      );
+
+    /* While the panel is open, Tab stays inside it and Escape closes it */
+    const onKeydown = (event) => {
+      if (event.key === 'Escape') {
+        closeFilter();
+        return;
+      }
+      if (event.key !== 'Tab') return;
+      const items = focusable();
+      if (!items.length) return;
+      const first = items[0];
+      const last = items[items.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    const openFilter = (event) => {
+      if (!filterSidebar) return;
+      lastToggle = event.currentTarget;
+      filterSidebar.classList.add('is-open');
+      toggles.forEach((toggle) => toggle.setAttribute('aria-expanded', 'true'));
+      document.addEventListener('keydown', onKeydown);
+      filterClose?.focus();
     };
 
     const closeFilter = () => {
-      if (filterSidebar) filterSidebar.classList.remove('is-open');
+      if (!filterSidebar?.classList.contains('is-open')) return;
+      filterSidebar.classList.remove('is-open');
+      toggles.forEach((toggle) => toggle.setAttribute('aria-expanded', 'false'));
+      document.removeEventListener('keydown', onKeydown);
+      lastToggle?.focus();
     };
 
-    if (filterToggle) {
-      filterToggle.addEventListener('click', openFilter);
-    }
+    toggles.forEach((toggle) => toggle.addEventListener('click', openFilter));
+    filterClose?.addEventListener('click', closeFilter);
 
-    if (filterToggleMobile) {
-      filterToggleMobile.addEventListener('click', openFilter);
-    }
-
-    if (filterClose) {
-      filterClose.addEventListener('click', closeFilter);
-    }
-
-    function applyFilters() {
-      if (!filterForm) return;
-      const formData = new FormData(filterForm);
-      const params = new URLSearchParams(formData);
-      
-      if (sortBySelect) {
-        params.set('sort_by', sortBySelect.value);
-      }
-
-      const newUrl = window.location.pathname + '?' + params.toString();
-      window.location.href = newUrl;
-    }
-
-    if (filterApply) {
-      filterApply.addEventListener('click', applyFilters);
-    }
-
-    if (sortBySelect) {
-      sortBySelect.addEventListener('change', applyFilters);
-    }
+    /* Sorting without the filter form: reload with the chosen order */
+    const sortOnly = document.querySelector('[data-sort-only="' + sectionId + '"]');
+    sortOnly?.addEventListener('change', () => sortOnly.form?.requestSubmit());
   })();
 </script>
 

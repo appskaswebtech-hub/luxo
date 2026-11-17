@@ -64,6 +64,9 @@
       "options": "Choose",
       "options_label": "Choose options for {{ product }}",
       "go_to": "Show product {{ index }} of {{ total }}"
+    },
+    "errors": {
+      "quantity_limit": "Only [quantity] of this item are available."
     }
   },
   "customers": {
@@ -82,12 +85,35 @@
     "card": "Gift card",
     "expired": "This gift card has expired",
     "expires_on": "Expires on {{ expires_on }}",
-    "use_at_checkout": "Use this gift card at checkout"
+    "use_at_checkout": "Use this gift card at checkout",
+    "title": "Here is your gift card for {{ shop }}",
+    "initial_value": "Original value {{ value }}",
+    "disabled": "This gift card is disabled",
+    "code": "Gift card code",
+    "copy": "Copy",
+    "copied": "Code copied",
+    "qr_label": "QR code for this gift card",
+    "shop_now": "Start shopping",
+    "print": "Print"
   },
   "password": {
     "title": "This shop is private",
     "password": "Password",
-    "enter": "Enter"
+    "enter": "Unlock store",
+    "heading": "This store is password protected",
+    "message": "Please enter the password to access our store.",
+    "divider": "Thank you for your patience!",
+    "footer": "Happy shopping!",
+    "placeholder": "Enter password",
+    "show": "Show password",
+    "hide": "Hide password",
+    "admin_html": "Are you the store owner? <a href=\"/admin\">Log in here</a>",
+    "signup": {
+      "heading": "Be the first to know when we open.",
+      "label": "Email address",
+      "submit": "Notify me",
+      "success": "Thanks! We will let you know when we open."
+    }
   },
   "products": {
     "badge": {
@@ -137,7 +163,13 @@
     "variant_label": "Variant",
     "placeholder_title": "Product title",
     "show_more_options": "Show {{ count }} more {{ option }} options",
-    "view_more_options": "View {{ count }} more {{ option }} options for {{ product }}"
+    "view_more_options": "View {{ count }} more {{ option }} options for {{ product }}",
+    "card_image": "Show image {{ index }} of {{ total }}",
+    "view_in_space": "View in your space",
+    "sku": "SKU",
+    "zoom": "Zoom image",
+    "zoom_previous": "Previous image",
+    "zoom_next": "Next image"
   },
   "search": {
     "title": "Search",
@@ -239,14 +271,32 @@
     "related": "Related articles",
     "related_previous": "Previous related articles",
     "related_next": "Next related articles",
-    "read": "Read article"
+    "read": "Read article",
+    "comments": {
+      "count": {
+        "one": "{{ count }} comment",
+        "other": "{{ count }} comments"
+      },
+      "leave": "Leave a comment",
+      "name": "Name",
+      "email": "Email",
+      "message": "Comment",
+      "submit": "Post comment",
+      "success": "Your comment was posted. Thank you!",
+      "success_moderated": "Thank you! Your comment will appear once it is approved.",
+      "moderated": "Comments are reviewed before they are published.",
+      "pagination": "Comments pages"
+    }
   },
   "blog_listing": {
     "title_fallback": "Latest articles",
     "empty": "No articles found in this blog.",
     "sample_title": "Sample blog post title",
     "sample_date": "January 01, 2024",
-    "sample_excerpt": "Share stories, guides and news with your customers. Choose a blog in this section to show your latest posts."
+    "sample_excerpt": "Share stories, guides and news with your customers. Choose a blog in this section to show your latest posts.",
+    "by_author": "By {{ author }}",
+    "all_tags": "All",
+    "filter_label": "Filter posts by tag"
   },
   "collection_page": {
     "products_count": {
@@ -307,6 +357,32 @@
     "featured_product": {
       "placeholder_title": "Your product name",
       "view_details": "View full details"
+    },
+    "seasonal_sale": {
+      "ended": "Sale ended"
+    },
+    "announcement": {
+      "label": "Announcements",
+      "carousel": "Carousel",
+      "slide": "Slide",
+      "position": "{{ index }} of {{ count }}",
+      "previous": "Previous announcement",
+      "next": "Next announcement"
+    },
+    "slideshow": {
+      "label": "Slideshow",
+      "carousel": "Carousel",
+      "slide": "Slide",
+      "position": "Slide {{ index }} of {{ count }}",
+      "previous": "Previous slide",
+      "next": "Next slide",
+      "go_to": "Go to slide {{ index }}",
+      "pause": "Pause slideshow",
+      "play": "Play slideshow"
+    },
+    "video": {
+      "default_title": "Video",
+      "play": "Play video: {{ title }}"
     }
   },
   "customer": {
@@ -415,7 +491,8 @@
     }
   },
   "facets": {
-    "remove": "Remove filter: {{ filter }}"
+    "remove": "Remove filter: {{ filter }}",
+    "active": "Active filters"
   },
   "price_tag": {
     "from": "From {{ price }}",

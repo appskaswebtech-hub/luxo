@@ -11,6 +11,37 @@
   "type": "header",
   "name": "t:general.header",
   "sections": {
+    "announcement_bar": {
+      "type": "announcement-bar",
+      "blocks": {
+        "announcement_1": {
+          "type": "announcement",
+          "settings": {
+            "text": "Free shipping on orders over $75",
+            "link": ""
+          }
+        },
+        "announcement_2": {
+          "type": "announcement",
+          "settings": {
+            "text": "New arrivals every week",
+            "link": ""
+          }
+        }
+      },
+      "block_order": [
+        "announcement_1",
+        "announcement_2"
+      ],
+      "settings": {
+        "color_scheme": "scheme-3",
+        "autoplay": true,
+        "autoplay_speed": 5,
+        "menu": "customer-account-main-menu",
+        "phone": "(+91) 90129 83208",
+        "show_currency": true
+      }
+    },
     "header": {
       "type": "header",
       "blocks": {
@@ -35,9 +66,7 @@
         "header_style": "minimal",
         "enable_sticky": true,
         "hide_on_scroll": true,
-        "topbar_menu": "customer-account",
-        "phone": "(+91) 90129 83208",
-        "show_currency": true,
+        "enable_custom_design": true,
         "show_search": true,
         "show_compare": false,
         "compare_url": "",
@@ -48,6 +77,7 @@
     }
   },
   "order": [
+    "announcement_bar",
     "header"
   ]
 }
