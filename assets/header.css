@@ -36,6 +36,10 @@
   font-size: var(--header-font-size);
 }
 
+.header-wrapper.header-wrapper--classic.header-wrapper--sticky.header-wrapper--hide-scroll {
+  background: var(--header-bg) !important;
+}
+
 .section-header:has(.header-wrapper--sticky) {
   position: sticky;
   top: 0;
@@ -824,6 +828,9 @@
     background: transparent;
     border-color: transparent;
     box-shadow: none;
+  }
+  .header-navbar {
+    display: none;
   }
   .header-cart-btn:hover {
     background: transparent;

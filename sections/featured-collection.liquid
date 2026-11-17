@@ -90,30 +90,36 @@
       if collection != blank and collection.products.size > 0
         assign has_products = true
       endif
-      assign placeholder_count = section.settings.products_limit | at_most: 8
     -%}
       <div class="featured-collection-{{ section.id }}__wrapper {% if layout_type == 'slider' %}featured-collection-{{ section.id }}__is-slider{% endif %}" data-layout="{{ layout_type }}">
         <div class="featured-collection-{{ section.id }}__track {% if layout_type == 'slider' %}featured-collection-{{ section.id }}__slider-track{% else %}featured-collection-{{ section.id }}__grid featured-collection-{{ section.id }}__columns-{{ products_per_row }}{% endif %}" id="FeaturedTrack-{{ section.id }}">
           
           {%- unless has_products -%}
-            {%- comment -%} Sample cards shown until a collection with products is selected {%- endcomment -%}
-            {%- for i in (1..placeholder_count) -%}
+            {%- comment -%} Show exactly 4 default placeholders if no products {%- endcomment -%}
+            {%- for i in (1..4) -%}
               {%- assign placeholder_index = forloop.index0 | modulo: 6 | plus: 1 -%}
               {%- assign placeholder_name = 'product-' | append: placeholder_index -%}
               <div class="featured-collection-{{ section.id }}__product-wrapper">
                 <div class="featured-collection-{{ section.id }}__product-card">
                   <div class="featured-collection-{{ section.id }}__product-top">
                     <span class="featured-collection-{{ section.id }}__product-badge">{{ shop.name | escape }}</span>
+                    <span class="featured-collection-{{ section.id }}__product-sku">SKU: 0000</span>
                   </div>
                   <div class="featured-collection-{{ section.id }}__image-wrapper featured-collection-{{ section.id }}__ratio-{{ image_ratio }}">
                     {{ placeholder_name | placeholder_svg_tag: placeholder_class }}
                   </div>
                   <div class="featured-collection-{{ section.id }}__product-body">
-                    <h3 class="featured-collection-{{ section.id }}__product-title">{{ 'products.placeholder_title' | t }}<span>.</span></h3>
-                    <p class="featured-collection-{{ section.id }}__product-desc">{{ 'products.description_fallback' | t }}</p>
+                    <h3 class="featured-collection-{{ section.id }}__product-title">Default Product<span>.</span></h3>
+                    <p class="featured-collection-{{ section.id }}__product-desc">This is a default placeholder product description.</p>
                   </div>
                   <div class="featured-collection-{{ section.id }}__product-bottom">
-                    <span class="featured-collection-{{ section.id }}__product-price">{% render 'price', amount: 2999 %}</span>
+                    <span class="featured-collection-{{ section.id }}__product-price">{{ 0 | money }}</span>
+                    <button type="button" class="featured-collection-{{ section.id }}__add-btn" disabled>
+                      <span>ADD TO CART</span>
+                      <svg width="13" height="5" viewBox="0 0 13 5" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9.45052 4.21172C9.63052 3.82772 9.80452 3.49172 9.97252 3.20372C10.1525 2.91572 10.3265 2.67572 10.4945 2.48372H0.000515878V1.72772H10.4945C10.3265 1.52372 10.1525 1.27772 9.97252 0.989718C9.80452 0.701718 9.63052 0.371718 9.45052 -0.000281632H10.0805C10.8365 0.875719 11.6285 1.52372 12.4565 1.94372V2.26772C11.6285 2.67572 10.8365 3.32372 10.0805 4.21172H9.45052Z" fill="currentColor"></path>
+                      </svg>
+                    </button>
                   </div>
                 </div>
               </div>
