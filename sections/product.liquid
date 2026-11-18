@@ -1200,6 +1200,7 @@
     width: 35px;
     height: 35px;
     background: transparent;
+    color: inherit;
     border: none;
     cursor: pointer;
     font-size: 16px;
@@ -1208,6 +1209,7 @@
   .main-product-{{ section.id }}__qty-input {
     width: 40px;
     text-align: center;
+    color: inherit;
     border: none;
     border-left: 1px solid var(--mp-border);
     border-right: 1px solid var(--mp-border);
@@ -1390,6 +1392,11 @@
     font-weight: 700;
     font-size: 14px;
     border-right: 1px solid rgba(255,255,255,0.2);
+  }
+
+  /* Sale prices are accent colored elsewhere; on the button they follow the button text */
+  .main-product-{{ section.id }}__btn-price-section .price-tag__now {
+    color: inherit;
   }
 
   .main-product-{{ section.id }}__btn-text-section {
@@ -1709,9 +1716,7 @@
     }
 
     .main-product-{{ section.id }}__card-frame {
-      padding: 15px;
-      width:100%;
-      max-width:78%;
+      padding: 16px;
     }
 
     .main-product-{{ section.id }}__main-image-wrapper {
@@ -1722,20 +1727,30 @@
       font-size: 22px;
     }
 
-    .main-product-{{ section.id }}__add-to-cart-btn { 
-      flex-direction: column; 
-      height: auto; 
+    .main-product-{{ section.id }}__add-to-cart-btn {
+      height: 52px;
     }
-    .main-product-{{ section.id }}__btn-price-section { 
-      width: 100%; 
-      padding: 12px; 
-      border-right: none; 
-      border-bottom: 1px solid rgba(255,255,255,0.2); 
+    .main-product-{{ section.id }}__btn-price-section {
+      width: auto;
+      flex: none;
+      padding: 0 14px;
+      font-size: 13px;
     }
-    .main-product-{{ section.id }}__btn-text-section { 
-      width: 100%; 
-      padding: 15px 20px; 
-      justify-content: center; 
+    .main-product-{{ section.id }}__btn-text-section {
+      padding: 0 14px;
+      justify-content: center;
+      gap: 8px;
+      font-size: 12px;
+    }
+
+    /* Larger quantity controls for touch */
+    .main-product-{{ section.id }}__qty-btn {
+      width: 44px;
+      height: 44px;
+    }
+    .main-product-{{ section.id }}__qty-input {
+      width: 48px;
+      font-size: 15px;
     }
 
     .main-product-{{ section.id }}__sticky-inner {
