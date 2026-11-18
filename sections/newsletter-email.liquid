@@ -8,9 +8,9 @@
     assign signup_form_bg = section.settings.custom_form_bg_color
     assign signup_form_text = section.settings.custom_form_text_color
     
-    assign heading_font = section.settings.custom_heading_font
-    assign body_font = section.settings.custom_body_font
-    
+    assign heading_font = section.settings.custom_heading_font.family | append: ', ' | append: section.settings.custom_heading_font.fallback_families
+    assign body_font = section.settings.custom_body_font.family | append: ', ' | append: section.settings.custom_body_font.fallback_families
+    render 'custom-fonts', heading: section.settings.custom_heading_font, body: section.settings.custom_body_font
     assign top_text_size = section.settings.custom_top_text_size | append: 'px'
     assign heading_size = section.settings.custom_heading_size | append: 'px'
     assign input_size = section.settings.custom_input_size | append: 'px'
@@ -87,14 +87,20 @@
         {%- form 'customer', id: 'NewsletterEmailForm', class: form_class -%}
           <input type="hidden" name="contact[tags]" value="newsletter">
           
+          <label class="visually-hidden" for="NewsletterEmail-{{ section.id }}">{{ 'general.newsletter.email_label' | t }}</label>
           <div class="newsletter-email-{{ section.id }}__input-group">
-            <input 
-              type="email" 
-              name="contact[email]" 
+            <input
+              type="email"
+              id="NewsletterEmail-{{ section.id }}"
+              name="contact[email]"
+              autocomplete="email"
               placeholder="{%- assign email_fallback = 'general.newsletter.email_placeholder' | t -%}{{ section.settings.placeholder_text | default: email_fallback }}" 
               class="newsletter-email-{{ section.id }}__input" 
               required
-              aria-label="{{ 'general.newsletter.email_label' | t }}"
+              {% if form.errors %}
+                aria-invalid="true"
+                aria-describedby="NewsletterEmailError-{{ section.id }}"
+              {% endif %}
             >
             <button type="submit" class="newsletter-email-{{ section.id }}__button">
               {%- assign notify_fallback = 'general.newsletter.notify' | t -%}{{ section.settings.button_text | default: notify_fallback }}
@@ -105,7 +111,7 @@
             <p class="newsletter-email-{{ section.id }}__success">{{ 'general.newsletter.success' | t }}</p>
           {%- endif -%}
           {%- if form.errors -%}
-            <p class="newsletter-email-{{ section.id }}__error">{{ form.errors.translated_fields.email | capitalize }} {{ form.errors.messages.email }}</p>
+            <p class="newsletter-email-{{ section.id }}__error" id="NewsletterEmailError-{{ section.id }}" role="alert">{{ form.errors.translated_fields.email | capitalize }} {{ form.errors.messages.email }}</p>
           {%- endif -%}
         {%- endform -%}
       </div>
@@ -378,19 +384,19 @@
       "type": "text",
       "id": "top_text",
       "label": "t:sections.newsletter_email.settings.top_text.label",
-      "default": "Joy Rush"
+      "default": "Newsletter"
     },
     {
       "type": "text",
       "id": "heading_line_1",
       "label": "t:sections.newsletter_email.settings.heading_line_1.label",
-      "default": "MORE JOY"
+      "default": "Join our"
     },
     {
       "type": "text",
       "id": "heading_line_2",
       "label": "t:sections.newsletter_email.settings.heading_line_2.label",
-      "default": "MORE OFTEN"
+      "default": "mailing list"
     },
     {
       "type": "image_picker",
@@ -405,13 +411,13 @@
       "type": "text",
       "id": "placeholder_text",
       "label": "t:sections.newsletter_email.settings.placeholder_text.label",
-      "default": "ENTER YOUR EMAIL..."
+      "default": "Enter your email"
     },
     {
       "type": "text",
       "id": "button_text",
       "label": "t:sections.newsletter_email.settings.button_text.label",
-      "default": "NOTIFY ME"
+      "default": "Subscribe"
     },
     {
       "type": "header",

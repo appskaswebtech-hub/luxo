@@ -306,6 +306,14 @@
     transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
   }
 
+  /* Lifts the bar above the header (z-index 999) only while the dropdown is open,
+     so it never covers the header's own menus */
+  .announcement-bar-section:has(.announcement-bar__account:hover),
+  .announcement-bar-section:has(.announcement-bar__account:focus-within) {
+    position: relative;
+    z-index: 1000;
+  }
+
   .announcement-bar__account:hover .announcement-bar__drop,
   .announcement-bar__account:focus-within .announcement-bar__drop {
     opacity: 1;
@@ -441,7 +449,9 @@
   "class": "announcement-bar-section",
   "max_blocks": 6,
   "enabled_on": {
-    "groups": ["header"]
+    "groups": [
+      "header"
+    ]
   },
   "settings": [
     {
@@ -479,7 +489,8 @@
       "type": "link_list",
       "id": "menu",
       "label": "t:sections.announcement_bar.settings.menu.label",
-      "info": "t:sections.announcement_bar.settings.menu.info"
+      "info": "t:sections.announcement_bar.settings.menu.info",
+      "default": "main-menu"
     },
     {
       "type": "text",
@@ -530,8 +541,18 @@
     {
       "name": "t:sections.announcement_bar.name",
       "blocks": [
-        { "type": "announcement", "settings": { "text": "Free shipping on orders over $75" } },
-        { "type": "announcement", "settings": { "text": "New arrivals every week" } }
+        {
+          "type": "announcement",
+          "settings": {
+            "text": "Free shipping on orders over $75"
+          }
+        },
+        {
+          "type": "announcement",
+          "settings": {
+            "text": "New arrivals every week"
+          }
+        }
       ]
     }
   ]

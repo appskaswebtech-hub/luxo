@@ -1,0 +1,29 @@
+{% doc %}
+  Loads the fonts a section picks in its custom design settings, with bold,
+  italic and bold-italic variants, so the chosen fonts render in every style.
+
+  @param {font} [heading] - Heading font from a font_picker setting
+  @param {font} [body] - Body font from a font_picker setting
+
+  @example
+  {% render 'custom-fonts', heading: section.settings.custom_heading_font, body: section.settings.custom_body_font %}
+{% enddoc %}
+
+{%- style -%}
+  {%- for font in (1..2) -%}
+    {%- if forloop.first -%}
+      {%- assign picked = heading -%}
+    {%- else -%}
+      {%- assign picked = body -%}
+    {%- endif -%}
+    {%- if picked != blank -%}
+      {%- assign picked_bold = picked | font_modify: 'weight', 'bold' -%}
+      {%- assign picked_italic = picked | font_modify: 'style', 'italic' -%}
+      {%- assign picked_bold_italic = picked_bold | font_modify: 'style', 'italic' -%}
+      {{ picked | font_face: font_display: 'swap' }}
+      {{ picked_bold | font_face: font_display: 'swap' }}
+      {{ picked_italic | font_face: font_display: 'swap' }}
+      {{ picked_bold_italic | font_face: font_display: 'swap' }}
+    {%- endif -%}
+  {%- endfor -%}
+{%- endstyle -%}

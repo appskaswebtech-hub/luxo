@@ -64,14 +64,19 @@ if (!customElements.get('media-gallery')) {
         const y = event.clientY - box.top;
         if (x < 0 || y < 0 || x > box.width || y > box.height) return hide();
 
-        /* Matches object-fit: cover so the lens shows exactly what sits under the pointer */
+        /* Matches object-fit (cover or contain) so the lens shows exactly what sits under the pointer */
         const naturalW = img.naturalWidth || box.width;
         const naturalH = img.naturalHeight || box.height;
-        const fit = Math.max(box.width / naturalW, box.height / naturalH);
+        const contain = getComputedStyle(img).objectFit === 'contain';
+        const fit = contain
+          ? Math.min(box.width / naturalW, box.height / naturalH)
+          : Math.max(box.width / naturalW, box.height / naturalH);
         const shownW = naturalW * fit;
         const shownH = naturalH * fit;
         const offsetX = (box.width - shownW) / 2;
         const offsetY = (box.height - shownH) / 2;
+        /* With contain, the empty bands around the photo get no lens */
+        if (x < offsetX || y < offsetY || x > offsetX + shownW || y > offsetY + shownH) return hide();
         const size = lens.offsetWidth;
 
         lens.style.backgroundImage = `url("${src}")`;

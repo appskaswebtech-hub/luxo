@@ -6,8 +6,9 @@
     assign cart_text = section.settings.custom_text_color
     assign cart_accent = section.settings.custom_accent_color
     assign cart_border = section.settings.custom_border_color
-    assign heading_font = section.settings.custom_heading_font
-    assign body_font = section.settings.custom_body_font
+    assign heading_font = section.settings.custom_heading_font.family | append: ', ' | append: section.settings.custom_heading_font.fallback_families
+    assign body_font = section.settings.custom_body_font.family | append: ', ' | append: section.settings.custom_body_font.fallback_families
+    render 'custom-fonts', heading: section.settings.custom_heading_font, body: section.settings.custom_body_font
   else
     assign cart_bg = section.settings.color_scheme.settings.background
     assign cart_text = section.settings.color_scheme.settings.text
@@ -190,7 +191,7 @@
     text-transform: uppercase;
     letter-spacing: 1px;
     font-weight: 700;
-    opacity: 0.5;
+    opacity: 0.8;
   }
 
   @media (min-width: 768px) {
@@ -362,7 +363,7 @@
     font-size: 0.45em;
     font-weight: 500;
     vertical-align: middle;
-    opacity: 0.6;
+    opacity: 0.8;
   }
 {% endstyle %}
 

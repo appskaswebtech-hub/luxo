@@ -6,14 +6,17 @@
     assign article_text = section.settings.custom_text_color
     assign article_accent = section.settings.custom_accent_color
     assign article_card_bg = section.settings.custom_card_bg_color
+    assign article_card_text = section.settings.custom_card_text_color
     assign article_border = section.settings.custom_border_color
-    assign heading_font = section.settings.custom_heading_font
-    assign body_font = section.settings.custom_body_font
+    assign heading_font = section.settings.custom_heading_font.family | append: ', ' | append: section.settings.custom_heading_font.fallback_families
+    assign body_font = section.settings.custom_body_font.family | append: ', ' | append: section.settings.custom_body_font.fallback_families
+    render 'custom-fonts', heading: section.settings.custom_heading_font, body: section.settings.custom_body_font
   else
     assign article_bg = section.settings.color_scheme.settings.background
     assign article_text = section.settings.color_scheme.settings.text
     assign article_accent = section.settings.color_scheme.settings.accent
     assign article_card_bg = section.settings.card_background
+    assign article_card_text = section.settings.card_text
     assign article_border = section.settings.color_scheme.settings.border
     assign heading_font = 'var(--font-heading-family)'
     assign body_font = 'var(--font-body-family)'
@@ -36,6 +39,7 @@
     --article-text: {{ article_text }};
     --article-accent: {{ article_accent }};
     --article-card-bg: {{ article_card_bg }};
+    --article-card-text: {{ article_card_text }};
     --article-border: {{ article_border }};
     --article-heading-font: {{ heading_font }};
     --article-body-font: {{ body_font }};
@@ -96,7 +100,7 @@
 
       <div class="theme-article-{{ section.id }}__content-column">
         <div class="theme-article-{{ section.id }}__content-card">
-          <div class="theme-article-{{ section.id }}__rte">
+          <div class="theme-article-{{ section.id }}__rte rte">
             {{ article.content }}
           </div>
         </div>
@@ -244,7 +248,7 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 1px;
-    opacity: 0.6;
+    opacity: 0.8;
   }
 
   .theme-article-{{ section.id }}__title {
@@ -290,7 +294,7 @@
   .theme-article-{{ section.id }}__read-time {
     font-size: 13px;
     font-weight: 600;
-    opacity: 0.6;
+    opacity: 0.8;
   }
 
   .theme-article-{{ section.id }}__layout {
@@ -311,6 +315,7 @@
   .theme-article-{{ section.id }}__image-card {
     width: 100%;
     background: var(--article-card-bg);
+    color: var(--article-card-text);
     border: 1px solid var(--article-border);
     padding: 15px;
     box-shadow: 10px 10px 0px var(--article-accent);
@@ -386,46 +391,14 @@
 
   .theme-article-{{ section.id }}__content-card {
     background: var(--article-card-bg);
+    color: var(--article-card-text);
     border: 1px solid var(--article-border);
     padding: 50px;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
   }
 
   .theme-article-{{ section.id }}__rte {
-    font-size: 16px;
-    line-height: 1.8;
     color: var(--article-text);
-  }
-
-  .theme-article-{{ section.id }}__rte p {
-    margin: 0 0 25px;
-  }
-
-  .theme-article-{{ section.id }}__rte h2, 
-  .theme-article-{{ section.id }}__rte h3 {
-    font-family: var(--article-heading-font), serif;
-    text-transform: uppercase;
-    color: var(--article-text);
-    margin: 40px 0 20px;
-    letter-spacing: 0.5px;
-  }
-
-  .theme-article-{{ section.id }}__rte img {
-    max-width: 100%;
-    height: auto;
-    display: block;
-    margin: 30px 0;
-    border: 1px solid var(--article-border);
-  }
-
-  .theme-article-{{ section.id }}__rte blockquote {
-    border-left: 4px solid var(--article-accent);
-    padding-left: 20px;
-    margin: 30px 0;
-    font-style: italic;
-    font-size: 18px;
-    color: var(--article-text);
-    opacity: 0.8;
   }
 
   .theme-article-{{ section.id }}__footer-nav {
@@ -504,6 +477,7 @@
   .theme-article-{{ section.id }}__slide-card {
     flex: 0 0 calc(33.333% - 17px);
     background: var(--article-card-bg);
+    color: var(--article-card-text);
     border: 1px solid var(--article-border);
     display: flex;
     flex-direction: column;
@@ -572,7 +546,7 @@
     text-transform: uppercase;
     letter-spacing: 1px;
     color: var(--article-text);
-    opacity: 0.5;
+    opacity: 0.8;
     margin-bottom: 15px;
   }
 
@@ -761,6 +735,12 @@
       "default": "#FCF9F6"
     },
     {
+      "type": "color",
+      "id": "card_text",
+      "label": "t:sections.article.settings.card_text.label",
+      "default": "#2B1E16"
+    },
+    {
       "type": "header",
       "content": "t:sections.article.headers.custom_design_override"
     },
@@ -797,6 +777,13 @@
       "id": "custom_card_bg_color",
       "label": "t:sections.article.settings.custom_card_bg_color.label",
       "default": "#F9F9F9",
+      "visible_if": "{{ section.settings.enable_custom_design }}"
+    },
+    {
+      "type": "color",
+      "id": "custom_card_text_color",
+      "label": "t:sections.article.settings.custom_card_text_color.label",
+      "default": "#111111",
       "visible_if": "{{ section.settings.enable_custom_design }}"
     },
     {

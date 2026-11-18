@@ -6,19 +6,22 @@
     assign footer_text = section.settings.custom_text_color
     assign footer_accent = section.settings.custom_accent_color
     assign footer_card_bg = section.settings.custom_card_bg
+    assign footer_card_text = section.settings.custom_card_text
     assign footer_scallop = section.settings.custom_scallop_color
     assign link_bg = section.settings.custom_link_bg
     assign link_text = section.settings.custom_link_text
     assign link_shadow = section.settings.custom_link_shadow
     assign bottom_bg = section.settings.custom_bottom_bg
     assign bottom_text = section.settings.custom_bottom_text
-    assign heading_font = section.settings.custom_heading_font
-    assign body_font = section.settings.custom_body_font
+    assign heading_font = section.settings.custom_heading_font.family | append: ', ' | append: section.settings.custom_heading_font.fallback_families
+    assign body_font = section.settings.custom_body_font.family | append: ', ' | append: section.settings.custom_body_font.fallback_families
+    render 'custom-fonts', heading: section.settings.custom_heading_font, body: section.settings.custom_body_font
   else
     assign footer_bg = section.settings.color_scheme.settings.background
     assign footer_text = section.settings.color_scheme.settings.text
     assign footer_accent = section.settings.color_scheme.settings.accent
     assign footer_card_bg = section.settings.card_background
+    assign footer_card_text = section.settings.card_text
     assign footer_scallop = section.settings.scallop_color
     assign link_bg = section.settings.link_bg_color
     assign link_text = section.settings.link_text_color
@@ -38,6 +41,7 @@
     --footer-text: {{ footer_text }};
     --footer-accent: {{ footer_accent }};
     --footer-card-bg: {{ footer_card_bg }};
+    --footer-card-text: {{ footer_card_text }};
     --footer-scallop: {{ footer_scallop }};
     --link-bg: {{ link_bg }};
     --link-text: {{ link_text }};
@@ -82,21 +86,32 @@
               
               {%- form 'customer', id: 'FooterNewsletter' -%}
                 <input type="hidden" name="contact[tags]" value="newsletter">
+                <label class="visually-hidden" for="FooterNewsletterEmail-{{ section.id }}">{{ 'general.newsletter.email_label' | t }}</label>
                 <div class="footer-{{ section.id }}__input-group">
-                  <input 
-                    type="email" 
-                    name="contact[email]" 
-                    placeholder="{{ 'general.newsletter.email_placeholder' | t }}" 
-                    class="footer-{{ section.id }}__input" 
+                  <input
+                    type="email"
+                    id="FooterNewsletterEmail-{{ section.id }}"
+                    name="contact[email]"
+                    placeholder="{{ 'general.newsletter.email_placeholder' | t }}"
+                    class="footer-{{ section.id }}__input"
+                    autocomplete="email"
                     required
-                    aria-label="{{ 'general.newsletter.email_label' | t }}"
+                    {% if form.errors %}
+                      aria-invalid="true"
+                      aria-describedby="FooterNewsletterError-{{ section.id }}"
+                    {% endif %}
                   >
                   <button type="submit" class="footer-{{ section.id }}__submit-btn" aria-label="{{ 'general.newsletter.subscribe' | t }}">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                   </button>
                 </div>
+                {%- if form.errors -%}
+                  <p class="footer-{{ section.id }}__error-msg" id="FooterNewsletterError-{{ section.id }}" role="alert">
+                    {{- form.errors.translated_fields.email | capitalize }} {{ form.errors.messages.email -}}
+                  </p>
+                {%- endif -%}
                 {%- if form.posted_successfully? -%}
-                  <p class="footer-{{ section.id }}__success-msg">{{ 'general.newsletter.success' | t }}</p>
+                  <p class="footer-{{ section.id }}__success-msg" role="status">{{ 'general.newsletter.success' | t }}</p>
                 {%- endif -%}
                 {%- if form.errors -%}
                   <p class="footer-{{ section.id }}__error-msg">{{ form.errors.translated_fields.email | capitalize }} {{ form.errors.messages.email }}</p>
@@ -282,6 +297,7 @@
 
   .footer-{{ section.id }}__newsletter-card {
     background-color: var(--footer-card-bg);
+    color: var(--footer-card-text);
     padding: 30px;
     border-radius: 16px;
     box-shadow: 6px 6px 0px rgba(43, 30, 22, 0.1);
@@ -303,6 +319,25 @@
     opacity: 0.8;
     margin: 0 0 20px 0;
     color: var(--footer-text);
+  }
+
+  .footer-{{ section.id }}__input-group:focus-within {
+    outline: 2px solid var(--footer-text, currentColor);
+    outline-offset: 3px;
+  }
+
+  .footer-{{ section.id }}__error-msg {
+    margin: 10px 0 0;
+    color: #b3261e;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .footer-{{ section.id }} a:focus-visible,
+  .footer-{{ section.id }} button:focus-visible,
+  .footer-{{ section.id }}__select:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 3px;
   }
 
   .footer-{{ section.id }}__input-group {
@@ -371,6 +406,7 @@
   .footer-{{ section.id }}__links-group,
   .footer-{{ section.id }}__social-group {
     background-color: var(--footer-card-bg);
+    color: var(--footer-card-text);
     padding: 20px;
     border-radius: 0;
     box-shadow: 6px 6px 0px rgba(43, 30, 22, 0.1);
@@ -518,7 +554,6 @@
   .footer-{{ section.id }}__payments {
     display: flex;
     gap: 8px;
-    opacity: 0.7;
     flex-wrap: wrap;
   }
 
@@ -619,6 +654,12 @@
       "id": "card_background",
       "label": "t:sections.footer.settings.card_background.label",
       "default": "#FCF9F6"
+    },
+    {
+      "type": "color",
+      "id": "card_text",
+      "label": "t:sections.footer.settings.card_text.label",
+      "default": "#2B1E16"
     },
     {
       "type": "header",
@@ -761,6 +802,13 @@
     },
     {
       "type": "color",
+      "id": "custom_card_text",
+      "label": "t:sections.footer.settings.custom_card_text.label",
+      "default": "#111111",
+      "visible_if": "{{ section.settings.enable_custom_design }}"
+    },
+    {
+      "type": "color",
       "id": "custom_scallop_color",
       "label": "t:sections.footer.settings.custom_scallop_color.label",
       "default": "#000000",
@@ -863,12 +911,13 @@
           "type": "text",
           "id": "menu_title",
           "label": "t:sections.footer.blocks.menu.settings.menu_title.label",
-          "default": "Quick Links"
+          "default": "Quick links"
         },
         {
           "type": "link_list",
           "id": "menu",
-          "label": "t:sections.footer.blocks.menu.settings.menu.label"
+          "label": "t:sections.footer.blocks.menu.settings.menu.label",
+          "default": "footer"
         },
         {
           "type": "checkbox",
@@ -887,7 +936,7 @@
           "type": "text",
           "id": "social_title",
           "label": "t:sections.footer.blocks.social_links.settings.social_title.label",
-          "default": "Socials"
+          "default": "Follow us"
         },
         {
           "type": "paragraph",

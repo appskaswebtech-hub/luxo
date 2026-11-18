@@ -318,7 +318,7 @@
 
             {%- when 'description' -%}
               <div 
-                class="hero-banner-{{ section.id }}__description" 
+                class="hero-banner-{{ section.id }}__description rte" 
                 style="
                   font-size: {{ block.settings.description_size }}px;
                   color: {{ block.settings.description_color | default: 'inherit' }};
@@ -524,7 +524,7 @@
           "type": "text",
           "id": "heading_text",
           "label": "t:sections.hero.blocks.heading.settings.heading_text.label",
-          "default": "Digital Creative"
+          "default": "Introduce your brand"
         },
         {
           "type": "range",
@@ -593,7 +593,7 @@
           "type": "richtext",
           "id": "description_text",
           "label": "t:sections.hero.blocks.description.settings.description_text.label",
-          "default": "<p>Discover our latest collection crafted with premium materials and timeless design.</p>"
+          "default": "<p>Use this text to share what makes your store special.</p>"
         },
         {
           "type": "range",
@@ -622,7 +622,7 @@
           "type": "text",
           "id": "button_text",
           "label": "t:sections.hero.blocks.button.settings.button_text.label",
-          "default": "Explore Collection"
+          "default": "Shop now"
         },
         {
           "type": "url",

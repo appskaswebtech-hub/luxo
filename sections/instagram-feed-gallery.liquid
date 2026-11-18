@@ -5,8 +5,9 @@
     assign insta_bg = section.settings.custom_bg_color
     assign insta_text = section.settings.custom_text_color
     assign insta_accent = section.settings.custom_accent_color
-    assign heading_font = section.settings.custom_heading_font
-    assign body_font = section.settings.custom_body_font
+    assign heading_font = section.settings.custom_heading_font.family | append: ', ' | append: section.settings.custom_heading_font.fallback_families
+    assign body_font = section.settings.custom_body_font.family | append: ', ' | append: section.settings.custom_body_font.fallback_families
+    render 'custom-fonts', heading: section.settings.custom_heading_font, body: section.settings.custom_body_font
   else
     assign insta_bg = section.settings.color_scheme.settings.background
     assign insta_text = section.settings.color_scheme.settings.text
@@ -61,7 +62,7 @@
         {%- if block != blank -%}
           <a href="{{ block.settings.link | default: '#' }}" class="instagram-feed-gallery-{{ section.id }}__link" target="_blank" rel="noopener noreferrer" aria-label="{{ 'general.social.view_instagram' | t }}" {{ block.shopify_attributes }}>
             {%- if block.settings.image != blank -%}
-              {{ block.settings.image | image_url: width: 600 | image_tag: class: main_img_class, loading: 'lazy', alt: block.settings.image.alt }}
+              {{ block.settings.image | image_url: width: 600 | image_tag: class: main_img_class, loading: 'lazy', widths: '165, 300, 450, 600', sizes: '(min-width: 990px) 25vw, 50vw', alt: block.settings.image.alt }}
             {%- else -%}
               {{ 'lifestyle-1' | placeholder_svg_tag: main_placeholder_class }}
             {%- endif -%}
@@ -77,7 +78,7 @@
         {%- if block != blank -%}
           <a href="{{ block.settings.link | default: '#' }}" class="instagram-feed-gallery-{{ section.id }}__link" target="_blank" rel="noopener noreferrer" aria-label="{{ 'general.social.view_instagram' | t }}" {{ block.shopify_attributes }}>
             {%- if block.settings.image != blank -%}
-              {{ block.settings.image | image_url: width: 1200 | image_tag: class: main_img_class, loading: 'lazy', alt: block.settings.image.alt }}
+              {{ block.settings.image | image_url: width: 1200 | image_tag: class: main_img_class, loading: 'lazy', widths: '375, 550, 750, 1000, 1200', sizes: '(min-width: 990px) 50vw, 100vw', alt: block.settings.image.alt }}
             {%- else -%}
               {{ 'lifestyle-2' | placeholder_svg_tag: main_placeholder_class }}
             {%- endif -%}
@@ -93,7 +94,7 @@
         {%- if block != blank -%}
           <a href="{{ block.settings.link | default: '#' }}" class="instagram-feed-gallery-{{ section.id }}__link" target="_blank" rel="noopener noreferrer" aria-label="{{ 'general.social.view_instagram' | t }}" {{ block.shopify_attributes }}>
             {%- if block.settings.image != blank -%}
-              {{ block.settings.image | image_url: width: 600 | image_tag: class: main_img_class, loading: 'lazy', alt: block.settings.image.alt }}
+              {{ block.settings.image | image_url: width: 600 | image_tag: class: main_img_class, loading: 'lazy', widths: '165, 300, 450, 600', sizes: '(min-width: 990px) 25vw, 50vw', alt: block.settings.image.alt }}
             {%- else -%}
               {{ 'lifestyle-1' | placeholder_svg_tag: main_placeholder_class }}
             {%- endif -%}
@@ -109,7 +110,7 @@
         {%- if block != blank -%}
           <a href="{{ block.settings.link | default: '#' }}" class="instagram-feed-gallery-{{ section.id }}__link" target="_blank" rel="noopener noreferrer" aria-label="{{ 'general.social.view_instagram' | t }}" {{ block.shopify_attributes }}>
             {%- if block.settings.image != blank -%}
-              {{ block.settings.image | image_url: width: 600 | image_tag: class: main_img_class, loading: 'lazy', alt: block.settings.image.alt }}
+              {{ block.settings.image | image_url: width: 600 | image_tag: class: main_img_class, loading: 'lazy', widths: '165, 300, 450, 600', sizes: '(min-width: 990px) 25vw, 50vw', alt: block.settings.image.alt }}
             {%- else -%}
               {{ 'lifestyle-1' | placeholder_svg_tag: main_placeholder_class }}
             {%- endif -%}
@@ -125,7 +126,7 @@
         {%- if block != blank -%}
           <a href="{{ block.settings.link | default: '#' }}" class="instagram-feed-gallery-{{ section.id }}__link" target="_blank" rel="noopener noreferrer" aria-label="{{ 'general.social.view_instagram' | t }}" {{ block.shopify_attributes }}>
             {%- if block.settings.image != blank -%}
-              {{ block.settings.image | image_url: width: 600 | image_tag: class: main_img_class, loading: 'lazy', alt: block.settings.image.alt }}
+              {{ block.settings.image | image_url: width: 600 | image_tag: class: main_img_class, loading: 'lazy', widths: '165, 300, 450, 600', sizes: '(min-width: 990px) 25vw, 50vw', alt: block.settings.image.alt }}
             {%- else -%}
               {{ 'lifestyle-1' | placeholder_svg_tag: main_placeholder_class }}
             {%- endif -%}

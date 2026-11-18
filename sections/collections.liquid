@@ -5,8 +5,9 @@
     assign bg_color = section.settings.custom_bg_color
     assign text_color = section.settings.custom_text_color
     assign accent_color = section.settings.custom_accent_color
-    assign heading_font = section.settings.custom_heading_font
-    assign body_font = section.settings.custom_body_font
+    assign heading_font = section.settings.custom_heading_font.family | append: ', ' | append: section.settings.custom_heading_font.fallback_families
+    assign body_font = section.settings.custom_body_font.family | append: ', ' | append: section.settings.custom_body_font.fallback_families
+    render 'custom-fonts', heading: section.settings.custom_heading_font, body: section.settings.custom_body_font
   else
     assign bg_color = section.settings.color_scheme.settings.background
     assign text_color = section.settings.color_scheme.settings.text
@@ -35,57 +36,55 @@
 >
   <div class="category-collection-{{ section.id }}__container">
     <div class="category-collection-{{ section.id }}__title-group">
-      <h2 class="category-collection-{{ section.id }}__heading">{{ section.settings.heading_text }}</h2>
+      {%- assign list_heading = 'collection_list.title' | t -%}
+      {%- if section.settings.heading_text != blank -%}
+        {%- assign list_heading = section.settings.heading_text -%}
+      {%- endif -%}
+      <h1 class="category-collection-{{ section.id }}__heading">{{ list_heading | escape }}</h1>
     </div>
-    
-    <div class="category-collection-{{ section.id }}__grid-layout">
-      
-      {%- for collection in collections -%}
-        {%- liquid
-          if collection.image != blank
-            assign card_image = collection.image
-          elsif collection.products.first.featured_image != blank
-            assign card_image = collection.products.first.featured_image
-          else
-            assign card_image = blank
-          endif
-          
-          assign card_title = collection.title
-          
-          assign card_desc = collection.description
-          if card_desc == blank
-            assign card_desc = "Discover our latest collection with premium quality and unique style."
-          else
-            assign card_desc = card_desc | strip_html | truncate: 100
-          endif
 
-          assign card_link = collection.url | default: '#'
-        -%}
+    {%- paginate collections by section.settings.per_page -%}
+      <div class="category-collection-{{ section.id }}__grid-layout">
+        {%- for collection in collections -%}
+          {%- liquid
+            assign card_image = collection.featured_image
+            assign card_desc = collection.description | strip_html | truncate: 100
+          -%}
 
-        <div class="category-collection-{{ section.id }}__column">
-          
-          <p class="category-collection-{{ section.id }}__description">{{ card_desc }}</p>
+          <div class="category-collection-{{ section.id }}__column">
+            {%- if card_desc != blank -%}
+              <p class="category-collection-{{ section.id }}__description">{{ card_desc }}</p>
+            {%- endif -%}
 
-          <div class="category-collection-{{ section.id }}__card-wrapper">
-            <div class="category-collection-{{ section.id }}__card">
-              <a href="{{ card_link }}" class="category-collection-{{ section.id }}__btn">
-                {{ section.settings.button_text }}
-              </a>
-              
-              {%- if card_image != blank -%}
-                {%- capture img_alt -%}{{ card_title }}{%- endcapture -%}{%- capture img_class -%}category-collection-{{ section.id }}__image{%- endcapture -%}{{ card_image | image_url: width: 600 | image_tag: widths: '100, 165, 220, 300, 400, 600', sizes: '(min-width: 990px) 33vw, 50vw', loading: 'lazy', alt: img_alt, class: img_class }}
-              {%- else -%}
-                {{ 'image' | placeholder_svg_tag: placeholder_class }}
-              {%- endif -%}
-              
-              <div class="category-collection-{{ section.id }}__tag">{{ card_title | truncate: 20 }}</div>
+            <div class="category-collection-{{ section.id }}__card-wrapper">
+              <div class="category-collection-{{ section.id }}__card">
+                <a href="{{ collection.url }}" class="category-collection-{{ section.id }}__btn">
+                  {{- section.settings.button_text | escape -}}
+                  <span class="visually-hidden">: {{ collection.title | escape }}</span>
+                </a>
+
+                {%- if card_image != blank -%}
+                  {%- capture img_class -%}category-collection-{{ section.id }}__image{%- endcapture -%}
+                  {{ card_image | image_url: width: 600 | image_tag: widths: '165, 220, 300, 400, 600', sizes: '(min-width: 990px) 33vw, (min-width: 769px) 50vw, 100vw', loading: 'lazy', alt: collection.title, class: img_class }}
+                {%- else -%}
+                  {{ 'collection-1' | placeholder_svg_tag: placeholder_class }}
+                {%- endif -%}
+
+                <h2 class="category-collection-{{ section.id }}__tag">{{ collection.title | escape }}</h2>
+              </div>
             </div>
           </div>
+        {%- else -%}
+          <p class="category-collection-{{ section.id }}__empty">{{ 'collection_list.empty' | t }}</p>
+        {%- endfor -%}
+      </div>
 
-        </div>
-      {%- endfor -%}
-
-    </div>
+      {%- if paginate.pages > 1 -%}
+        <nav class="category-collection-{{ section.id }}__pagination" aria-label="{{ 'collection_list.pagination' | t }}">
+          {{ paginate | default_pagination }}
+        </nav>
+      {%- endif -%}
+    {%- endpaginate -%}
   </div>
 </section>
 
@@ -236,7 +235,13 @@
     text-transform: uppercase;
     letter-spacing: 1px;
     border: 2px solid var(--category-text-color);
-    white-space: nowrap;
+    max-width: 90%;
+    margin: 0;
+    font-family: inherit;
+    line-height: 1.3;
+    text-align: center;
+    white-space: normal;
+    overflow-wrap: anywhere;
     z-index: 10;
   }
 
@@ -268,6 +273,32 @@
       margin-bottom: 3rem;
     }
   }
+  .category-collection-{{ section.id }}__empty {
+    grid-column: 1 / -1;
+    text-align: center;
+  }
+
+  .category-collection-{{ section.id }}__pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 4rem;
+    font-weight: 600;
+  }
+
+  .category-collection-{{ section.id }}__pagination .page,
+  .category-collection-{{ section.id }}__pagination .next,
+  .category-collection-{{ section.id }}__pagination .prev {
+    display: inline-block;
+    margin: 0 0.5rem;
+  }
+
+  .category-collection-{{ section.id }}__pagination a {
+    color: inherit;
+  }
+
+  .category-collection-{{ section.id }}__pagination .current {
+    color: var(--category-accent-color);
+  }
 {% endstyle %}
 
 {% schema %}
@@ -284,13 +315,22 @@
       "type": "text",
       "id": "heading_text",
       "label": "t:sections.collections.settings.heading_text.label",
-      "default": "TRENDING CARDS IDEA"
+      "default": "Collections"
     },
     {
       "type": "text",
       "id": "button_text",
       "label": "t:sections.collections.settings.button_text.label",
-      "default": "SHOP NOW"
+      "default": "Shop now"
+    },
+    {
+      "type": "range",
+      "id": "per_page",
+      "label": "t:sections.collections.settings.per_page.label",
+      "min": 6,
+      "max": 48,
+      "step": 3,
+      "default": 12
     },
     {
       "type": "range",

@@ -890,11 +890,11 @@
         "type": "range",
         "id": "cart_drawer_width",
         "min": 320,
-        "max": 560,
+        "max": 640,
         "step": 8,
         "unit": "px",
         "label": "t:labels.cart_drawer_width",
-        "default": 416,
+        "default": 480,
         "visible_if": "{{ settings.cart_type == 'drawer' }}"
       },
       {
@@ -1051,25 +1051,6 @@
         "id": "cart_summary_card",
         "label": "t:labels.cart_summary_card",
         "default": true
-      },
-      {
-        "type": "header",
-        "content": "t:general.cart_free_shipping"
-      },
-      {
-        "type": "checkbox",
-        "id": "cart_free_shipping",
-        "label": "t:labels.cart_free_shipping",
-        "info": "t:info.cart_free_shipping",
-        "default": true
-      },
-      {
-        "type": "number",
-        "id": "cart_free_shipping_threshold",
-        "label": "t:labels.cart_free_shipping_threshold",
-        "info": "t:info.cart_free_shipping_threshold",
-        "default": 100,
-        "visible_if": "{{ settings.cart_free_shipping }}"
       },
       {
         "type": "header",

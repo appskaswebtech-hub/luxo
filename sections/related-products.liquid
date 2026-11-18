@@ -16,8 +16,9 @@
     assign rp_bg = section.settings.custom_bg_color
     assign rp_text = section.settings.custom_text_color
     assign rp_accent = section.settings.custom_accent_color
-    assign heading_font = section.settings.custom_heading_font
-    assign body_font = section.settings.custom_body_font
+    assign heading_font = section.settings.custom_heading_font.family | append: ', ' | append: section.settings.custom_heading_font.fallback_families
+    assign body_font = section.settings.custom_body_font.family | append: ', ' | append: section.settings.custom_body_font.fallback_families
+    render 'custom-fonts', heading: section.settings.custom_heading_font, body: section.settings.custom_body_font
   else
     assign rp_bg = section.settings.color_scheme.settings.background
     assign rp_text = section.settings.color_scheme.settings.text
@@ -600,7 +601,7 @@
       "type": "text",
       "id": "heading",
       "label": "t:sections.related_products.settings.heading.label",
-      "default": "You May Also Like"
+      "default": "You may also like"
     },
     {
       "type": "text",
@@ -709,7 +710,7 @@
       "type": "text",
       "id": "view_all_text",
       "label": "t:sections.related_products.settings.view_all_text.label",
-      "default": "View All"
+      "default": "View all"
     },
     {
       "type": "header",

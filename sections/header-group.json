@@ -48,13 +48,15 @@
         "menu_item_1": {
           "type": "menu_item",
           "settings": {
-            "title": "CATEGORY 1"
+            "title": "Category 1",
+            "submenu_menu": ""
           }
         },
         "menu_item_2": {
           "type": "menu_item",
           "settings": {
-            "title": "CATEGORY 2"
+            "title": "Category 2",
+            "submenu_menu": ""
           }
         }
       },
@@ -71,7 +73,7 @@
         "show_compare": false,
         "compare_url": "",
         "main_menu": "main-menu",
-        "deal_text": "TODAY DEALS",
+        "deal_text": "Today's deals",
         "deal_link": ""
       }
     }

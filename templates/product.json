@@ -12,28 +12,12 @@
     "main": {
       "type": "product",
       "blocks": {
-        "customer_review": {
-          "type": "customer_review",
-          "settings": {
-            "customer_name": "Sophie L.",
-            "review_title": "Love this overnight glow!",
-            "review_text": "Woke up with plump, hydrated skin. My complexion looks smoother and more radiant every morning."
-          }
-        },
         "title": {
           "type": "title",
-          "settings": {
-            "subtitle": "FIRMING | HYDRATING | OVERNIGHT CARE"
-          }
+          "settings": {}
         },
         "rating": {
           "type": "rating"
-        },
-        "key_benefits": {
-          "type": "key_benefits",
-          "settings": {
-            "benefits_list": "Hydrates & Locks in Moisture Overnight, BOOSTS ELASTICITY, SMOOTHES & FIRMS SKIN, SENSITIVE SKIN FRIENDLY"
-          }
         },
         "variant_picker": {
           "type": "variant_picker"
@@ -47,7 +31,7 @@
         "size_chart": {
           "type": "size_chart",
           "settings": {
-            "title": "Size Chart"
+            "title": "Size chart"
           }
         },
         "quantity_selector": {
@@ -56,41 +40,8 @@
         "buy_button": {
           "type": "buy_button",
           "settings": {
-            "button_text": "ADD TO CART",
+            "button_text": "Add to cart",
             "show_price": true
-          }
-        },
-        "shipping_info": {
-          "type": "shipping_info",
-          "settings": {
-            "shipping_text": "Ships within 24 hours."
-          }
-        },
-        "guarantee_text": {
-          "type": "guarantee_text",
-          "settings": {
-            "guarantee_text": "TRY IT - FREE FOR 30 DAYS. 100% REFUND."
-          }
-        },
-        "faq_1": {
-          "type": "faq_accordion",
-          "settings": {
-            "title": "Shipping & Returns",
-            "content": "<p>Details here...</p>"
-          }
-        },
-        "faq_2": {
-          "type": "faq_accordion",
-          "settings": {
-            "title": "Shipping & Returns",
-            "content": "<p>Details here...</p>"
-          }
-        },
-        "faq_3": {
-          "type": "faq_accordion",
-          "settings": {
-            "title": "Shipping & Returns",
-            "content": "<p>Details here...</p>"
           }
         },
         "price": {
@@ -101,21 +52,14 @@
         }
       },
       "block_order": [
-        "customer_review",
         "title",
         "price",
         "rating",
-        "key_benefits",
         "variant_picker",
         "stock_alert",
         "size_chart",
         "quantity_selector",
-        "buy_button",
-        "shipping_info",
-        "guarantee_text",
-        "faq_1",
-        "faq_2",
-        "faq_3"
+        "buy_button"
       ],
       "settings": {}
     },

@@ -6,8 +6,9 @@
     assign blog_text = section.settings.custom_text_color
     assign blog_accent = section.settings.custom_accent_color
     assign blog_border = section.settings.custom_border_color
-    assign heading_font = section.settings.custom_heading_font
-    assign body_font = section.settings.custom_body_font
+    assign heading_font = section.settings.custom_heading_font.family | append: ', ' | append: section.settings.custom_heading_font.fallback_families
+    assign body_font = section.settings.custom_body_font.family | append: ', ' | append: section.settings.custom_body_font.fallback_families
+    render 'custom-fonts', heading: section.settings.custom_heading_font, body: section.settings.custom_body_font
   else
     assign blog_bg = section.settings.color_scheme.settings.background
     assign blog_text = section.settings.color_scheme.settings.text

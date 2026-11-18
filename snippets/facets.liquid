@@ -160,8 +160,10 @@
                 <price-range class="facets__price" data-max="{{ range_max }}">
                   <div class="facets__slider" aria-hidden="true">
                     <span class="facets__track"><span class="facets__track-fill" data-range-fill></span></span>
-                    <input type="range" class="facets__thumb" min="0" max="{{ range_max }}" step="1" value="{{ current_min | default: 0 }}" data-range-min tabindex="-1">
-                    <input type="range" class="facets__thumb" min="0" max="{{ range_max }}" step="1" value="{{ current_max | default: range_max }}" data-range-max tabindex="-1">
+                    <label class="visually-hidden" for="{{ group_id }}-range-min">{{ 'collection_page.min' | t }}</label>
+                    <input type="range" class="facets__thumb" id="{{ group_id }}-range-min" min="0" max="{{ range_max }}" step="1" value="{{ current_min | default: 0 }}" data-range-min tabindex="-1">
+                    <label class="visually-hidden" for="{{ group_id }}-range-max">{{ 'collection_page.max' | t }}</label>
+                    <input type="range" class="facets__thumb" id="{{ group_id }}-range-max" min="0" max="{{ range_max }}" step="1" value="{{ current_max | default: range_max }}" data-range-max tabindex="-1">
                   </div>
                   <div class="facets__price-fields">
                     <label for="{{ group_id }}-min">

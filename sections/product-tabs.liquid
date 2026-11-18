@@ -6,8 +6,9 @@
     assign tabs_text = section.settings.custom_text_color
     assign tabs_accent = section.settings.custom_accent_color
     assign tabs_border = section.settings.custom_border_color
-    assign heading_font = section.settings.custom_heading_font
-    assign body_font = section.settings.custom_body_font
+    assign heading_font = section.settings.custom_heading_font.family | append: ', ' | append: section.settings.custom_heading_font.fallback_families
+    assign body_font = section.settings.custom_body_font.family | append: ', ' | append: section.settings.custom_body_font.fallback_families
+    render 'custom-fonts', heading: section.settings.custom_heading_font, body: section.settings.custom_body_font
   else
     assign tabs_bg = section.settings.color_scheme.settings.background
     assign tabs_text = section.settings.color_scheme.settings.text
@@ -64,7 +65,7 @@
           {%- case block.type -%}
             
             {%- when 'description' -%}
-              <div class="product-tabs-{{ section.id }}__rte">
+              <div class="product-tabs-{{ section.id }}__rte rte">
                 {%- if block.settings.custom_description != blank -%}
                   {{ block.settings.custom_description }}
                 {%- else -%}
@@ -73,7 +74,7 @@
               </div>
 
             {%- when 'reviews' -%}
-              <div class="product-tabs-{{ section.id }}__reviews">
+              <div class="product-tabs-{{ section.id }}__reviews rte">
                 {%- if block.settings.review_content != blank -%}
                   {{ block.settings.review_content }}
                 {%- else -%}
@@ -84,7 +85,7 @@
               </div>
 
             {%- when 'shipping' -%}
-              <div class="product-tabs-{{ section.id }}__rte">
+              <div class="product-tabs-{{ section.id }}__rte rte">
                 {{ block.settings.shipping_content }}
               </div>
 
@@ -93,9 +94,9 @@
                 {%- if block.settings.size_chart_image != blank -%}
                   {%- capture img_alt -%}{{ 'products.size_chart' | t }}{%- endcapture -%}{%- capture img_class -%}product-tabs-{{ section.id }}__size-chart-img{%- endcapture -%}{{ block.settings.size_chart_image | image_url: width: 800 | image_tag: widths: '100, 165, 220, 300, 400, 600, 800', sizes: '(min-width: 990px) 800px, 100vw', loading: 'lazy', alt: img_alt, class: img_class }}
                 {%- elsif block.settings.custom_size_chart != blank -%}
-                  <div class="product-tabs-{{ section.id }}__rte">{{ block.settings.custom_size_chart }}</div>
+                  <div class="product-tabs-{{ section.id }}__rte rte">{{ block.settings.custom_size_chart }}</div>
                 {%- elsif product.metafields.custom.size_chart.value != blank -%}
-                  <div class="product-tabs-{{ section.id }}__rte">{{ product.metafields.custom.size_chart.value }}</div>
+                  <div class="product-tabs-{{ section.id }}__rte rte">{{ product.metafields.custom.size_chart.value }}</div>
                 {%- else -%}
                   <div class="product-tabs-{{ section.id }}__review-empty">
                     <p>{{ block.settings.empty_state_text | escape }}</p>
@@ -104,7 +105,7 @@
               </div>
 
             {%- when 'custom_html' -%}
-              <div class="product-tabs-{{ section.id }}__rte">
+              <div class="product-tabs-{{ section.id }}__rte rte">
                 {{ block.settings.custom_content }}
               </div>
 
@@ -160,7 +161,7 @@
     text-transform: uppercase;
     letter-spacing: 1px;
     color: var(--tabs-text);
-    opacity: 0.5;
+    opacity: 0.8;
     cursor: pointer;
     position: relative;
     transition: opacity 0.3s ease;
@@ -212,18 +213,7 @@
   }
 
   .product-tabs-{{ section.id }}__rte {
-    font-size: 15px;
-    line-height: 1.7;
     color: var(--tabs-text);
-    opacity: 0.9;
-  }
-
-  .product-tabs-{{ section.id }}__rte p {
-    margin: 0 0 15px;
-  }
-
-  .product-tabs-{{ section.id }}__rte p:last-child {
-    margin-bottom: 0;
   }
 
   .product-tabs-{{ section.id }}__reviews {
@@ -467,7 +457,7 @@
           "type": "text",
           "id": "tab_title",
           "label": "t:sections.product_tabs.blocks.shipping.settings.tab_title.label",
-          "default": "Shipping & Returns"
+          "default": "Shipping and returns"
         },
         {
           "type": "richtext",
@@ -485,7 +475,7 @@
           "type": "text",
           "id": "tab_title",
           "label": "t:sections.product_tabs.blocks.size_chart.settings.tab_title.label",
-          "default": "Size Chart"
+          "default": "Size chart"
         },
         {
           "type": "image_picker",
@@ -502,7 +492,7 @@
           "type": "text",
           "id": "empty_state_text",
           "label": "t:sections.product_tabs.blocks.size_chart.settings.empty_state_text.label",
-          "default": "Please contact us for size details."
+          "default": "Contact us for size details."
         }
       ]
     },

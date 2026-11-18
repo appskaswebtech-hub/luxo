@@ -1,40 +1,19 @@
 {% doc %}
-  Renders the cart totals, free shipping progress, order note, checkout button,
-  express checkout buttons and trust points. Shared by the cart page and cart drawer.
+  Renders the cart totals, order note, checkout button, express checkout buttons
+  and, in card mode, trust points. Shared by the cart page and cart drawer.
 
   @param {string} form_id - Id of the cart form the note and checkout button belong to
   @param {boolean} [show_express] - Show express checkout buttons such as Shop Pay
   @param {boolean} [full_width] - Stretch to the container width with labels left and amounts right
-  @param {boolean} [card] - Show the summary inside a card (cart page)
+  @param {boolean} [card] - Show the summary inside a card with trust points (cart page)
 
   @example
   {% render 'cart-summary', form_id: 'CartForm', show_express: true, card: true %}
 {% enddoc %}
 
 {%- liquid
-  assign show_shipping = false
-  if settings.cart_free_shipping
-    if settings.cart_free_shipping_threshold > 0
-      assign show_shipping = true
-    endif
-  endif
-
-  if show_shipping
-    assign threshold = settings.cart_free_shipping_threshold | times: 100
-    assign remaining = threshold | minus: cart.total_price
-    assign progress = cart.total_price | times: 100 | divided_by: threshold | at_most: 100
-
-    comment
-      In another market currency, the threshold is converted in the browser with the market rate
-    endcomment
-    assign convert = false
-    if cart.currency.iso_code != shop.currency
-      assign convert = true
-    endif
-  endif
-
   assign trust_count = 0
-  if settings.cart_trust_badges
+  if settings.cart_trust_badges and card
     if settings.cart_trust_1 != blank
       assign trust_count = trust_count | plus: 1
     endif
@@ -51,40 +30,6 @@
   <div class="cart-summary__totals" data-cart-region="totals">
     {%- if card -%}
       <h2 class="cart-summary__heading">{{ 'cart.summary' | t }}</h2>
-    {%- endif -%}
-
-    {%- if show_shipping -%}
-      <free-shipping
-        class="cart-summary__shipping"
-        {% if convert %}
-          data-convert
-          data-threshold="{{ threshold }}"
-          data-total="{{ cart.total_price }}"
-          data-currency="{{ cart.currency.iso_code }}"
-          data-template="{{ 'cart.shipping.remaining_html' | t: amount: '[amount]' | escape }}"
-          data-unlocked="{{ 'cart.shipping.unlocked' | t | escape }}"
-          hidden
-        {% endif %}
-      >
-        <p class="cart-summary__shipping-text">
-          {%- if remaining > 0 -%}
-            {%- capture remaining_amount -%}<strong>{% render 'price', amount: remaining %}</strong>{%- endcapture -%}
-            {{ 'cart.shipping.remaining_html' | t: amount: remaining_amount }}
-          {%- else -%}
-            {{ 'cart.shipping.unlocked' | t }}
-          {%- endif -%}
-        </p>
-        <div
-          class="cart-summary__shipping-bar"
-          role="progressbar"
-          aria-label="{{ 'cart.shipping.label' | t }}"
-          aria-valuemin="0"
-          aria-valuemax="100"
-          aria-valuenow="{{ progress }}"
-        >
-          <span style="width: {{ progress }}%;"></span>
-        </div>
-      </free-shipping>
     {%- endif -%}
 
     {%- if cart.cart_level_discount_applications.size > 0 -%}

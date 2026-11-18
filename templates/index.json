@@ -99,41 +99,37 @@
       "type": "customer-reviews",
       "blocks": {
         "review_1": {
-          "type": "review"
+          "type": "review",
+          "settings": {}
         },
         "review_2": {
           "type": "review",
           "settings": {
-            "customer_name": "Customer Name",
-            "customer_role": "Verified customer"
+            "customer_name": "Customer name"
           }
         },
         "review_3": {
           "type": "review",
           "settings": {
-            "customer_name": "Customer Name",
-            "customer_role": "Verified customer"
+            "customer_name": "Customer name"
           }
         },
         "review_4": {
           "type": "review",
           "settings": {
-            "customer_name": "Customer Name",
-            "customer_role": "Verified customer"
+            "customer_name": "Customer name"
           }
         },
         "review_5": {
           "type": "review",
           "settings": {
-            "customer_name": "Customer Name",
-            "customer_role": "Verified customer"
+            "customer_name": "Customer name"
           }
         },
         "review_6": {
           "type": "review",
           "settings": {
-            "customer_name": "Customer Name",
-            "customer_role": "Verified customer"
+            "customer_name": "Customer name"
           }
         }
       },
@@ -182,12 +178,56 @@
     "newsletter": {
       "type": "newsletter-email",
       "settings": {}
+    },
+    "featured_product": {
+      "type": "featured-product",
+      "blocks": {
+        "featured_product_title": {
+          "type": "title",
+          "settings": {}
+        },
+        "featured_product_price": {
+          "type": "price",
+          "settings": {}
+        },
+        "featured_product_variant_picker": {
+          "type": "variant_picker",
+          "settings": {}
+        },
+        "featured_product_quantity": {
+          "type": "quantity",
+          "settings": {}
+        },
+        "featured_product_buy_buttons": {
+          "type": "buy_buttons",
+          "settings": {}
+        },
+        "featured_product_description": {
+          "type": "description",
+          "settings": {}
+        }
+      },
+      "block_order": [
+        "featured_product_title",
+        "featured_product_price",
+        "featured_product_variant_picker",
+        "featured_product_quantity",
+        "featured_product_buy_buttons",
+        "featured_product_description"
+      ],
+      "settings": {
+        "color_scheme": "scheme-2",
+        "media_position": "left",
+        "padding_top": 64,
+        "padding_bottom": 64
+      }
     }
   },
   "order": [
     "hero",
     "trending_categories",
     "featured_products",
+    "featured_product",
     "seasonal_sale",
     "digital_creative",
     "lookbook",

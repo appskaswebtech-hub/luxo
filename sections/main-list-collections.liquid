@@ -9,6 +9,7 @@
     assign bg_color = section.settings.custom_bg_color
     assign text_color = section.settings.custom_text_color
     assign accent_color = section.settings.custom_accent_color
+    render 'custom-fonts', heading: section.settings.custom_heading_font, body: section.settings.custom_body_font
   endif
 -%}
 
@@ -24,9 +25,9 @@
     --cc-default-body-font: var(--font-body-family);
     --cc-default-body-size: var(--font-body-size);
     {% if use_custom_colors %}
-      --cc-heading-font: {{ section.settings.custom_heading_font }};
+      --cc-heading-font: {{ section.settings.custom_heading_font.family }}, {{ section.settings.custom_heading_font.fallback_families }};
       --cc-heading-size: {{ section.settings.custom_heading_size }}px;
-      --cc-body-font: {{ section.settings.custom_body_font }};
+      --cc-body-font: {{ section.settings.custom_body_font.family }}, {{ section.settings.custom_body_font.fallback_families }};
       --cc-body-size: {{ section.settings.custom_body_size }}px;
     {% else %}
       --cc-heading-font: var(--cc-default-heading-font);
@@ -61,14 +62,14 @@
             if card_title == blank and collection != blank
               assign card_title = collection.title
             elsif card_title == blank
-              assign card_title = "Category Name"
+              assign card_title = 'collection_card.placeholder_title' | t
             endif
 
             assign card_desc = block.settings.custom_description
             if card_desc == blank and collection != blank and collection.description != blank
               assign card_desc = collection.description | strip_html | truncate: 100
             elsif card_desc == blank
-              assign card_desc = "Discover our latest collection with premium quality and unique style."
+              assign card_desc = 'collection_card.placeholder_description' | t
             endif
 
             assign card_link = collection.url | default: '#'
@@ -94,7 +95,7 @@
                   </div>
                 {%- endif -%}
                 
-                <div class="category-collection__tag">{{ card_title | truncate: 20 }}</div>
+                <div class="category-collection__tag">{{ card_title | escape }}</div>
               </div>
             </div>
 
@@ -297,7 +298,11 @@
     text-transform: uppercase;
     letter-spacing: 1px;
     border: 2px solid var(--category-text-color);
-    white-space: nowrap;
+    max-width: 90%;
+    line-height: 1.3;
+    text-align: center;
+    white-space: normal;
+    overflow-wrap: anywhere;
     z-index: 10;
   }
 
@@ -346,13 +351,13 @@
       "type": "text",
       "id": "heading_text",
       "label": "t:sections.main_list_collections.settings.heading_text.label",
-      "default": "TRENDING CARDS IDEA"
+      "default": "Shop by collection"
     },
     {
       "type": "text",
       "id": "button_text",
       "label": "t:sections.main_list_collections.settings.button_text.label",
-      "default": "SHOP NOW"
+      "default": "Shop now"
     },
     {
       "type": "range",

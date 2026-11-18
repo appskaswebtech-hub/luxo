@@ -13,9 +13,9 @@
     assign accent_color = section.settings.custom_accent_color
     assign card_color = section.settings.custom_card_color
     
-    assign heading_font = section.settings.custom_heading_font
-    assign body_font = section.settings.custom_body_font
-    
+    assign heading_font = section.settings.custom_heading_font.family | append: ', ' | append: section.settings.custom_heading_font.fallback_families
+    assign body_font = section.settings.custom_body_font.family | append: ', ' | append: section.settings.custom_body_font.fallback_families
+    render 'custom-fonts', heading: section.settings.custom_heading_font, body: section.settings.custom_body_font
     assign btn_bg_color = section.settings.custom_btn_bg_color
     assign btn_text_color = section.settings.custom_btn_text_color
     assign btn_size = section.settings.custom_btn_font_size
@@ -73,10 +73,12 @@
         <div class="seasonal-sale-banner-{{ section.id }}__divider"></div>
       </div>
 
-      <div class="seasonal-sale-banner-{{ section.id }}__desc">
+      <div class="seasonal-sale-banner-{{ section.id }}__desc rte">
         {{ section.settings.description_text }}
       </div>
 
+      {%- comment -%} Shown only for a real end date set by the merchant {%- endcomment -%}
+      {%- if countdown_end_date != blank -%}
       <div class="seasonal-sale-banner-{{ section.id }}__countdown-wrapper">
         <div
           class="seasonal-sale-banner-{{ section.id }}__countdown"
@@ -105,6 +107,7 @@
           </div>
         </div>
       </div>
+      {%- endif -%}
 
       {%- if section.settings.button_text != blank -%}
         <a href="{{ section.settings.button_link | default: routes.all_products_collection_url }}" class="seasonal-sale-banner-{{ section.id }}__btn">
@@ -179,8 +182,8 @@
   .seasonal-sale-banner-{{ section.id }}__card {
     background: var(--ss-card-color);
     opacity: 0.95;
-    backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 24px;
     padding: 60px 50px;
@@ -377,18 +380,15 @@
   document.addEventListener('DOMContentLoaded', function() {
     const countdownContainers = document.querySelectorAll('.seasonal-sale-banner-{{ section.id }}__countdown');
 
-    /* Without an end date the countdown runs to the end of the week, so the banner always looks live */
-    const endOfWeek = () => {
-      const end = new Date();
-      end.setDate(end.getDate() + ((7 - end.getDay()) % 7));
-      end.setHours(23, 59, 59, 0);
-      return end.getTime();
-    };
-
     countdownContainers.forEach(container => {
       const endDateString = container.getAttribute('data-end-date');
       const parsed = endDateString ? new Date(endDateString).getTime() : NaN;
-      const countDownDate = Number.isNaN(parsed) ? endOfWeek() : parsed;
+      /* No valid date means no countdown, never an invented deadline */
+      if (Number.isNaN(parsed)) {
+        container.closest('.seasonal-sale-banner-{{ section.id }}__countdown-wrapper')?.remove();
+        return;
+      }
+      const countDownDate = parsed;
 
       const x = setInterval(function() {
         const now = new Date().getTime();
@@ -437,19 +437,19 @@
       "type": "text",
       "id": "main_heading",
       "label": "t:sections.seasonal_sale_banner.settings.main_heading.label",
-      "default": "UP TO 30% OFF"
+      "default": "Seasonal sale"
     },
     {
       "type": "richtext",
       "id": "description_text",
       "label": "t:sections.seasonal_sale_banner.settings.description_text.label",
-      "default": "<p>Calling all bag lovers! Our mega sale is here and it's time to make a serious style statement.</p>"
+      "default": "<p>Use this banner to promote a sale or a limited-time offer.</p>"
     },
     {
       "type": "text",
       "id": "button_text",
       "label": "t:sections.seasonal_sale_banner.settings.button_text.label",
-      "default": "Explore Collection"
+      "default": "Shop the sale"
     },
     {
       "type": "url",
@@ -484,13 +484,13 @@
       "type": "text",
       "id": "minutes_label",
       "label": "t:sections.seasonal_sale_banner.settings.minutes_label.label",
-      "default": "Mins"
+      "default": "Minutes"
     },
     {
       "type": "text",
       "id": "seconds_label",
       "label": "t:sections.seasonal_sale_banner.settings.seconds_label.label",
-      "default": "Sec"
+      "default": "Seconds"
     },
     {
       "type": "header",

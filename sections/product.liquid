@@ -18,6 +18,7 @@
     --mp-btn-text: {{ section.settings.button_text_color }};
     --mp-border: {{ section.settings.color_scheme.settings.border }};
     --mp-soft-bg: {{ section.settings.soft_background }};
+    --mp-soft-text: {{ section.settings.soft_text }};
     --mp-card-border-width: {{ section.settings.card_border_width }}px;
     padding-top: {{ section.settings.padding_top }}px;
     padding-bottom: {{ section.settings.padding_bottom }}px;
@@ -49,7 +50,7 @@
             data-prev-label="{{ 'products.zoom_previous' | t }}"
             data-next-label="{{ 'products.zoom_next' | t }}"
           >
-            <div class="main-product-{{ section.id }}__main-image-wrapper">
+            <div class="main-product-{{ section.id }}__main-image-wrapper main-product-{{ section.id }}__main-image-wrapper--{{ section.settings.media_fit | default: 'contain' }}">
               {%- if product.tags.size > 0 -%}
                 <span class="main-product-{{ section.id }}__main-badge">{{ product.tags.first | upcase }}</span>
               {%- endif -%}
@@ -265,13 +266,13 @@
 
                 {%- when 'price' -%}
                   <div class="main-product-{{ section.id }}__price-block" {{ block.shopify_attributes }}>
-                    {% render 'price-tag', product: product, variant: current_variant, form_id: form_id, savings: block.settings.show_savings %}
+                    {% render 'price-tag', product: product, variant: current_variant, form_id: form_id, savings: block.settings.show_savings, tax_note: true %}
                   </div>
 
                 {%- when 'description' -%}
                   <div class="main-product-{{ section.id }}__description-block" {{ block.shopify_attributes }}>
                     <h3 class="main-product-{{ section.id }}__block-heading">{{ 'products.description' | t }}</h3>
-                    {{ product.description }}
+                    <div class="rte">{{ product.description }}</div>
                   </div>
 
                 {%- when 'key_benefits' -%}
@@ -361,26 +362,26 @@
                       </legend>
 
                       {%- unless product.requires_selling_plan -%}
-                        <label class="main-product-{{ section.id }}__purchase-option main-product-{{ section.id }}__one-time-option">
-                          <input type="radio" name="selling_plan" value="" form="{{ form_id }}"{% if selected_plan == blank %} checked{% endif %}>
-                          <div class="main-product-{{ section.id }}__option-content">
+                        <label class="main-product-{{ section.id }}__purchase-option main-product-{{ section.id }}__one-time-option" for="SellingPlan-{{ section.id }}-none">
+                          <input type="radio" id="SellingPlan-{{ section.id }}-none" name="selling_plan" value="" form="{{ form_id }}"{% if selected_plan == blank %} checked{% endif %}>
+                          <span class="main-product-{{ section.id }}__option-content">
                             <span class="main-product-{{ section.id }}__option-title">{{ 'products.one_time' | t }}</span>
                             <span class="main-product-{{ section.id }}__option-price">{% render 'price', amount: current_variant.price %}</span>
-                          </div>
+                          </span>
                         </label>
                       {%- endunless -%}
 
                       {%- for group in product.selling_plan_groups -%}
                         {%- for plan in group.selling_plans -%}
                           {%- assign allocation = current_variant.selling_plan_allocations | where: 'selling_plan_id', plan.id | first -%}
-                          <label class="main-product-{{ section.id }}__purchase-option">
-                            <input type="radio" name="selling_plan" value="{{ plan.id }}" form="{{ form_id }}"{% if selected_plan.id == plan.id %} checked{% endif %}>
-                            <div class="main-product-{{ section.id }}__option-content">
+                          <label class="main-product-{{ section.id }}__purchase-option" for="SellingPlan-{{ section.id }}-{{ plan.id }}">
+                            <input type="radio" id="SellingPlan-{{ section.id }}-{{ plan.id }}" name="selling_plan" value="{{ plan.id }}" form="{{ form_id }}"{% if selected_plan.id == plan.id %} checked{% endif %}>
+                            <span class="main-product-{{ section.id }}__option-content">
                               <span class="main-product-{{ section.id }}__option-title">{{ plan.name | escape }}</span>
                               {%- if allocation -%}
                                 <span class="main-product-{{ section.id }}__option-price">{% render 'price', amount: allocation.price %}</span>
                               {%- endif -%}
-                            </div>
+                            </span>
                           </label>
                           {%- if plan.description != blank -%}
                             <p class="main-product-{{ section.id }}__subscribe-benefits">{{ plan.description | escape }}</p>
@@ -484,6 +485,18 @@
                   </div>
 
                 {%- when 'size_chart' -%}
+                  {%- comment -%} Shown only when there is a real size chart, never invented measurements {%- endcomment -%}
+                  {%- liquid
+                    assign has_size_chart = false
+                    if block.settings.size_chart_image != blank
+                      assign has_size_chart = true
+                    elsif product.metafields.custom.size_chart.value != blank
+                      assign has_size_chart = true
+                    endif
+                  -%}
+                  {%- unless has_size_chart -%}
+                    {%- continue -%}
+                  {%- endunless -%}
                   <div class="main-product-{{ section.id }}__sizechart-block" {{ block.shopify_attributes }}>
                     <button type="button" class="main-product-{{ section.id }}__sizechart-btn" data-open-sizechart="SizechartModal-{{ section.id }}">
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
@@ -501,23 +514,6 @@
                             {%- capture img_alt -%}{{ 'products.size_chart' | t }}{%- endcapture -%}{%- capture img_class -%}main-product-{{ section.id }}__sizechart-img{%- endcapture -%}{{ block.settings.size_chart_image | image_url: width: 800 | image_tag: widths: '100, 165, 220, 300, 400, 600, 800', sizes: '(min-width: 990px) 800px, 100vw', loading: 'lazy', alt: img_alt, class: img_class }}
                           {%- elsif product.metafields.custom.size_chart.value != blank -%}
                             <div class="main-product-{{ section.id }}__metafield-content">{{ product.metafields.custom.size_chart.value }}</div>
-                          {%- else -%}
-                            <table class="main-product-{{ section.id }}__size-table">
-                              <thead>
-                                <tr>
-                                  <th>{{ 'products.size' | t }}</th>
-                                  <th>{{ 'products.chest' | t }}</th>
-                                  <th>{{ 'products.waist' | t }}</th>
-                                  <th>{{ 'products.hip' | t }}</th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                <tr><td>S</td><td>34-36"</td><td>28-30"</td><td>35-37"</td></tr>
-                                <tr><td>M</td><td>38-40"</td><td>32-34"</td><td>39-41"</td></tr>
-                                <tr><td>L</td><td>42-44"</td><td>36-38"</td><td>43-45"</td></tr>
-                                <tr><td>XL</td><td>46-48"</td><td>40-42"</td><td>47-49"</td></tr>
-                              </tbody>
-                            </table>
                           {%- endif -%}
                         </div>
                       </div>
@@ -528,7 +524,7 @@
                   <div class="main-product-{{ section.id }}__accordion-block" {{ block.shopify_attributes }}>
                     <details class="main-product-{{ section.id }}__accordion">
                       <summary class="main-product-{{ section.id }}__accordion-summary">{{ block.settings.title }}</summary>
-                      <div class="main-product-{{ section.id }}__accordion-content">
+                      <div class="main-product-{{ section.id }}__accordion-content rte">
                         {{ block.settings.content }}
                       </div>
                     </details>
@@ -715,6 +711,7 @@
     width: 100%;
     aspect-ratio: 4/5;
     background-color: var(--mp-soft-bg);
+    color: var(--mp-soft-text);
     overflow: hidden;
   }
 
@@ -722,6 +719,11 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+  }
+
+  /* Show whole image: every photo stays fully visible whatever its ratio */
+  .main-product-{{ section.id }}__main-image-wrapper--contain .main-product-{{ section.id }}__main-image {
+    object-fit: contain;
   }
 
   .main-product-{{ section.id }}__media-item {
@@ -746,6 +748,7 @@
 
   .main-product-{{ section.id }}__media-item--model model-viewer {
     background: var(--mp-soft-bg);
+    color: var(--mp-soft-text);
   }
 
   .main-product-{{ section.id }}__thumbnail {
@@ -783,6 +786,7 @@
     border: 3px solid var(--mp-bg, #fff);
     border-radius: 50%;
     background-color: var(--mp-soft-bg, #f5efe7);
+    color: var(--mp-soft-text);
     background-repeat: no-repeat;
     box-shadow: 0 0 0 1px var(--mp-accent, #9c4a1a), 0 18px 40px rgb(0 0 0 / 0.22);
     opacity: 0;
@@ -832,6 +836,7 @@
     max-height: 100%;
     object-fit: contain;
     cursor: zoom-in;
+    -webkit-user-select: none;
     user-select: none;
   }
 
@@ -1034,6 +1039,7 @@
     height: 45px;
     border-radius: 50%;
     background: var(--mp-soft-bg);
+    color: var(--mp-soft-text);
   }
 
   .main-product-{{ section.id }}__reviewer-name {
@@ -1099,7 +1105,7 @@
     text-transform: uppercase;
     letter-spacing: 1px;
     color: var(--mp-text);
-    opacity: 0.6;
+    opacity: 0.8;
     margin: 0;
   }
 
@@ -1406,6 +1412,7 @@
     align-items: center;
     gap: 12px;
     background: var(--mp-soft-bg);
+    color: var(--mp-soft-text);
     padding: 12px;
     border: 1px solid var(--mp-border);
   }
@@ -1564,25 +1571,6 @@
     line-height: 1.6;
   }
 
-  .main-product-{{ section.id }}__size-table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-
-  .main-product-{{ section.id }}__size-table th, 
-  .main-product-{{ section.id }}__size-table td {
-    border: 1px solid var(--mp-border);
-    padding: 12px;
-    text-align: center;
-    font-size: 13px;
-  }
-
-  .main-product-{{ section.id }}__size-table th {
-    background: var(--mp-soft-bg);
-    font-weight: 700;
-    text-transform: uppercase;
-  }
-
   .main-product-{{ section.id }}__sticky-atc {
     position: fixed;
     bottom: 0;
@@ -1626,6 +1614,7 @@
     object-fit: cover;
     border: 1px solid var(--mp-border);
     background: var(--mp-soft-bg);
+    color: var(--mp-soft-text);
   }
 
   .main-product-{{ section.id }}__sticky-info {
@@ -1903,6 +1892,23 @@
       "default": true
     },
     {
+      "type": "select",
+      "id": "media_fit",
+      "label": "t:sections.product.settings.media_fit.label",
+      "info": "t:sections.product.settings.media_fit.info",
+      "default": "contain",
+      "options": [
+        {
+          "value": "contain",
+          "label": "t:sections.product.settings.media_fit.options__contain"
+        },
+        {
+          "value": "cover",
+          "label": "t:sections.product.settings.media_fit.options__cover"
+        }
+      ]
+    },
+    {
       "type": "checkbox",
       "id": "enable_zoom",
       "label": "t:sections.product.settings.enable_zoom.label",
@@ -1950,6 +1956,12 @@
     },
     {
       "type": "color",
+      "id": "soft_text",
+      "label": "t:sections.product.settings.soft_text.label",
+      "default": "#2B1E16"
+    },
+    {
+      "type": "color",
       "id": "button_bg_color",
       "label": "t:sections.product.settings.button_bg_color.label",
       "default": "#1a1a1a"
@@ -1986,19 +1998,19 @@
           "type": "text",
           "id": "customer_name",
           "label": "t:sections.product.blocks.customer_review.settings.customer_name.label",
-          "default": "Sophie L."
+          "default": "Customer name"
         },
         {
           "type": "text",
           "id": "review_title",
           "label": "t:sections.product.blocks.customer_review.settings.review_title.label",
-          "default": "Love this overnight glow!"
+          "default": "Review title"
         },
         {
           "type": "textarea",
           "id": "review_text",
           "label": "t:sections.product.blocks.customer_review.settings.review_text.label",
-          "default": "Woke up with plump, hydrated skin."
+          "default": "Add a quote from a real customer review."
         },
         {
           "type": "range",
@@ -2026,8 +2038,7 @@
         {
           "type": "text",
           "id": "subtitle",
-          "label": "t:sections.product.blocks.title.settings.subtitle.label",
-          "default": "AFORMO"
+          "label": "t:sections.product.blocks.title.settings.subtitle.label"
         }
       ]
     },
@@ -2074,7 +2085,7 @@
           "type": "textarea",
           "id": "benefits_list",
           "label": "t:sections.product.blocks.key_benefits.settings.benefits_list.label",
-          "default": "Hydrates & Locks in Moisture Overnight, BOOSTS ELASTICITY"
+          "default": "First benefit, second benefit, third benefit"
         }
       ]
     },
@@ -2127,7 +2138,7 @@
           "type": "text",
           "id": "button_text",
           "label": "t:sections.product.blocks.buy_button.settings.button_text.label",
-          "default": "ADD TO CART"
+          "default": "Add to cart"
         },
         {
           "type": "checkbox",
@@ -2160,7 +2171,7 @@
           "type": "text",
           "id": "guarantee_text",
           "label": "t:sections.product.blocks.guarantee_text.settings.guarantee_text.label",
-          "default": "TRY IT - FREE FOR 30 DAYS. 100% REFUND."
+          "default": "Add a short note about your returns policy"
         }
       ]
     },
@@ -2173,7 +2184,7 @@
           "type": "text",
           "id": "title",
           "label": "t:sections.product.blocks.size_chart.settings.title.label",
-          "default": "Size Chart"
+          "default": "Size chart"
         },
         {
           "type": "image_picker",
@@ -2190,13 +2201,13 @@
           "type": "text",
           "id": "title",
           "label": "t:sections.product.blocks.faq_accordion.settings.title.label",
-          "default": "Shipping & Returns"
+          "default": "Shipping and returns"
         },
         {
           "type": "richtext",
           "id": "content",
           "label": "t:sections.product.blocks.faq_accordion.settings.content.label",
-          "default": "<p>Details here...</p>"
+          "default": "<p>Add answers to common questions about this product.</p>"
         }
       ]
     },
@@ -2209,7 +2220,7 @@
           "type": "text",
           "id": "shipping_text",
           "label": "t:sections.product.blocks.shipping_info.settings.shipping_text.label",
-          "default": "We offer worldwide free shipping for every order."
+          "default": "Add a short note about your shipping options"
         }
       ]
     },

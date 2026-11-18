@@ -250,7 +250,7 @@
     <main class="gift-card__inner" id="MainContent">
       <a class="gift-card__brand" href="{{ routes.root_url }}">
         {%- if settings.logo_default != blank -%}
-          {{ settings.logo_default | image_url: width: 360 | image_tag: class: 'gift-card__logo', alt: shop.name, widths: '180, 270, 360' }}
+          {{ settings.logo_default | image_url: width: 360 | image_tag: class: 'gift-card__logo', alt: shop.name, sizes: '180px', loading: 'eager', widths: '180, 270, 360' }}
         {%- else -%}
           <span class="gift-card__shop">{{ shop.name | escape }}</span>
         {%- endif -%}
@@ -280,13 +280,13 @@
 
       <div class="gift-card__code-wrap">
         <p class="gift-card__hint">{{ 'gift_card.use_at_checkout' | t }}</p>
+        <label class="visually-hidden" for="GiftCardCode">{{ 'gift_card.code' | t }}</label>
         <div class="gift-card__code-row">
           <input
             class="gift-card__code"
             id="GiftCardCode"
             type="text"
             value="{{ gift_card.code | format_code }}"
-            aria-label="{{ 'gift_card.code' | t }}"
             readonly
             onfocus="this.select()"
           >

@@ -12,6 +12,7 @@
   @param {boolean} [compare] - Shows the before price when on sale; defaults to true
   @param {boolean} [savings] - Shows how much the customer saves; defaults to false
   @param {string} [form_id] - Product form id, so the tag follows the selected variant
+  @param {boolean} [tax_note] - Adds a line saying taxes are included when the store uses tax-inclusive prices
   @param {string} [class] - Extra classes for the tag
 
   @example
@@ -33,6 +34,14 @@
   if from and product.price_varies
     assign starts_at = true
     assign now_amount = product.price_min
+    comment
+      Product-level compare-at price, so "From" and the before price describe the same range
+    endcomment
+    assign was_amount = product.compare_at_price
+    assign on_sale = false
+    if was_amount > now_amount
+      assign on_sale = true
+    endif
   endif
 
   assign show_was = true
@@ -105,6 +114,10 @@
       {{ 'price_tag.per_unit' | t: price: unit_text, unit: unit_name }}
     {%- endif -%}
   </span>
+
+  {%- if tax_note and cart.taxes_included -%}
+    <span class="price-tag__tax">{{ 'price_tag.tax_included' | t }}</span>
+  {%- endif -%}
 </span>
 
 {% stylesheet %}
@@ -126,7 +139,7 @@
 
   .price-tag__was {
     font-size: 0.85em;
-    opacity: 0.6;
+    opacity: 0.8;
   }
 
   .price-tag__save {
@@ -140,6 +153,13 @@
   .price-tag__unit {
     flex-basis: 100%;
     font-size: 0.8em;
+    opacity: 0.7;
+  }
+
+  .price-tag__tax {
+    flex-basis: 100%;
+    font-size: 0.8em;
+    font-weight: 400;
     opacity: 0.7;
   }
 

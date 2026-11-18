@@ -18,7 +18,7 @@
         <ul class="article-comments__list" role="list">
           {%- for comment in article.comments -%}
             <li class="article-comments__item" id="{{ comment.id }}">
-              <div class="article-comments__body">{{ comment.content }}</div>
+              <div class="article-comments__body rte">{{ comment.content }}</div>
               <p class="article-comments__meta">
                 {{ comment.author | escape }} · {{ comment.created_at | time_tag: format: 'date' }}
               </p>

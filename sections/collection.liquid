@@ -59,7 +59,7 @@
         <div class="collection-grid-{{ section.id }}__banner-content">
           <h1 class="collection-grid-{{ section.id }}__banner-title">{{ collection.title | escape }}</h1>
           {%- if collection.description != blank -%}
-            <p class="collection-grid-{{ section.id }}__banner-desc">{{ collection.description | strip_html | truncate: 150 }}</p>
+            <div class="collection-grid-{{ section.id }}__banner-desc rte">{{ collection.description }}</div>
           {%- endif -%}
           <span class="collection-grid-{{ section.id }}__banner-count" data-facets-update="collection-count-{{ section.id }}">{{ 'collection_page.products_count' | t: count: collection.products_count }}</span>
         </div>
@@ -111,12 +111,14 @@
                   {%- else -%}
                     {{ 'product-1' | placeholder_svg_tag: placeholder_class }}
                   {%- endif -%}
-                  <span class="collection-grid-{{ section.id }}__featured-badge">{{ 'collection_page.sale' | t }}</span>
+                  {%- if featured_product.compare_at_price_max > featured_product.price -%}
+                    <span class="collection-grid-{{ section.id }}__featured-badge">{{ 'collection_page.sale' | t }}</span>
+                  {%- endif -%}
                 </div>
                 <div class="collection-grid-{{ section.id }}__featured-content">
                   <h4 class="collection-grid-{{ section.id }}__featured-title">{{ featured_product.title | escape }}</h4>
                   <div class="collection-grid-{{ section.id }}__featured-price">
-                    {% render 'price-tag', product: featured_product %}
+                    {% render 'price-tag', product: featured_product, from: true %}
                   </div>
                 </div>
               </a>
@@ -261,7 +263,7 @@
 
                   <div class="collection-grid-{{ section.id }}__card-bottom">
                     <span class="collection-grid-{{ section.id }}__price" data-card-price>
-                      {% render 'price-tag', product: product, variant: card_variant %}
+                      {% render 'price-tag', product: product, variant: card_variant, from: true %}
                     </span>
 
                     {%- if quick_add != 'none' -%}
@@ -593,7 +595,7 @@
 
   .collection-grid-{{ section.id }}__price-compare {
     color: var(--grid-text);
-    opacity: 0.5;
+    opacity: 0.8;
     text-decoration: line-through;
     font-size: 0.85rem;
   }
@@ -723,7 +725,7 @@
   }
 
   .collection-grid-{{ section.id }}__card-collection {
-    opacity: 0.6;
+    opacity: 0.8;
   }
 
   .collection-grid-{{ section.id }}__card-image-wrapper {
@@ -823,7 +825,7 @@
     font-size: 0.65rem;
     text-transform: uppercase;
     letter-spacing: 1px;
-    opacity: 0.6;
+    opacity: 0.8;
   }
 
   .collection-grid-{{ section.id }}__card-title {

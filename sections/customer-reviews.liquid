@@ -8,8 +8,9 @@
     assign reviews_accent = section.settings.custom_accent_color
     assign reviews_border = section.settings.custom_card_border
     
-    assign heading_font = section.settings.custom_heading_font
-    assign body_font = section.settings.custom_body_font
+    assign heading_font = section.settings.custom_heading_font.family | append: ', ' | append: section.settings.custom_heading_font.fallback_families
+    assign body_font = section.settings.custom_body_font.family | append: ', ' | append: section.settings.custom_body_font.fallback_families
+    render 'custom-fonts', heading: section.settings.custom_heading_font, body: section.settings.custom_body_font
   else
     assign reviews_text = section.settings.color_scheme.settings.text
     assign reviews_muted = section.settings.muted_color
@@ -59,7 +60,7 @@
         {% endif %}
 
         {% if section.settings.description != blank %}
-          <div class="customer-reviews-{{ section.id }}__description">
+          <div class="customer-reviews-{{ section.id }}__description rte">
             {{ section.settings.description }}
           </div>
         {% endif %}
@@ -417,7 +418,7 @@
   }
 
   .customer-reviews-{{ section.id }}__star {
-    opacity: .28;
+    opacity: 0.5;
   }
 
   .customer-reviews-{{ section.id }}__star.is-filled {
@@ -456,25 +457,26 @@
   .customer-reviews-{{ section.id }}__dots {
     display: flex;
     align-items: center;
-    gap: 7px;
+    gap: 0;
   }
 
+  /* 24px tap area; the visible dot is the 6px content box inside the padding */
   .customer-reviews-{{ section.id }}__dot {
-    width: 6px;
-    height: 6px;
-    padding: 0;
+    width: 24px;
+    height: 24px;
+    padding: 9px;
     border: 0;
-    border-radius: 50%;
-    background: var(--reviews-muted);
+    border-radius: 12px;
+    background-clip: content-box;
+    background-color: var(--reviews-muted);
     opacity: .35;
     cursor: pointer;
     transition: width 200ms ease, opacity 200ms ease, background 200ms ease;
   }
 
   .customer-reviews-{{ section.id }}__dot.is-active {
-    width: 18px;
-    border-radius: 10px;
-    background: var(--reviews-accent);
+    width: 36px;
+    background-color: var(--reviews-accent);
     opacity: 1;
   }
 
@@ -717,13 +719,13 @@
       "type": "text",
       "id": "heading",
       "label": "t:sections.customer_reviews.settings.heading.label",
-      "default": "What Our Customers Say"
+      "default": "What our customers say"
     },
     {
       "type": "richtext",
       "id": "description",
       "label": "t:sections.customer_reviews.settings.description.label",
-      "default": "<p>Discover why our customers love our beautifully crafted handbags, where premium quality meets timeless style and everyday sophistication.</p>"
+      "default": "<p>Share what customers love about your products.</p>"
     },
     {
       "type": "header",
@@ -932,19 +934,18 @@
           "type": "text",
           "id": "customer_name",
           "label": "t:sections.customer_reviews.blocks.review.settings.customer_name.label",
-          "default": "Amy Chase"
+          "default": "Customer name"
         },
         {
           "type": "text",
           "id": "customer_role",
-          "label": "t:sections.customer_reviews.blocks.review.settings.customer_role.label",
-          "default": "Founder, Modern Muse"
+          "label": "t:sections.customer_reviews.blocks.review.settings.customer_role.label"
         },
         {
           "type": "textarea",
           "id": "review",
           "label": "t:sections.customer_reviews.blocks.review.settings.review.label",
-          "default": "Absolutely in love with my new handbag! The elegant design, premium finish, and beautiful detailing make it feel truly luxurious. It is the perfect blend of style and practicality."
+          "default": "Share a quote from one of your customers about their experience."
         },
         {
           "type": "range",
@@ -969,36 +970,31 @@
         {
           "type": "review",
           "settings": {
-            "customer_name": "Customer Name",
-            "customer_role": "Verified customer"
+            "customer_name": "Customer name"
           }
         },
         {
           "type": "review",
           "settings": {
-            "customer_name": "Customer Name",
-            "customer_role": "Verified customer"
+            "customer_name": "Customer name"
           }
         },
         {
           "type": "review",
           "settings": {
-            "customer_name": "Customer Name",
-            "customer_role": "Verified customer"
+            "customer_name": "Customer name"
           }
         },
         {
           "type": "review",
           "settings": {
-            "customer_name": "Customer Name",
-            "customer_role": "Verified customer"
+            "customer_name": "Customer name"
           }
         },
         {
           "type": "review",
           "settings": {
-            "customer_name": "Customer Name",
-            "customer_role": "Verified customer"
+            "customer_name": "Customer name"
           }
         }
       ]

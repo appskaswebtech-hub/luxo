@@ -203,3 +203,125 @@ h6 {
   gap: 1.5rem;
   padding-block: 2rem;
 }
+
+/* Rich text from the Shopify editor (articles, pages, product and collection
+   descriptions, comments, rich text settings): one look across the theme */
+.rte {
+  overflow-wrap: break-word;
+  line-height: 1.75;
+}
+
+.rte > * + * {
+  margin-top: 1em;
+}
+
+.rte p {
+  margin-bottom: 0;
+}
+
+.rte :is(h1, h2, h3, h4, h5, h6) {
+  margin: 1.6em 0 0.6em;
+  color: inherit;
+  line-height: 1.25;
+}
+
+.rte > :is(h1, h2, h3, h4, h5, h6):first-child {
+  margin-top: 0;
+}
+
+.rte h1 { font-size: 2em; }
+.rte h2 { font-size: 1.6em; }
+.rte h3 { font-size: 1.35em; }
+.rte h4 { font-size: 1.15em; }
+.rte h5 { font-size: 1em; }
+.rte h6 {
+  font-size: 0.85em;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.rte :is(ul, ol) {
+  padding-inline-start: 1.5em;
+}
+
+.rte ul {
+  list-style: disc;
+}
+
+.rte ol {
+  list-style: decimal;
+}
+
+.rte li + li {
+  margin-top: 0.35em;
+}
+
+.rte :is(ul, ol) :is(ul, ol) {
+  margin-top: 0.35em;
+}
+
+.rte a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.rte a:hover {
+  text-decoration-thickness: 2px;
+}
+
+.rte blockquote {
+  margin-inline: 0;
+  padding: 0.25em 0 0.25em 1.25em;
+  border-inline-start: 3px solid var(--color-accent, currentColor);
+  font-family: var(--font-heading-family);
+  font-size: 1.15em;
+  font-style: italic;
+}
+
+.rte img {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--media-radius, 0);
+}
+
+.rte table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.rte :is(th, td) {
+  padding: 0.5em 0.75em;
+  border: 1px solid color-mix(in srgb, currentColor 15%, transparent);
+  text-align: start;
+}
+
+.rte iframe {
+  max-width: 100%;
+}
+
+.rte hr {
+  border: 0;
+  border-top: 1px solid color-mix(in srgb, currentColor 15%, transparent);
+}
+
+/* Keyboard focus: every control shows a ring unless a component draws its own.
+   :where() keeps this at zero specificity so component styles win. */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+/* Theme-wide heading scale so h1–h6 always look different;
+   sections with their own heading classes keep their sizes */
+h1 { font-size: calc(var(--font-heading-size, 32px) * 1.25); }
+h2 { font-size: var(--font-heading-size, 32px); }
+h3 { font-size: calc(var(--font-heading-size, 32px) * 0.75); }
+h4 { font-size: calc(var(--font-heading-size, 32px) * 0.625); }
+h5 { font-size: calc(var(--font-heading-size, 32px) * 0.53); }
+h6 {
+  font-size: calc(var(--font-heading-size, 32px) * 0.47);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}

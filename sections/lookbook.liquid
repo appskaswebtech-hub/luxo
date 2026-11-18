@@ -8,8 +8,9 @@
     assign bg_color = section.settings.custom_bg_color
     assign text_color = section.settings.custom_text_color
     assign accent_color = section.settings.custom_accent_color
-    assign heading_font = section.settings.custom_heading_font
-    assign body_font = section.settings.custom_body_font
+    assign heading_font = section.settings.custom_heading_font.family | append: ', ' | append: section.settings.custom_heading_font.fallback_families
+    assign body_font = section.settings.custom_body_font.family | append: ', ' | append: section.settings.custom_body_font.fallback_families
+    render 'custom-fonts', heading: section.settings.custom_heading_font, body: section.settings.custom_body_font
   else
     assign bg_color = section.settings.color_scheme.settings.background
     assign text_color = section.settings.color_scheme.settings.text
@@ -373,7 +374,7 @@
     text-transform: uppercase;
     letter-spacing: 1px;
     color: var(--lb-text);
-    opacity: 0.6;
+    opacity: 0.8;
     transition: opacity 0.3s ease;
   }
 
@@ -519,7 +520,7 @@
       "type": "text",
       "id": "accessible_label",
       "label": "t:sections.lookbook.settings.accessible_label.label",
-      "default": "Cinematic Lookbook Slider"
+      "default": "Lookbook"
     },
     {
       "type": "select",
@@ -619,19 +620,19 @@
           "type": "text",
           "id": "title",
           "label": "t:sections.lookbook.blocks.lookbook_slide.settings.title.label",
-          "default": "Autumn Elegance"
+          "default": "Slide heading"
         },
         {
           "type": "richtext",
           "id": "description",
           "label": "t:sections.lookbook.blocks.lookbook_slide.settings.description.label",
-          "default": "<p>Discover the latest trends in our exclusive autumn collection.</p>"
+          "default": "<p>Describe the look or collection shown in this slide.</p>"
         },
         {
           "type": "text",
           "id": "button_label",
           "label": "t:sections.lookbook.blocks.lookbook_slide.settings.button_label.label",
-          "default": "Shop Now"
+          "default": "Shop now"
         },
         {
           "type": "url",

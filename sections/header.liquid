@@ -13,6 +13,7 @@
      style="{% if use_custom %}
        --header-bg: {{ section.settings.custom_bg }};
        --header-bg-2: {{ section.settings.custom_bg_2 }};
+       --header-on-dark: {{ section.settings.custom_text_2 }};
        --header-text: {{ section.settings.custom_text }};
        --header-accent: {{ section.settings.custom_accent }};
        --header-accent-2: {{ section.settings.custom_accent_2 }};
@@ -58,18 +59,20 @@
           <{{ search_tag }} class="header-search" data-url="{{ routes.predictive_search_url }}">
             <form action="{{ routes.search_url }}" method="get" class="header-search__form" role="search">
               <div class="header-search__cat">
-                <select name="type" aria-label="{{ 'general.header.search_category' | t }}">
+                <label class="visually-hidden" for="HeaderSearchType-{{ section.id }}">{{ 'general.header.search_category' | t }}</label>
+                <select name="type" id="HeaderSearchType-{{ section.id }}">
                   <option value="">{{ 'general.header.all_categories' | t }}</option>
                   <option value="product">{{ 'search.predictive.products' | t }}</option>
                   <option value="article">{{ 'search.predictive.articles' | t }}</option>
                   <option value="page">{{ 'search.predictive.pages' | t }}</option>
                 </select>
               </div>
+              <label class="visually-hidden" for="HeaderSearch-{{ section.id }}">{{ 'search.label' | t }}</label>
               <input
                 type="search"
+                id="HeaderSearch-{{ section.id }}"
                 name="q"
                 placeholder="{{ 'general.header.search_placeholder' | t }}"
-                aria-label="{{ 'search.label' | t }}"
                 {% if settings.search_suggestions %}
                   role="combobox"
                   aria-expanded="false"
@@ -147,6 +150,15 @@
                   </a>
                   {%- if submenu.links.size > 0 -%}
                     <div class="header-mega-panel">
+                      <div class="header-mega-panel__head">
+                        <p class="header-mega-panel__heading">{{ block.settings.title | escape }}</p>
+                        {%- if block.settings.link != blank -%}
+                          <a href="{{ block.settings.link }}" class="header-mega-panel__all">
+                            {{- 'general.header.view_all' | t -}}
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                          </a>
+                        {%- endif -%}
+                      </div>
                       <ul class="header-mega-columns">
                         {%- for link in submenu.links -%}
                           <li class="header-mega-column">
@@ -334,6 +346,13 @@
     },
     {
       "type": "color",
+      "id": "custom_text_2",
+      "label": "t:sections.header.settings.custom_text_2.label",
+      "default": "#FFFFFF",
+      "visible_if": "{{ section.settings.enable_custom_design }}"
+    },
+    {
+      "type": "color",
       "id": "custom_text",
       "label": "t:sections.header.settings.custom_text.label",
       "default": "#2B1E16"
@@ -445,19 +464,20 @@
       "type": "text",
       "id": "mega_label",
       "label": "t:sections.header.settings.mega_label.label",
-      "default": "ALL CATEGORIES"
+      "default": "All categories"
     },
     {
       "type": "link_list",
       "id": "main_menu",
-      "label": "t:sections.header.settings.main_menu.label"
+      "label": "t:sections.header.settings.main_menu.label",
+      "default": "main-menu"
     },
     {
       "type": "text",
       "id": "deal_text",
       "label": "t:sections.header.settings.deal_text.label",
       "info": "t:sections.header.settings.deal_text.info",
-      "default": "TODAY DEALS"
+      "default": "Today's deals"
     },
     {
       "type": "url",
@@ -475,7 +495,7 @@
           "type": "text",
           "id": "title",
           "label": "t:sections.header.blocks.menu_item.settings.title.label",
-          "default": "Laptops & Mac"
+          "default": "Menu item"
         },
         {
           "type": "url",
@@ -486,7 +506,8 @@
           "type": "link_list",
           "id": "submenu_menu",
           "label": "t:sections.header.blocks.menu_item.settings.submenu_menu.label",
-          "info": "t:sections.header.blocks.menu_item.settings.submenu_menu.info"
+          "info": "t:sections.header.blocks.menu_item.settings.submenu_menu.info",
+          "default": "main-menu"
         }
       ]
     }

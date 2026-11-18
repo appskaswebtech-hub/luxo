@@ -49,7 +49,6 @@
     "card_variants": "Variant options on cards",
     "cart_upsell": "Product suggestions",
     "filters": "Filters",
-    "cart_free_shipping": "Free shipping progress",
     "cart_trust": "Trust points"
   },
   "labels": {
@@ -133,7 +132,7 @@
     "cart_upsell_heading": "Heading",
     "cart_upsell_collection": "Collection",
     "cart_upsell_limit": "Products to show",
-    "cart_upsell_navigation": "Slider navigation",
+    "cart_upsell_navigation": "Slideshow navigation",
     "cart_upsell_button": "Button action",
     "filter_style": "Filter style",
     "filter_apply": "Apply filters",
@@ -141,14 +140,12 @@
     "card_image_behavior": "Card image",
     "card_slider_arrow_bg": "Arrow background",
     "card_slider_arrow_icon": "Arrow icon",
-    "card_slider_limit": "Images in card slider",
+    "card_slider_limit": "Images in card slideshow",
     "card_slider_arrows": "Show arrows",
     "card_slider_indicator": "Indicator",
     "card_slider_max_dots": "Visible dots",
     "card_slider_indicator_color": "Dots and progress line",
     "cart_summary_card": "Show order summary in a card",
-    "cart_free_shipping": "Show free shipping progress bar",
-    "cart_free_shipping_threshold": "Free shipping threshold",
     "cart_trust_badges": "Show trust points under checkout",
     "cart_trust_1": "Secure checkout text",
     "cart_trust_2": "Returns text",
@@ -157,7 +154,7 @@
   "info": {
     "cart_layout": "Side by side applies to screens 990px and wider. Smaller screens always show the summary below the items",
     "cart_popup_trigger": "Touch screens always open the popup on tap. With hover, clicking the cart icon opens the cart page",
-    "favicon": "Displayed at 32 x 32 px",
+    "favicon": "32 x 32px recommended",
     "pills_settings": "Pills settings",
     "reduced_motion": "Animations stay off for visitors who have reduced motion turned on in their device settings",
     "search_suggestions": "Products, collections, and pages appear in a dropdown as customers type",
@@ -176,9 +173,7 @@
     "cart_upsell_collection": "Leave empty to suggest from all products",
     "cart_upsell_button": "Add to cart adds the first available option of products with variants",
     "filter_apply": "Results update without reloading the page in both modes",
-    "card_slider_max_dots": "With more images than this, the dots slide along as customers move through the images",
-    "cart_free_shipping": "Shown in the cart page and cart drawer. Hidden when a customer shops in a different currency from your store.",
-    "cart_free_shipping_threshold": "Order amount in your store currency, for example 100. Match it to your free shipping rate in Settings > Shipping and delivery."
+    "card_slider_max_dots": "With more images than this, the dots slide along as customers move through the images"
   },
   "sections": {
     "hero": {
@@ -197,7 +192,7 @@
           "label": "Layout style",
           "options": {
             "center_overlap": "Center overlap (2 images behind text)",
-            "edge_spaced": "Edge spaced (images on far left & right)"
+            "edge_spaced": "Edge spaced (images on far left and right)"
           }
         },
         "image_border_radius": {
@@ -373,6 +368,12 @@
         },
         "custom_body_font": {
           "label": "Custom body font"
+        },
+        "card_text": {
+          "label": "Card text"
+        },
+        "custom_card_text_color": {
+          "label": "Card text"
         }
       }
     },
@@ -563,7 +564,7 @@
           "label": "Section background"
         },
         "default_text_color": {
-          "label": "Text & dark elements"
+          "label": "Text and dark elements"
         },
         "default_accent_color": {
           "label": "Accent color (buttons)"
@@ -586,6 +587,9 @@
         },
         "custom_body_font": {
           "label": "Custom body font"
+        },
+        "per_page": {
+          "label": "Collections per page"
         }
       }
     },
@@ -633,7 +637,7 @@
           "label": "Text color"
         },
         "accent_color": {
-          "label": "Accent color (button & icons)"
+          "label": "Accent color (button and icons)"
         },
         "input_background": {
           "label": "Input background"
@@ -675,7 +679,7 @@
       }
     },
     "customer_reviews": {
-      "name": "Customer reviews slider",
+      "name": "Testimonials",
       "settings": {
         "heading": {
           "label": "Heading"
@@ -755,8 +759,8 @@
         }
       },
       "headers": {
-        "slider_settings": "Slider settings",
-        "default_typography_and_sizes": "Default typography & sizes",
+        "slider_settings": "Slideshow",
+        "default_typography_and_sizes": "Default typography and sizes",
         "default_colors": "Default colors",
         "spacing": "Spacing",
         "custom_design_override": "Custom design (override)"
@@ -772,7 +776,7 @@
               "label": "Customer name"
             },
             "customer_role": {
-              "label": "Customer title"
+              "label": "Customer role"
             },
             "review": {
               "label": "Review text"
@@ -843,7 +847,7 @@
         "section_content": "Section content",
         "layout_settings": "Layout settings",
         "product_card_settings": "Product card settings",
-        "button_and_header": "Button & header",
+        "button_and_header": "Button and heading",
         "spacing": "Spacing",
         "default_colors": "Default colors",
         "custom_design_override": "Custom design (override)"
@@ -873,7 +877,7 @@
           "label": "Layout type",
           "options": {
             "grid": "Grid",
-            "slider": "Slider (carousel)"
+            "slider": "Carousel"
           }
         },
         "products_per_row": {
@@ -931,10 +935,10 @@
           "label": "Custom heading size"
         },
         "custom_title_color": {
-          "label": "Custom title color"
+          "label": "Custom heading color"
         },
         "custom_title_size": {
-          "label": "Custom title size"
+          "label": "Custom heading size"
         },
         "custom_body_font": {
           "label": "Custom body font"
@@ -1055,6 +1059,12 @@
         },
         "custom_body_font": {
           "label": "Custom body font"
+        },
+        "card_text": {
+          "label": "Card text"
+        },
+        "custom_card_text": {
+          "label": "Card text"
         }
       },
       "blocks": {
@@ -1073,7 +1083,7 @@
           "name": "Newsletter (left)",
           "settings": {
             "newsletter_title": {
-              "label": "Newsletter title"
+              "label": "Newsletter heading"
             },
             "newsletter_text": {
               "label": "Newsletter subtext"
@@ -1084,7 +1094,7 @@
           "name": "Menu column (right)",
           "settings": {
             "menu_title": {
-              "label": "Menu title"
+              "label": "Menu heading"
             },
             "menu": {
               "label": "Select menu"
@@ -1098,7 +1108,7 @@
           "name": "Social links (right)",
           "settings": {
             "social_title": {
-              "label": "Social title"
+              "label": "Social media heading"
             }
           },
           "paragraphs": {
@@ -1195,6 +1205,9 @@
         },
         "deal_link": {
           "label": "Deal badge link"
+        },
+        "custom_text_2": {
+          "label": "Text on dark background"
         }
       },
       "blocks": {
@@ -1202,7 +1215,7 @@
           "name": "Mega menu item",
           "settings": {
             "title": {
-              "label": "Title"
+              "label": "Label"
             },
             "link": {
               "label": "Link"
@@ -1216,7 +1229,7 @@
       }
     },
     "instagram_feed_gallery": {
-      "name": "Instagram feed gallery",
+      "name": "Social image gallery",
       "headers": {
         "content_settings": "Content settings",
         "image_styling": "Image styling",
@@ -1247,7 +1260,7 @@
           "label": "Heading text color"
         },
         "accent_color": {
-          "label": "Button & border color"
+          "label": "Button and border color"
         },
         "padding_top": {
           "label": "Padding top"
@@ -1290,7 +1303,7 @@
       }
     },
     "lookbook": {
-      "name": "Lookbook slider",
+      "name": "Lookbook",
       "settings": {
         "accessible_label": {
           "label": "Section label"
@@ -1309,7 +1322,7 @@
           "label": "Text color"
         },
         "accent_color": {
-          "label": "Accent color (buttons & highlights)"
+          "label": "Accent color (buttons and highlights)"
         },
         "enable_custom_design": {
           "label": "Enable custom design",
@@ -1388,7 +1401,7 @@
           "label": "Section background"
         },
         "default_text_color": {
-          "label": "Text & dark elements"
+          "label": "Text and dark elements"
         },
         "default_accent_color": {
           "label": "Accent color (buttons)"
@@ -1431,15 +1444,15 @@
               "info": "Overrides Collection image if selected"
             },
             "custom_title": {
-              "label": "Custom tag title",
-              "info": "Overrides Collection title (e.g., CASUAL, LEISURE)"
+              "label": "Custom tag heading",
+              "info": "Replaces the collection title on the tag"
             },
             "custom_description": {
               "label": "Custom description",
               "info": "Overrides Collection description"
             },
             "layout_center": {
-              "label": "Move description below image?"
+              "label": "Show description below image"
             }
           }
         }
@@ -1530,7 +1543,7 @@
       "name": "Product tabs",
       "headers": {
         "section_spacing": "Section spacing",
-        "default_colors_and_typography": "Default colors & typography",
+        "default_colors_and_typography": "Default colors and typography",
         "custom_design_override": "Custom design (override)"
       },
       "settings": {
@@ -1580,7 +1593,7 @@
           "name": "Description tab",
           "settings": {
             "tab_title": {
-              "label": "Tab title"
+              "label": "Tab heading"
             },
             "custom_description": {
               "label": "Custom description text",
@@ -1592,7 +1605,7 @@
           "name": "Reviews tab",
           "settings": {
             "tab_title": {
-              "label": "Tab title"
+              "label": "Tab heading"
             },
             "review_content": {
               "label": "Review content",
@@ -1607,7 +1620,7 @@
           "name": "Shipping tab",
           "settings": {
             "tab_title": {
-              "label": "Tab title"
+              "label": "Tab heading"
             },
             "shipping_content": {
               "label": "Shipping policy content"
@@ -1618,7 +1631,7 @@
           "name": "Size chart tab",
           "settings": {
             "tab_title": {
-              "label": "Tab title"
+              "label": "Tab heading"
             },
             "size_chart_image": {
               "label": "Size chart image"
@@ -1636,7 +1649,7 @@
           "name": "Custom content tab",
           "settings": {
             "tab_title": {
-              "label": "Tab title"
+              "label": "Tab heading"
             },
             "custom_content": {
               "label": "Content"
@@ -1688,6 +1701,15 @@
         },
         "enable_zoom": {
           "label": "Enable image zoom"
+        },
+        "media_fit": {
+          "label": "Image fit",
+          "info": "Show whole image keeps every photo fully visible. Fill frame crops photos that have a different shape.",
+          "options__contain": "Show whole image",
+          "options__cover": "Fill frame"
+        },
+        "soft_text": {
+          "label": "Soft background text"
         }
       },
       "blocks": {
@@ -1701,7 +1723,7 @@
               "label": "Customer name"
             },
             "review_title": {
-              "label": "Review title"
+              "label": "Review heading"
             },
             "review_text": {
               "label": "Review text"
@@ -1719,7 +1741,7 @@
           "name": "Product title",
           "settings": {
             "subtitle": {
-              "label": "Subtitle text"
+              "label": "Subheading"
             }
           }
         },
@@ -1806,7 +1828,7 @@
           "name": "FAQ accordion",
           "settings": {
             "title": {
-              "label": "Title"
+              "label": "Heading"
             },
             "content": {
               "label": "Content"
@@ -1858,7 +1880,7 @@
         "section_content": "Section content",
         "layout_settings": "Layout settings",
         "product_image_style": "Product image style",
-        "button_and_header": "Button & header",
+        "button_and_header": "Button and heading",
         "spacing": "Spacing",
         "default_colors": "Default colors",
         "custom_design_override": "Custom design (override)"
@@ -1888,7 +1910,7 @@
           "label": "Layout type",
           "options": {
             "grid": "Grid",
-            "slider": "Slider (carousel)"
+            "slider": "Carousel"
           }
         },
         "products_per_row": {
@@ -1974,7 +1996,7 @@
         },
         "countdown_end_date": {
           "label": "End date",
-          "info": "Format: YYYY-MM-DDTHH:MM:SS, for example 2026-12-31T23:59:59. Leave empty to count down to the end of each week"
+          "info": "Your sale's real end date and time, for example 2026-12-31T23:59:59. Leave blank to hide the countdown."
         },
         "days_label": {
           "label": "Days label"
@@ -2084,7 +2106,7 @@
       },
       "blocks": {
         "title": {
-          "name": "Title"
+          "name": "Product title"
         },
         "price": {
           "name": "Price"
@@ -2459,6 +2481,21 @@
           "label": "Bottom padding"
         }
       }
+    },
+    "page": {
+      "settings": {
+        "width": {
+          "label": "Content width",
+          "options__narrow": "Narrow",
+          "options__wide": "Wide"
+        },
+        "padding_top": {
+          "label": "Top padding"
+        },
+        "padding_bottom": {
+          "label": "Bottom padding"
+        }
+      }
     }
   },
   "options": {
@@ -2524,8 +2561,8 @@
       "rounded": "Rounded square"
     },
     "text_style": {
-      "title": "Title",
-      "subtitle": "Subtitle",
+      "title": "Heading",
+      "subtitle": "Subheading",
       "normal": "Normal text"
     },
     "text_transform": {
@@ -2577,7 +2614,7 @@
     },
     "card_image_behavior": {
       "hover": "Second image on hover",
-      "slider": "Image slider",
+      "slider": "Image slideshow",
       "none": "First image only"
     },
     "card_slider_limit": {
