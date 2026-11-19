@@ -47,7 +47,9 @@
     },
     "featured_products": {
       "type": "featured-collection",
-      "settings": {}
+      "settings": {
+        "layout_type": "slider"
+      }
     },
     "seasonal_sale": {
       "type": "seasonal-sale-banner",

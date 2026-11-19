@@ -374,7 +374,17 @@
     grid-template-columns: repeat(4, 1fr);
   }
 
+  /* Carousel: the track takes the full row, the arrows sit centered underneath */
+  .featured-collection-{{ section.id }}__is-slider {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 24px 12px;
+  }
+
   .featured-collection-{{ section.id }}__is-slider .featured-collection-{{ section.id }}__slider-track {
+    flex: 0 0 100%;
+    min-width: 0;
     display: flex;
     gap: 2rem;
     overflow-x: auto;
@@ -608,32 +618,39 @@
 
   .featured-collection-{{ section.id }}__slider-prev,
   .featured-collection-{{ section.id }}__slider-next {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
+    position: static;
     width: 44px;
     height: 44px;
-    background: #fff;
-    border: 1px solid #ddd;
+    padding: 0;
+    background: transparent;
+    color: var(--fc-text-color);
+    border: 1px solid var(--fc-text-color);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    z-index: 10;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    transition: all 0.3s ease;
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, opacity 0.3s ease;
   }
 
-  .featured-collection-{{ section.id }}__slider-prev:hover,
-  .featured-collection-{{ section.id }}__slider-next:hover {
+  .featured-collection-{{ section.id }}__slider-prev:disabled,
+  .featured-collection-{{ section.id }}__slider-next:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+
+  .featured-collection-{{ section.id }}__slider-prev[hidden],
+  .featured-collection-{{ section.id }}__slider-next[hidden] {
+    display: none;
+  }
+
+  .featured-collection-{{ section.id }}__slider-prev:hover:not(:disabled),
+  .featured-collection-{{ section.id }}__slider-next:hover:not(:disabled) {
     background: var(--fc-accent-color);
     color: #fff;
     border-color: var(--fc-accent-color);
   }
 
-  .featured-collection-{{ section.id }}__slider-prev { left: -20px; }
-  .featured-collection-{{ section.id }}__slider-next { right: -20px; }
 
   .featured-collection-{{ section.id }}__empty-text {
     text-align: center;
@@ -653,8 +670,6 @@
     .featured-collection-{{ section.id }}__columns-3 {
       grid-template-columns: repeat(2, 1fr);
     }
-    .featured-collection-{{ section.id }}__slider-prev { left: 0; }
-    .featured-collection-{{ section.id }}__slider-next { right: 0; }
   }
 
   @media (max-width: 768px) {
@@ -680,15 +695,25 @@
     const nextBtn = document.querySelector('[data-slider-next="' + sectionId + '"]');
 
     if (track && prevBtn && nextBtn) {
-      const scrollAmount = track.clientWidth * 0.8;
-      
-      prevBtn.addEventListener('click', () => {
-        track.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-      });
-      
-      nextBtn.addEventListener('click', () => {
-        track.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-      });
+      const step = () => {
+        const card = track.firstElementChild;
+        const gap = parseFloat(getComputedStyle(track).columnGap) || 0;
+        return card ? card.getBoundingClientRect().width + gap : track.clientWidth * 0.8;
+      };
+      const sync = () => {
+        const max = track.scrollWidth - track.clientWidth;
+        const scrollable = max > 2;
+        prevBtn.hidden = !scrollable;
+        nextBtn.hidden = !scrollable;
+        prevBtn.disabled = track.scrollLeft <= 2;
+        nextBtn.disabled = track.scrollLeft >= max - 2;
+      };
+
+      prevBtn.addEventListener('click', () => track.scrollBy({ left: -step(), behavior: 'smooth' }));
+      nextBtn.addEventListener('click', () => track.scrollBy({ left: step(), behavior: 'smooth' }));
+      track.addEventListener('scroll', sync, { passive: true });
+      window.addEventListener('resize', sync);
+      sync();
     }
   });
 </script>
